@@ -1,0 +1,242 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* ---- Helix palette (raw hex values the task calls for) ---- */
+:root {
+  /* Phase 4 adds a deeper "bg-0" tier + amber accent for warnings/claims. */
+  --bg-0: #060a14;
+  --bg: #07090a;
+  --bg-1: #0c0f10;
+  --bg-2: #11161a;
+  --line: #1d2429;
+  --line-soft: #161b1f;
+
+  --fg: #e8efe9;
+  --fg-muted: #8a9a91;
+  --fg-faint: #54625a;
+
+  --green: #4ade80;
+  --green-deep: #16a34a;
+  --green-glow: #22c55e;
+  --cyan: #67e8f9;
+  --violet: #a78bfa;
+  --magenta: #f472b6;
+  --amber: #fbbf24;
+
+  /* ---- shadcn/ui (new-york, zinc, dark-only) ---- */
+  --radius: 0.625rem;
+
+  --background: var(--bg);
+  --foreground: var(--fg);
+  --card: var(--bg-1);
+  --card-foreground: var(--fg);
+  --popover: var(--bg-1);
+  --popover-foreground: var(--fg);
+  --primary: var(--green);
+  --primary-foreground: #06220e;
+  --secondary: var(--bg-2);
+  --secondary-foreground: var(--fg);
+  --muted: var(--bg-2);
+  --muted-foreground: var(--fg-muted);
+  --accent: var(--bg-2);
+  --accent-foreground: var(--fg);
+  --destructive: #ef4444;
+  --border: var(--line);
+  --input: var(--line);
+  --ring: var(--green);
+  --chart-1: var(--green);
+  --chart-2: var(--cyan);
+  --chart-3: var(--violet);
+  --chart-4: var(--magenta);
+  --chart-5: #f59e0b;
+  --sidebar: var(--bg-1);
+  --sidebar-foreground: var(--fg);
+  --sidebar-primary: var(--green);
+  --sidebar-primary-foreground: #06220e;
+  --sidebar-accent: var(--bg-2);
+  --sidebar-accent-foreground: var(--fg);
+  --sidebar-border: var(--line);
+  --sidebar-ring: var(--green);
+}
+
+@theme inline {
+  /* Helix palette → Tailwind v4 colors */
+  --color-bg-0: var(--bg-0);
+  --color-bg: var(--bg);
+  --color-bg-1: var(--bg-1);
+  --color-bg-2: var(--bg-2);
+  --color-line: var(--line);
+  --color-line-soft: var(--line-soft);
+
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-fg-faint: var(--fg-faint);
+
+  --color-green: var(--green);
+  --color-green-deep: var(--green-deep);
+  --color-green-glow: var(--green-glow);
+  --color-cyan: var(--cyan);
+  --color-violet: var(--violet);
+  --color-magenta: var(--magenta);
+  --color-amber: var(--amber);
+
+  /* shadcn tokens */
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: #ffffff;
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --font-sans: var(--font-geist), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --font-serif: var(--font-serif), ui-serif, Georgia, serif;
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+
+  html,
+  body {
+    background-color: var(--bg);
+    color: var(--fg);
+    min-height: 100dvh;
+    overflow-x: hidden;
+    font-family: var(--font-geist), system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    letter-spacing: -0.005em;
+  }
+
+  ::selection {
+    background: var(--green);
+    color: #06220e;
+  }
+
+  .mono,
+  code,
+  kbd,
+  pre,
+  samp {
+    font-family: var(--font-geist-mono);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .serif {
+    font-family: var(--font-serif);
+    letter-spacing: -0.01em;
+  }
+
+  ::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--bg);
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line);
+    border-radius: 6px;
+    border: 2px solid var(--bg);
+  }
+}
+
+@layer utilities {
+  .mono-num {
+    font-family: var(--font-geist-mono);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: -0.01em;
+  }
+
+  @keyframes marquee-x {
+    0% {
+      transform: translateX(0);
+    }
+    100% {
+      transform: translateX(calc(-100% / 3));
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee-x 30s linear infinite;
+  }
+
+  .spotlight-card {
+    position: relative;
+  }
+  .spotlight-card::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.4s;
+    background: radial-gradient(
+      250px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+      rgba(74, 222, 128, 0.15),
+      transparent 60%
+    );
+  }
+  @media (hover: hover) {
+    .spotlight-card:hover::before {
+      opacity: 1;
+    }
+  }
+
+  .conic-border {
+    background: conic-gradient(
+      from var(--angle, 0deg) at 50% 50%,
+      rgba(74, 222, 128, 0.6) 0deg,
+      rgba(103, 232, 249, 0.5) 120deg,
+      rgba(167, 139, 250, 0.5) 240deg,
+      rgba(74, 222, 128, 0.6) 360deg
+    );
+    animation: conic-spin 8s linear infinite;
+  }
+
+  @keyframes conic-spin {
+    to {
+      --angle: 360deg;
+    }
+  }
+
+  @property --angle {
+    syntax: "<angle>";
+    initial-value: 0deg;
+    inherits: false;
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "require": ["tests/integration/mocharc.js"],
+  "extension": ["ts"],
+  "spec": ["tests/integration/**/*.test.ts"],
+  "timeout": 120000,
+  "reporter": "spec"
+}

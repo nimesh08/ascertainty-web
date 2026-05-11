@@ -1,0 +1,20 @@
+[Unit]
+Description=Exira Web (Next.js production server on port 3100)
+After=network.target
+
+[Service]
+Type=simple
+User=ubuntu
+WorkingDirectory=/home/ubuntu/exira-web
+Environment=NODE_ENV=production
+Environment=PORT=3100
+# Optional: load additional env vars from a file
+# EnvironmentFile=/home/ubuntu/exira-web/.env.local
+ExecStart=/usr/bin/npm run start -- --port 3100
+Restart=on-failure
+RestartSec=5
+StandardOutput=append:/var/log/exira-web-v2.log
+StandardError=append:/var/log/exira-web-v2.log
+
+[Install]
+WantedBy=multi-user.target
