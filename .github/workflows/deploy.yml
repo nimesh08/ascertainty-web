@@ -34,7 +34,7 @@ jobs:
         run: npm run build
         env:
           NODE_ENV: production
-          NEXT_PUBLIC_PRIVY_APP_ID: ${{ vars.BUILD_PRIVY_APP_ID || 'build-stub' }}
+          NEXT_PUBLIC_PRIVY_APP_ID: ${{ vars.BUILD_PRIVY_APP_ID || 'buildstubbuildstubbuildst' }}
           NEXT_PUBLIC_SOLANA_RPC: https://api.devnet.solana.com
           NEXT_PUBLIC_SOLANA_CLUSTER: devnet
           NEXT_PUBLIC_EXIRA_PROGRAM_ID: J7z1a2bwMEC8MchgZwskJZ8PzXg4UG674VgD8DuotJn2
