@@ -160,7 +160,7 @@ run with `LIVE_WRITE=1`. Default runs are read-only.
 
 Production on EC2 runs Next.js in standalone (`npm run start`) behind Caddy
 (TLS termination + HTTP→HTTPS redirect) and pm2 (process supervision). See
-[`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) for the full runbook, and
+[`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) for the full runbook and
 [`deploy/`](./deploy) for reference Caddy/pm2/systemd templates.
 
 ## Project structure
