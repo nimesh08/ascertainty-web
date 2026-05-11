@@ -22,7 +22,7 @@ Reporting, Verification) baseline.
 This repository contains the frontend and a thin server layer: Next.js 15
 routes that render public pages (landing, projects, pools, portfolio, admin),
 a small set of API routes for admin-only writes and indexer triggers, and an
-indexer that mirrors on-chain state (Anchor accounts on Solana Devnet) into a
+indexer that mirrors the on-chain state (Anchor accounts on Solana Devnet) into a
 Postgres database (Neon) for fast reads. The on-chain Anchor program lives in
 a separate repo: **[nimesh08/exira-contracts](https://github.com/nimesh08/exira-contracts)**.
 
