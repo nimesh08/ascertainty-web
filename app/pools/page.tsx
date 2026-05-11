@@ -16,6 +16,7 @@ async function loadPools() {
         status: schema.pools.status,
         targetUsdc: schema.pools.targetUsdc,
         tokensSold: schema.pools.tokensSold,
+        expectedApyBps: schema.pools.expectedApyBps,
         createdAt: schema.pools.createdAt,
         projectCount: sql<number>`(select count(*) from pool_projects where pool_projects.pool_id = ${schema.pools.id})::int`,
       })
@@ -29,6 +30,7 @@ async function loadPools() {
       status: r.status,
       targetUsdc: r.targetUsdc,
       tokensSold: r.tokensSold,
+      expectedApyBps: r.expectedApyBps ?? null,
       projectCount: r.projectCount ?? 0,
       createdAt: r.createdAt.toISOString(),
     }));

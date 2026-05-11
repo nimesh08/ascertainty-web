@@ -1,9 +1,12 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Card } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
 import { Button } from "@/components/ui/button";
 import { StatusBadge } from "./status-badge";
-import { fmtUsdc, fmtPct } from "@/lib/utils/format";
+import { ProjectHero } from "./project-hero";
+import { formatUsd } from "@/lib/utils/format";
 import { ArrowRight, Layers } from "lucide-react";
 
 export interface PoolCardPool {
@@ -18,64 +21,110 @@ export interface PoolCardPool {
 }
 
 export function PoolCard({ pool }: { pool: PoolCardPool }) {
-  const target = Number(pool.targetUsdc) / 1_000_000;
-  const sold = Number(pool.tokensSold) / 1_000_000;
-  const pct = target > 0 ? Math.min(100, (sold / target) * 100) : 0;
+  const target = Number(pool.targetUsdc);
+  const sold = Number(pool.tokensSold);
+  const pctRaw = target > 0 ? (sold / target) * 100 : 0;
+  const pct = Math.min(100, pctRaw);
+  const barWidth = Math.max(1, pct);
   const blendedApyPct =
     pool.expectedApyBps != null ? pool.expectedApyBps / 100 : null;
 
   return (
-    <Card className="group relative gap-0 overflow-hidden p-0 transition-all hover:border-violet/30 hover:shadow-[0_0_0_1px_rgba(167,139,250,0.15),0_20px_40px_-20px_rgba(167,139,250,0.25)]">
-      <div className="flex items-start justify-between gap-3 p-5 pb-3">
-        <div className="min-w-0 space-y-1">
-          <h3 className="truncate text-base font-semibold tracking-tight text-fg">
-            {pool.name}
-          </h3>
-          <p className="line-clamp-2 text-xs text-fg-muted">
-            {pool.description ?? "Diversified basket of MSME projects."}
-          </p>
+    <motion.div
+      whileHover={{ y: -2 }}
+      transition={{ duration: 0.2 }}
+      className="h-full"
+    >
+      <Card className="group relative h-full gap-0 overflow-hidden rounded-2xl border-line/60 bg-bg-1/50 p-0 transition-colors hover:border-violet/40">
+        <div className="relative">
+          <ProjectHero kind="pool" className="aspect-[16/9]" />
+          <div className="absolute right-3 bottom-3">
+            <StatusBadge status={pool.status} />
+          </div>
         </div>
-        <StatusBadge status={pool.status} />
-      </div>
 
-      <div className="space-y-2 px-5">
-        <div className="flex items-center justify-between text-xs text-fg-muted">
-          <span>Raised</span>
-          <span className="mono-num text-fg">
-            {fmtUsdc(pool.tokensSold)} / {fmtUsdc(pool.targetUsdc)}
-          </span>
-        </div>
-        <Progress value={pct} className="h-1.5 [&_[data-slot=progress-indicator]]:bg-violet" />
-      </div>
+        <div className="flex flex-col gap-4 p-5 sm:p-6">
+          <div className="space-y-1">
+            <h3 className="truncate text-lg font-semibold tracking-tight text-fg">
+              {pool.name}
+            </h3>
+            <p className="line-clamp-2 text-xs text-fg-muted">
+              {pool.description ?? "Diversified basket of MSME projects."}
+            </p>
+          </div>
 
-      <div className="mt-4 grid grid-cols-3 gap-3 border-t border-line/60 px-5 py-4 text-xs">
-        <div>
-          <p className="text-fg-muted">Projects</p>
-          <p className="mono-num mt-0.5 inline-flex items-center gap-1 text-fg">
-            <Layers className="size-3" />
-            {pool.projectCount ?? 0}
-          </p>
-        </div>
-        <div>
-          <p className="text-fg-muted">Blend APY</p>
-          <p className="mono-num mt-0.5 text-violet">
-            {blendedApyPct != null ? fmtPct(blendedApyPct, 1) : "—"}
-          </p>
-        </div>
-        <div>
-          <p className="text-fg-muted">Raised</p>
-          <p className="mono-num mt-0.5 text-fg">{pct.toFixed(0)}%</p>
-        </div>
-      </div>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-xs">
+              <span className="text-fg-muted">Raised</span>
+              <span className="mono-num text-fg">
+                {formatUsd(pool.tokensSold)} / {formatUsd(pool.targetUsdc)}
+              </span>
+            </div>
+            <div className="h-1.5 overflow-hidden rounded-full bg-bg-0">
+              <div
+                className="h-full rounded-full bg-violet transition-[width] duration-500"
+                style={{ width: `${barWidth}%` }}
+              />
+            </div>
+          </div>
 
-      <div className="px-5 pb-5">
-        <Button asChild size="sm" variant="secondary" className="w-full">
-          <Link href={`/pools/${pool.id}`}>
-            View pool
-            <ArrowRight className="size-4" />
-          </Link>
-        </Button>
-      </div>
-    </Card>
+          <div className="grid grid-cols-3 gap-2">
+            <StatTile
+              label="Projects"
+              value={
+                pool.projectCount != null ? String(pool.projectCount) : "N/A"
+              }
+              icon={<Layers className="size-3" />}
+            />
+            <StatTile
+              label="Blend APY"
+              value={
+                blendedApyPct != null ? `${blendedApyPct.toFixed(1)}%` : "—"
+              }
+              valueClassName="text-violet"
+            />
+            <StatTile label="Raised" value={`${pct.toFixed(0)}%`} />
+          </div>
+
+          <Button asChild size="sm" variant="secondary" className="w-full">
+            <Link href={`/pools/${pool.id}`}>
+              View pool
+              <ArrowRight className="size-4" />
+            </Link>
+          </Button>
+        </div>
+      </Card>
+    </motion.div>
   );
 }
+
+function StatTile({
+  label,
+  value,
+  valueClassName,
+  icon,
+}: {
+  label: string;
+  value: string;
+  valueClassName?: string;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-lg border border-line/60 bg-bg-0/40 px-2.5 py-2">
+      <p className="text-[10px] font-medium tracking-wider text-fg-muted uppercase">
+        {label}
+      </p>
+      <p
+        className={
+          "mono-num mt-0.5 inline-flex items-center gap-1 text-sm text-fg " +
+          (valueClassName ?? "")
+        }
+      >
+        {icon}
+        <span className="truncate">{value}</span>
+      </p>
+    </div>
+  );
+}
+
+export default PoolCard;
