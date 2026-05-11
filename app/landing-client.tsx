@@ -35,12 +35,14 @@ export interface LandingStats {
   activeProjects: number;
   projectCount: number;
   poolCount: number;
+  /** Best APY (%) across live projects. Null when none set. */
+  bestApyPct?: number | null;
 }
 
 export function LandingClient({ stats }: { stats: LandingStats }) {
   const totalFundedUsdc = Number(stats.totalFundedRaw) / 1_000_000;
   const totalDistributed = Number(stats.totalDistributedRaw) / 1_000_000;
-  const bestApy = 12.4;
+  const bestApy = stats.bestApyPct ?? 0;
 
   return (
     <>

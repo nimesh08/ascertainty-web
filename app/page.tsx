@@ -12,6 +12,7 @@ async function loadStats() {
         totalDistributed: sql<string>`coalesce(sum(${schema.projects.totalDistributed}), 0)::text`,
         active: sql<number>`count(*) filter (where ${schema.projects.status} in ('funding','active','repaying'))::int`,
         projectCount: sql<number>`count(*)::int`,
+        bestApyBps: sql<number | null>`max(${schema.projects.expectedApyBps})::int`,
       })
       .from(schema.projects);
 
@@ -27,6 +28,8 @@ async function loadStats() {
       activeProjects: projStats?.active ?? 0,
       projectCount: projStats?.projectCount ?? 0,
       poolCount: poolStats?.poolCount ?? 0,
+      bestApyPct:
+        projStats?.bestApyBps != null ? projStats.bestApyBps / 100 : null,
     };
   } catch (err) {
     console.error("landing loadStats", err);
@@ -36,6 +39,7 @@ async function loadStats() {
       activeProjects: 0,
       projectCount: 0,
       poolCount: 0,
+      bestApyPct: null,
     };
   }
 }

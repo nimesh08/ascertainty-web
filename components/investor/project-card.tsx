@@ -16,13 +16,15 @@ export interface ProjectCardProject {
   targetUsdc: string;
   tokensSold: string;
   termMonths: number;
+  expectedApyBps?: number | null;
 }
 
 export function ProjectCard({ project }: { project: ProjectCardProject }) {
   const target = Number(project.targetUsdc) / 1_000_000;
   const sold = Number(project.tokensSold) / 1_000_000;
   const pct = target > 0 ? Math.min(100, (sold / target) * 100) : 0;
-  const estimatedApyPct = 12;
+  const estimatedApyPct =
+    project.expectedApyBps != null ? project.expectedApyBps / 100 : null;
 
   return (
     <Card className="group relative gap-0 overflow-hidden p-0 transition-all hover:border-green/30 hover:shadow-[0_0_0_1px_rgba(74,222,128,0.15),0_20px_40px_-20px_rgba(74,222,128,0.25)]">
@@ -62,7 +64,9 @@ export function ProjectCard({ project }: { project: ProjectCardProject }) {
         </div>
         <div>
           <p className="text-fg-muted">Est. APY</p>
-          <p className="mono-num mt-0.5 text-green">{fmtPct(estimatedApyPct, 1)}</p>
+          <p className="mono-num mt-0.5 text-green">
+            {estimatedApyPct != null ? fmtPct(estimatedApyPct, 1) : "—"}
+          </p>
         </div>
         <div>
           <p className="text-fg-muted">Upgrade</p>

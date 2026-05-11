@@ -10,6 +10,7 @@ import {
   AddProjectToPoolPicker,
   type ProjectOption,
 } from "@/components/admin/add-project-to-pool";
+import { AdminEditContentPanel } from "@/components/admin/admin-edit-content-panel";
 import {
   fmtUsdc,
   shortSig,
@@ -214,6 +215,21 @@ export default async function AdminPoolDetailPage({
           )}
         </CardContent>
       </Card>
+
+      <AdminEditContentPanel
+        scope="pool"
+        id={pool.id}
+        initial={{
+          description: pool.description,
+          aboutPool: pool.aboutPool,
+          managementText: pool.managementText,
+          financialsText: pool.financialsText,
+          expectedApyBps: pool.expectedApyBps,
+          trustScore: pool.trustScore,
+          highlights: pool.highlights,
+          documents: pool.documents,
+        }}
+      />
     </div>
   );
 }

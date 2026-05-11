@@ -19,13 +19,16 @@ export interface PoolCardModel {
   tokensSold: string;
   projectCount: number;
   blendedApyPct?: number;
+  expectedApyBps?: number | null;
 }
 
 export function PoolCard({ pool }: { pool: PoolCardModel }) {
   const target = Number(pool.targetUsdc);
   const sold = Number(pool.tokensSold);
   const pct = target > 0 ? Math.min(100, (sold / target) * 100) : 0;
-  const apy = pool.blendedApyPct ?? 11;
+  const apy =
+    pool.blendedApyPct ??
+    (pool.expectedApyBps != null ? pool.expectedApyBps / 100 : null);
 
   return (
     <motion.div
@@ -68,7 +71,9 @@ export function PoolCard({ pool }: { pool: PoolCardModel }) {
           </div>
           <div>
             <p className="text-fg-muted">Blend APY</p>
-            <p className="mono-num mt-0.5 text-violet">{fmtPct(apy, 1)}</p>
+            <p className="mono-num mt-0.5 text-violet">
+              {apy != null ? fmtPct(apy, 1) : "—"}
+            </p>
           </div>
           <div>
             <p className="text-fg-muted">Raised</p>

@@ -20,8 +20,9 @@ export interface ProjectCardModel {
   targetUsdc: string;
   tokensSold: string;
   termMonths: number;
-  /** Optional estimated APY (%). Falls back to a reasonable default. */
+  /** Optional estimated APY (%). Falls back to `expectedApyBps` on the DB row. */
   estimatedApyPct?: number;
+  expectedApyBps?: number | null;
 }
 
 export function ProjectCard({
@@ -34,7 +35,9 @@ export function ProjectCard({
   const target = Number(project.targetUsdc);
   const sold = Number(project.tokensSold);
   const pct = target > 0 ? Math.min(100, (sold / target) * 100) : 0;
-  const apy = project.estimatedApyPct ?? 12;
+  const apy =
+    project.estimatedApyPct ??
+    (project.expectedApyBps != null ? project.expectedApyBps / 100 : null);
 
   return (
     <motion.div
@@ -81,7 +84,9 @@ export function ProjectCard({
           </div>
           <div>
             <p className="text-fg-muted">Est. APY</p>
-            <p className="mono-num mt-0.5 text-green">{fmtPct(apy, 1)}</p>
+            <p className="mono-num mt-0.5 text-green">
+              {apy != null ? fmtPct(apy, 1) : "—"}
+            </p>
           </div>
           <div>
             <p className="text-fg-muted">Upgrade</p>

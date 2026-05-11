@@ -14,13 +14,15 @@ export interface PoolCardPool {
   targetUsdc: string;
   tokensSold: string;
   projectCount?: number;
+  expectedApyBps?: number | null;
 }
 
 export function PoolCard({ pool }: { pool: PoolCardPool }) {
   const target = Number(pool.targetUsdc) / 1_000_000;
   const sold = Number(pool.tokensSold) / 1_000_000;
   const pct = target > 0 ? Math.min(100, (sold / target) * 100) : 0;
-  const blendedApyPct = 11;
+  const blendedApyPct =
+    pool.expectedApyBps != null ? pool.expectedApyBps / 100 : null;
 
   return (
     <Card className="group relative gap-0 overflow-hidden p-0 transition-all hover:border-violet/30 hover:shadow-[0_0_0_1px_rgba(167,139,250,0.15),0_20px_40px_-20px_rgba(167,139,250,0.25)]">
@@ -56,7 +58,9 @@ export function PoolCard({ pool }: { pool: PoolCardPool }) {
         </div>
         <div>
           <p className="text-fg-muted">Blend APY</p>
-          <p className="mono-num mt-0.5 text-violet">{fmtPct(blendedApyPct, 1)}</p>
+          <p className="mono-num mt-0.5 text-violet">
+            {blendedApyPct != null ? fmtPct(blendedApyPct, 1) : "—"}
+          </p>
         </div>
         <div>
           <p className="text-fg-muted">Raised</p>
