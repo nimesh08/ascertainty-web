@@ -46,6 +46,36 @@ export function fmtUsdc(raw: BN | string | number | bigint): string {
   return `$${fmtNumber(h, 2)}`;
 }
 
+/**
+ * USD formatter. App-wide convention: everything is USD, backed by USDC at
+ * 6 decimals. Accepts either raw (smallest units) or human string/number.
+ * - `raw`   : bigint | string | BN — interpreted as 6-decimal smallest units.
+ * - `human` : number — interpreted as a plain dollar amount (e.g. 1234.5).
+ */
+export function formatUsd(value: BN | string | number | bigint, opts?: {
+  human?: boolean;
+  decimals?: number;
+}): string {
+  const decimals = opts?.decimals ?? 2;
+  if (opts?.human === true && typeof value === "number") {
+    return `$${fmtNumber(value, decimals)}`;
+  }
+  const h = rawToUsdc(value);
+  return `$${fmtNumber(h, decimals)}`;
+}
+
+/**
+ * Human token amount with 6 decimals (project share tokens).
+ * `raw` is the on-chain smallest-unit count.
+ */
+export function formatTokenAmount(
+  raw: BN | string | number | bigint,
+  decimals = 2
+): string {
+  const h = rawToUsdc(raw); // same 6-decimal base
+  return fmtNumber(h, decimals);
+}
+
 /** Percent (0..100) formatter. */
 export function fmtPct(n: number, decimals = 1): string {
   return `${fmtNumber(n, decimals)}%`;

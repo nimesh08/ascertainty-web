@@ -38,6 +38,12 @@ import { StickyActionBar } from "@/components/admin/sticky-action-bar";
 import { solanaPubkey } from "@/lib/utils/validation";
 import { explorerTx } from "@/lib/utils/format";
 import { triggerIndexerSync } from "@/lib/admin/indexer-sync";
+import {
+  AdminContentEditor,
+  EMPTY_CONTENT,
+  serializeAdminContent,
+  type AdminContentValue,
+} from "@/components/admin/admin-content-editor";
 
 const schema = z.object({
   msmeName: z.string().min(2, "Name too short").max(64),
@@ -65,6 +71,7 @@ const FUELS = ["diesel", "coal", "grid", "lpg", "biomass", "other"];
 export function NewProjectForm() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
+  const [content, setContent] = useState<AdminContentValue>(EMPTY_CONTENT);
   const { program, wallet, signAndSend, ready } = useAdminTx();
 
   const form = useForm<FormInput, unknown, FormValues>({
@@ -150,6 +157,8 @@ export function NewProjectForm() {
             values.baselineCo2TonsPerYear * 100
           ).toString(),
           reportHashHex: values.reportHash,
+          // Optional admin content (any blanks become null server-side).
+          ...serializeAdminContent(content),
         }),
       });
 
@@ -440,6 +449,26 @@ export function NewProjectForm() {
                   <FormMessage />
                 </FormItem>
               )}
+            />
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-base">
+              4 · Investor content (optional)
+            </CardTitle>
+            <p className="text-xs text-fg-muted">
+              Fill these now for a rich project page, or skip and edit later
+              from the admin detail view. Nothing here is required.
+            </p>
+          </CardHeader>
+          <CardContent>
+            <AdminContentEditor
+              value={content}
+              onChange={setContent}
+              labelScope="project"
+              disabled={submitting}
             />
           </CardContent>
         </Card>
