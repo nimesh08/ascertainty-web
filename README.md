@@ -22,7 +22,7 @@ Reporting, Verification) baseline.
 This repository contains the frontend and a thin server layer: Next.js 15
 routes that render public pages (landing, projects, pools, portfolio, admin),
 a small set of API routes for admin-only writes and indexer triggers, and an
-indexer that mirrors the on-chain state (Anchor accounts on Solana Devnet) into a
+indexer that mirrors on-chain state (Anchor accounts on Solana Devnet) into a
 Postgres database (Neon) for fast reads. The on-chain Anchor program lives in
 a separate repo: **[nimesh08/exira-contracts](https://github.com/nimesh08/exira-contracts)**.
 
@@ -160,7 +160,7 @@ run with `LIVE_WRITE=1`. Default runs are read-only.
 
 Production on EC2 runs Next.js in standalone (`npm run start`) behind Caddy
 (TLS termination + HTTP→HTTPS redirect) and pm2 (process supervision). See
-[`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) for the full runbook and
+[`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) for the full runbook, and
 [`deploy/`](./deploy) for reference Caddy/pm2/systemd templates.
 
 ## Project structure
