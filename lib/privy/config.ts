@@ -7,8 +7,8 @@ export const SOLANA_CHAIN = "solana:devnet" as const;
 export const privyConfig: PrivyClientConfig = {
   loginMethods: ["email", "wallet", "google"],
   appearance: {
-    theme: "dark",
-    accentColor: "#4ADE80",
+    theme: "light",
+    accentColor: "#1f6b47",
     logo: undefined,
     walletChainType: "solana-only",
     showWalletLoginFirst: false,
