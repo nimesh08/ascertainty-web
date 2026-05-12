@@ -28,30 +28,73 @@ function getPrivyClient(): PrivyClient | null {
  *   2. Fallback: read `x-admin-wallet` header (test harness only).
  *   3. Fallback: read `admin-wallet` cookie (test harness only).
  */
+type MaybeUser = {
+  id?: string;
+  wallet?: { address?: string };
+  linkedAccounts?: Array<{ type: string; address?: string }>;
+};
+
+function _extractWallet(user: MaybeUser | null | undefined): string | null {
+  if (!user) return null;
+  if (user.wallet?.address) return String(user.wallet.address);
+  const wAcc = (user.linkedAccounts ?? []).find(
+    (a) => a.type === "wallet" && typeof a.address === "string"
+  );
+  return wAcc?.address ? String(wAcc.address) : null;
+}
+
 export async function getSessionWallet(): Promise<string | null> {
   const jar = await cookies();
 
-  // Privy SDK has used different cookie names over versions:
-  //   - privy-id-token (older builds, JWT containing user id)
-  //   - privy-token    (current default in this app's bundle)
-  // Both are JWTs decodable by PrivyClient.getUser({ idToken }).
-  const idToken =
-    jar.get("privy-id-token")?.value ??
-    jar.get("privy-token")?.value;
-  if (idToken) {
-    const client = getPrivyClient();
-    if (client) {
-      try {
-        const user = await client.getUser({ idToken });
-        const wallet =
-          user.wallet?.address ??
-          user.linkedAccounts.find(
-            (a) => a.type === "wallet" && (a as { address?: string }).address
-          )?.["address" as never];
-        if (wallet) return String(wallet);
-      } catch {
-        // fallthrough
+  // Privy's cookie naming and token format has differed across SDK versions.
+  // Try every name we've ever seen, and try both auth flows for each token.
+  const candidates = [
+    jar.get("privy-id-token")?.value,
+    jar.get("privy-token")?.value,
+    jar.get("privy-access-token")?.value,
+  ].filter((v): v is string => typeof v === "string" && v.length > 0);
+
+  if (candidates.length === 0) {
+    console.warn("[getSessionWallet] no Privy cookie present in request");
+  }
+
+  const client = getPrivyClient();
+  if (!client) {
+    console.error("[getSessionWallet] PrivyClient not initialised (missing app id or secret)");
+  }
+
+  for (const token of candidates) {
+    if (!client) break;
+
+    // Path 1: treat as ID token (JWT)
+    try {
+      const user = (await client.getUser({ idToken: token })) as MaybeUser;
+      const w = _extractWallet(user);
+      if (w) return w;
+    } catch (e) {
+      console.warn(
+        "[getSessionWallet] getUser({idToken}) failed:",
+        (e as Error)?.message ?? String(e)
+      );
+    }
+
+    // Path 2: treat as access token — verify, then look up user by id
+    try {
+      // verifyAuthToken returns claims including userId (`appId`-scoped)
+      // Cast loosely because the SDK types vary by version.
+      const claims = await (client as unknown as {
+        verifyAuthToken: (t: string) => Promise<{ userId?: string }>;
+      }).verifyAuthToken(token);
+      if (claims?.userId) {
+        const user = (await client.getUser(claims.userId)) as MaybeUser;
+        const w = _extractWallet(user);
+        if (w) return w;
       }
+    } catch (e) {
+      console.warn(
+        "[getSessionWallet] verifyAuthToken path failed:",
+        (e as Error)?.message ?? String(e)
+      );
     }
   }
 
