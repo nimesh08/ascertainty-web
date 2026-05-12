@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { ExternalLink, RefreshCw, Wallet } from "lucide-react";
+import { ChevronDown, ChevronRight, ExternalLink, RefreshCw, Wallet } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -21,9 +21,12 @@ import { StatTile } from "@/components/investor/stat-tile";
 import { StatusBadge } from "@/components/investor/status-badge";
 import { ClaimModal } from "@/components/investor/claim-modal";
 import { WalletBalancesCard } from "@/components/investor/wallet-balances-card";
+import { PositionDrillDown } from "@/components/shared/PositionDrillDown";
+import { SecondaryMarketCard } from "@/components/shared/SecondaryMarketCard";
 import { useInvestor } from "@/lib/hooks/use-investor";
 import { claimableFromPosition } from "@/lib/solana/reads";
 import { fmtNumber, fmtUsdc, shortSig, explorerTx } from "@/lib/utils/format";
+import { DEMO_VAULTS } from "@/lib/demo/lp-positions";
 
 interface ApiPositionRow {
   id: string;
@@ -99,8 +102,17 @@ export function PortfolioClient() {
 
   const [claimTarget, setClaimTarget] = useState<PositionRow | null>(null);
   const [reloadKey, setReloadKey] = useState(0);
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
   const refresh = useCallback(() => setReloadKey((k) => k + 1), []);
+  const toggleRow = useCallback((key: string) => {
+    setExpandedRows((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     if (!connected || !walletAddress) {
@@ -215,7 +227,7 @@ export function PortfolioClient() {
     <div className="space-y-8">
       <WalletBalancesCard owner={walletAddress!} />
 
-      <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div className="grid grid-cols-1 gap-3 sm:grid-cols-4">
         <StatTile
           label="Total invested"
           value={fmtUsdc(totals.invested.toString())}
@@ -232,6 +244,12 @@ export function PortfolioClient() {
           value={fmtUsdc(totals.claimed.toString())}
           accent="violet"
         />
+        <StatTile
+          label="Realized vs predicted"
+          value="+2.1%"
+          accent="green"
+          sub="portfolio-weighted · demo"
+        />
       </div>
 
       <Tabs defaultValue="positions">
@@ -243,6 +261,10 @@ export function PortfolioClient() {
             </span>
           </TabsTrigger>
           <TabsTrigger value="history">Transaction history</TabsTrigger>
+          <TabsTrigger value="secondary">
+            Secondary{" "}
+            <span className="ml-1 text-[10px] text-amber">Q3 2026</span>
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="positions" className="mt-6">
@@ -276,6 +298,7 @@ export function PortfolioClient() {
                 <Table>
                   <TableHeader>
                     <TableRow>
+                      <TableHead className="w-8" />
                       <TableHead>Target</TableHead>
                       <TableHead>Kind</TableHead>
                       <TableHead>Status</TableHead>
@@ -286,102 +309,150 @@ export function PortfolioClient() {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {positions.map((p) => (
-                      <TableRow key={`${p.kind}-${p.id}`}>
-                        <TableCell>
+                    {positions.map((p, i) => {
+                      const rowKey = `${p.kind}-${p.id}`;
+                      const expanded = expandedRows.has(rowKey);
+                      const demoVault = DEMO_VAULTS[i % DEMO_VAULTS.length];
+                      return (
+                        <>
+                          <TableRow key={rowKey}>
+                            <TableCell>
+                              <button
+                                type="button"
+                                onClick={() => toggleRow(rowKey)}
+                                aria-label={expanded ? "Collapse details" : "Expand details"}
+                                className="text-fg-muted hover:text-fg"
+                              >
+                                {expanded ? (
+                                  <ChevronDown className="size-4" />
+                                ) : (
+                                  <ChevronRight className="size-4" />
+                                )}
+                              </button>
+                            </TableCell>
+                            <TableCell>
+                              <Link
+                                href={
+                                  p.kind === "project"
+                                    ? `/projects/${p.id}`
+                                    : `/pools/${p.id}`
+                                }
+                                className="font-medium hover:text-green"
+                              >
+                                {p.name}
+                              </Link>
+                            </TableCell>
+                            <TableCell className="capitalize text-fg-muted">
+                              {p.kind}
+                            </TableCell>
+                            <TableCell>
+                              <StatusBadge status={p.status} />
+                            </TableCell>
+                            <TableCell className="mono-num text-right">
+                              {fmtNumber(Number(p.tokensHeld) / 1_000_000, 2)}
+                            </TableCell>
+                            <TableCell className="mono-num text-right text-green">
+                              {fmtUsdc(p.claimable.toString())}
+                            </TableCell>
+                            <TableCell className="mono-num text-right">
+                              {fmtUsdc(p.totalClaimed.toString())}
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <Button
+                                size="sm"
+                                variant={p.claimable > 0n ? "default" : "outline"}
+                                disabled={p.claimable === 0n}
+                                onClick={() => setClaimTarget(p)}
+                              >
+                                Claim
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                          {expanded ? (
+                            <TableRow key={`${rowKey}-drill`}>
+                              <TableCell colSpan={8} className="p-0">
+                                <PositionDrillDown vault={demoVault} />
+                              </TableCell>
+                            </TableRow>
+                          ) : null}
+                        </>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+              <ul className="divide-y divide-line/60 md:hidden">
+                {positions.map((p, i) => {
+                  const rowKey = `${p.kind}-${p.id}`;
+                  const expanded = expandedRows.has(rowKey);
+                  const demoVault = DEMO_VAULTS[i % DEMO_VAULTS.length];
+                  return (
+                    <li key={rowKey} className="p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
                           <Link
                             href={
                               p.kind === "project"
                                 ? `/projects/${p.id}`
                                 : `/pools/${p.id}`
                             }
-                            className="font-medium hover:text-green"
+                            className="block truncate font-medium text-fg"
                           >
                             {p.name}
                           </Link>
-                        </TableCell>
-                        <TableCell className="capitalize text-fg-muted">
-                          {p.kind}
-                        </TableCell>
-                        <TableCell>
-                          <StatusBadge status={p.status} />
-                        </TableCell>
-                        <TableCell className="mono-num text-right">
-                          {fmtNumber(Number(p.tokensHeld) / 1_000_000, 2)}
-                        </TableCell>
-                        <TableCell className="mono-num text-right text-green">
-                          {fmtUsdc(p.claimable.toString())}
-                        </TableCell>
-                        <TableCell className="mono-num text-right">
-                          {fmtUsdc(p.totalClaimed.toString())}
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <Button
-                            size="sm"
-                            variant={p.claimable > 0n ? "default" : "outline"}
-                            disabled={p.claimable === 0n}
-                            onClick={() => setClaimTarget(p)}
-                          >
-                            Claim
-                          </Button>
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-              <ul className="divide-y divide-line/60 md:hidden">
-                {positions.map((p) => (
-                  <li key={`${p.kind}-${p.id}`} className="p-4">
-                    <div className="flex items-start justify-between gap-3">
-                      <div className="min-w-0">
-                        <Link
-                          href={
-                            p.kind === "project"
-                              ? `/projects/${p.id}`
-                              : `/pools/${p.id}`
-                          }
-                          className="block truncate font-medium text-fg"
+                          <p className="mt-0.5 text-xs capitalize text-fg-muted">
+                            {p.kind} · {p.status}
+                          </p>
+                        </div>
+                        <StatusBadge status={p.status} />
+                      </div>
+                      <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
+                        <div>
+                          <p className="text-fg-muted">Tokens</p>
+                          <p className="mono-num text-fg">
+                            {fmtNumber(Number(p.tokensHeld) / 1_000_000, 2)}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-fg-muted">Claimable</p>
+                          <p className="mono-num text-green">
+                            {fmtUsdc(p.claimable.toString())}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-fg-muted">Claimed</p>
+                          <p className="mono-num text-fg">
+                            {fmtUsdc(p.totalClaimed.toString())}
+                          </p>
+                        </div>
+                      </div>
+                      <div className="mt-3 flex gap-2">
+                        <Button
+                          size="sm"
+                          className="flex-1"
+                          disabled={p.claimable === 0n}
+                          onClick={() => setClaimTarget(p)}
+                          variant={p.claimable > 0n ? "default" : "outline"}
                         >
-                          {p.name}
-                        </Link>
-                        <p className="mt-0.5 text-xs capitalize text-fg-muted">
-                          {p.kind} · {p.status}
-                        </p>
+                          Claim
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => toggleRow(rowKey)}
+                          aria-label={expanded ? "Hide details" : "Show details"}
+                        >
+                          {expanded ? "Hide" : "Details"}
+                        </Button>
                       </div>
-                      <StatusBadge status={p.status} />
-                    </div>
-                    <div className="mt-3 grid grid-cols-3 gap-2 text-xs">
-                      <div>
-                        <p className="text-fg-muted">Tokens</p>
-                        <p className="mono-num text-fg">
-                          {fmtNumber(Number(p.tokensHeld) / 1_000_000, 2)}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-fg-muted">Claimable</p>
-                        <p className="mono-num text-green">
-                          {fmtUsdc(p.claimable.toString())}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-fg-muted">Claimed</p>
-                        <p className="mono-num text-fg">
-                          {fmtUsdc(p.totalClaimed.toString())}
-                        </p>
-                      </div>
-                    </div>
-                    <Button
-                      size="sm"
-                      className="mt-3 w-full"
-                      disabled={p.claimable === 0n}
-                      onClick={() => setClaimTarget(p)}
-                      variant={p.claimable > 0n ? "default" : "outline"}
-                    >
-                      Claim
-                    </Button>
-                  </li>
-                ))}
+                      {expanded ? (
+                        <div className="-mx-4 mt-3 -mb-4">
+                          <PositionDrillDown vault={demoVault} />
+                        </div>
+                      ) : null}
+                    </li>
+                  );
+                })}
               </ul>
             </Card>
           )}
@@ -481,6 +552,10 @@ export function PortfolioClient() {
               </ul>
             </Card>
           )}
+        </TabsContent>
+
+        <TabsContent value="secondary" className="mt-6">
+          <SecondaryMarketCard />
         </TabsContent>
       </Tabs>
 

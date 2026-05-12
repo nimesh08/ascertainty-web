@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SavingsBand } from "@/components/auditor/savings-band";
+import { IoTMockChart } from "@/components/shared/IoTMockChart";
 import { db, schema } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -240,20 +241,43 @@ export default async function BorrowerDealPage({
         </Card>
       )}
 
-      {/* Realized savings placeholder */}
+      {/* Realized savings — IoT M&V time-series */}
       <Card>
-        <CardHeader>
-          <CardTitle className="text-base">Realized savings</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-2 text-sm">
-          <p className="text-fg-muted">
-            Live IoT-meter data from your installed retrofit will appear here
-            starting Month 1 post-install. Your payments are funded from the
-            energy you save — we just track them.
-          </p>
-          <Badge variant="outline" className="text-[10px]">
-            Coming soon · IoT M&amp;V telemetry
+        <CardHeader className="flex flex-row items-start justify-between space-y-0">
+          <div className="space-y-1">
+            <div className="text-[10px] uppercase tracking-wider text-fg-muted">
+              Realized savings · post-install M&amp;V
+            </div>
+            <CardTitle className="text-base">
+              Meter readings vs. predicted band
+            </CardTitle>
+          </div>
+          <Badge
+            variant="outline"
+            className="border-amber/40 bg-amber/10 text-[10px] text-amber"
+          >
+            Live · Demo data
           </Badge>
+        </CardHeader>
+        <CardContent>
+          {sumPredicted > 0 && sumP5 > 0 ? (
+            <IoTMockChart
+              dealId={deal_id}
+              annualPredictedKwh={sumPredicted}
+              annualP5Kwh={sumP5}
+              annualP95Kwh={sumP95}
+              electricityRateInrKwh={rate}
+            />
+          ) : (
+            <p className="text-sm text-fg-muted">
+              Meter readings will appear here starting Month 1 post-install.
+            </p>
+          )}
+          <p className="mt-3 text-xs text-fg-muted">
+            Your payments are funded from the energy you save. As long as the
+            realized line stays above the P5 floor, your DSCR holds and your
+            loan covenants stay green.
+          </p>
         </CardContent>
       </Card>
 

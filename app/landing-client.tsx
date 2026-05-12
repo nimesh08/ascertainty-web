@@ -418,7 +418,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
           idx="03"
           kicker="BENCHMARKS"
           title="Calibrated, not just confident."
-          intro="Our underwriting model produces a calibrated 90% confidence interval — meaning the P5 lower bound is honest, not an LLM hallucination. Numbers below come from leave-one-out cross-validation on the 72-ECM KISEM corpus after pretraining on 14,000 real IAC industrial audits; reproduction script is one curl away."
+          intro="Our underwriting model produces a calibrated 90% confidence interval — meaning the P5 lower bound is honest, not an LLM hallucination. Numbers below come from leave-one-out cross-validation on the 72-ECM KISEM corpus after pretraining on 14,000 real US-DOE IAC industrial audits. v0.3 (TabPFN v2 in-context) achieves R² 0.56 with a distribution-free 90% PI; reproduction script below."
         />
         <div className="shell" style={{ paddingBottom: 56 }}>
           <div className="bench-grid" style={{ marginTop: 32 }}>
@@ -452,28 +452,38 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>−0.07</td>
                   <td>42.3%</td>
                   <td>88% (native σ-scaling)</td>
-                  <td>Internal physics-informed neural network on KISEM-only</td>
+                  <td>Physics-informed neural net, KISEM-only</td>
+                </tr>
+                <tr>
+                  <td>Ascertainty CatBoost v0.2</td>
+                  <td>+0.28</td>
+                  <td>44.7%</td>
+                  <td>±67,679 kWh (split-conformal)</td>
+                  <td>IAC pretrain + KISEM finetune, deployed</td>
                 </tr>
                 <tr style={{ background: "rgba(16,185,129,0.06)" }}>
-                  <td><b>Ascertainty CatBoost v0.2 (this product)</b></td>
-                  <td><b>+0.28</b></td>
-                  <td><b>44.7%</b></td>
-                  <td><b>90% PI via split-conformal (±67,679 kWh)</b></td>
-                  <td><b>IAC (14,000 audits) pretrain + KISEM (n=72) finetune</b></td>
+                  <td><b>Ascertainty TabPFN v0.3 (this product)</b></td>
+                  <td><b>+0.56</b></td>
+                  <td><b>41.6%</b></td>
+                  <td><b>±69,254 kWh (split-conformal)</b></td>
+                  <td><b>TabPFN v2 in-context on IAC + KISEM. Hollmann et al., <i>Nature</i> 2025.</b></td>
                 </tr>
               </tbody>
             </table>
             <p style={{ marginTop: 16, fontSize: 12, color: "var(--fg-muted)" }}>
-              v0.2 = pretrained on the US Department of Energy Industrial Assessment Center
-              database (14,000 implemented recommendations with client-reported realized
-              savings, 1981–2024) and finetuned on the Indian KISEM 72-ECM cohort. Split-conformal
-              prediction wrapped around CatBoost gives a distribution-free 90% PI: predicted ±67,679
-              kWh/yr, derived from leave-one-out residuals on the KISEM hold-outs.
+              v0.3 backbone = TabPFN v2 (Hollmann et al., <i>Nature</i> 2025) — a pretrained
+              transformer that performs in-context tabular regression. Pretrained on ~130M
+              synthetic priors, conditioned at inference on the US Department of Energy
+              Industrial Assessment Center database (14,000 implemented recommendations with
+              client-reported realized savings, 1981–2024) plus our Indian KISEM 72-ECM cohort.
+              Split-conformal prediction (MAPIE 1.4) gives a distribution-free 90% PI of
+              ±69,254 kWh/yr, derived from leave-one-out residuals on the KISEM hold-outs.
               <br /><br />
-              Caveat (important for lenders): IAC's "realized savings" is client-reported at
-              6–9 month phone follow-up, not metered M&V. Our own metered M&V loop closes the
-              gap post-deployment via IPMVP Option B telemetry. TabPFN v2 (Hollmann et al.,
-              <i>Nature</i> 2025) is the next training upgrade once we negotiate licensing.
+              <b>Caveat — important for lenders:</b> IAC's "realized savings" is client-reported
+              at 6–9 month phone follow-up, not metered M&V. Our own metered M&V loop closes the
+              gap post-deployment via IPMVP Option B telemetry. CatBoost v0.2 currently runs in
+              production as the deployment-simple fallback; TabPFN v0.3 promotes to production
+              once we validate inference latency and memory footprint on the live sidecar.
             </p>
 
             <div className="bench-snippet" style={{ marginTop: 28 }}>
