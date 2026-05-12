@@ -1,36 +1,33 @@
-# Exira Web
+# Ascertainty Web
 
-> Frontend and thin backend for the Exira protocol — tokenized MSME climate finance on Solana.
+> Frontend and thin backend for the Ascertainty protocol — tokenized MSME climate finance on Solana.
 
 [![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)](https://nextjs.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?logo=react)](https://react.dev/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)](https://www.typescriptlang.org/)
 [![Tailwind](https://img.shields.io/badge/Tailwind-v4-06B6D4?logo=tailwindcss)](https://tailwindcss.com/)
-[![Drizzle](https://img.shields.io/badge/Drizzle-ORM-C5F74F)](https://orm.drizzle.team/)
+[![Solana](https://img.shields.io/badge/Solana-Devnet-9945FF?logo=solana)](https://explorer.solana.com/?cluster=devnet)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
-[![Solana Devnet](https://img.shields.io/badge/Solana-Devnet-9945FF?logo=solana)](https://explorer.solana.com/?cluster=devnet)
+
+Live at **[ascertainty.com](https://ascertainty.com/)**.
 
 ## What is this?
 
-Exira is a climate-finance protocol for Indian MSMEs. The core idea: MSMEs have
-cash-flowing assets (rooftop solar, efficient lighting retrofits, EV fleets,
-biomass digesters) that also produce measurable carbon abatement. Exira lets
-investors fund those assets directly with USDC and receive two complementary
-payoffs: a proportional share of the project's USDC cash flows, and a share of
-verified carbon credits issued against an approved MRV (Measurement,
-Reporting, Verification) baseline.
+Ascertainty is a climate-finance protocol for Asian MSMEs. The core idea:
+small and mid-sized enterprises have cash-flowing energy upgrades (rooftop
+solar, efficient lighting retrofits, EV fleets, biomass digesters) that also
+produce measurable carbon abatement. Ascertainty lets investors fund those
+upgrades directly with USDC and receive two complementary payoffs: a
+proportional share of the project's USDC cash flows, and a share of verified
+carbon credits issued against an approved MRV (Measurement, Reporting,
+Verification) baseline.
 
 This repository contains the frontend and a thin server layer: Next.js 15
 routes that render public pages (landing, projects, pools, portfolio, admin),
 a small set of API routes for admin-only writes and indexer triggers, and an
 indexer that mirrors on-chain state (Anchor accounts on Solana Devnet) into a
 Postgres database (Neon) for fast reads. The on-chain Anchor program lives in
-a separate repo: **[nimesh08/exira-contracts](https://github.com/nimesh08/exira-contracts)**.
-
-## Live deployment
-
-A preview build runs on an EC2 box at **https://13.201.222.240/** against
-Solana Devnet. Browsers show a certificate warning because the cert is issued
-for an IP via Caddy's shortlived ACME profile; proceed past the warning.
+a separate repo (see [Related](#related)).
 
 ## Architecture
 
@@ -60,8 +57,8 @@ flowchart LR
 ## Quickstart
 
 ```bash
-gh repo clone nimesh08/exira-web
-cd exira-web
+git clone https://github.com/nimesh08/ascertainty-web.git
+cd ascertainty-web
 cp .env.example .env.local && $EDITOR .env.local
 npm install --legacy-peer-deps
 npm run db:push
@@ -72,7 +69,7 @@ npm run dev
 `--legacy-peer-deps` is required because a handful of Solana-adjacent packages
 still express older peer ranges against React 19.
 
-Open http://localhost:3000 — the landing page should render. Connecting a
+Open <http://localhost:3000> — the landing page should render. Connecting a
 wallet requires a Privy app with `localhost:3000` added to its allowed
 origins. See [`docs/PRIVY.md`](./docs/PRIVY.md).
 
@@ -158,15 +155,16 @@ run with `LIVE_WRITE=1`. Default runs are read-only.
 
 ## Deployment
 
-Production on EC2 runs Next.js in standalone (`npm run start`) behind Caddy
-(TLS termination + HTTP→HTTPS redirect) and pm2 (process supervision). See
-[`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) for the full runbook, and
-[`deploy/`](./deploy) for reference Caddy/pm2/systemd templates.
+Production runs Next.js in standalone (`npm run start`) on an EC2 instance
+behind Caddy (TLS termination + HTTP→HTTPS redirect) and pm2 (process
+supervision). CI builds and SSH-deploys on every push to `main` —
+[`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml). See
+[`docs/DEPLOYMENT.md`](./docs/DEPLOYMENT.md) for the full runbook.
 
 ## Project structure
 
 ```
-exira-web/
+ascertainty-web/
 ├── app/                   Next.js App Router (routes + server components)
 │   ├── admin/             Admin dashboard (auditors, MRV, projects, pools)
 │   ├── api/               Route handlers (admin, indexer, investor, wallet)
@@ -184,12 +182,11 @@ exira-web/
 │   ├── privy/             Privy config + Solana signer adapter
 │   ├── solana/            PDAs, program factory, tx builders
 │   └── utils/             cn, format, zod validators
-├── idl/                   exira.json + exira.ts (Anchor IDL, public)
+├── idl/                   Anchor IDL (public)
 ├── scripts/               sync-all-cli, seed-admin
 ├── public/                static assets
 ├── types/                 bs58.d.ts
 ├── tests/                 unit + integration + e2e
-├── deploy/                Caddyfile + pm2 + systemd reference templates
 ├── docs/                  SETUP, ENV, DATABASE, PRIVY, ARCHITECTURE,
 │                          DEPLOYMENT, TROUBLESHOOTING
 ├── .env.example
@@ -199,9 +196,10 @@ exira-web/
 
 ## Related
 
-- **[nimesh08/exira-contracts](https://github.com/nimesh08/exira-contracts)** —
-  Anchor program (the on-chain half of this stack).
+- **`ascertainty-contracts`** — Anchor program (the on-chain half of this
+  stack). Repo URL to be added once renamed; current source at
+  [`nimesh08/exira-contracts`](https://github.com/nimesh08/exira-contracts).
 
 ## License
 
-[MIT](./LICENSE) © 2026 Exira
+[MIT](./LICENSE)

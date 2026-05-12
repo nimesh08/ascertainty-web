@@ -1,6 +1,6 @@
 # Architecture
 
-High-level map of the exira-web codebase and its runtime.
+High-level map of the ascertainty-web codebase and its runtime.
 
 ## Stack
 

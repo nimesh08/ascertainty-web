@@ -1,6 +1,6 @@
 # Setup
 
-Local-dev quickstart for `exira-web`.
+Local-dev quickstart for `ascertainty-web`.
 
 ## Prerequisites
 
@@ -15,8 +15,8 @@ Local-dev quickstart for `exira-web`.
 ## 1. Clone and install
 
 ```bash
-gh repo clone nimesh08/exira-web
-cd exira-web
+gh repo clone nimesh08/ascertainty-web
+cd ascertainty-web
 npm install --legacy-peer-deps
 ```
 

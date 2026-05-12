@@ -42,7 +42,7 @@ const COMMON_HIGHLIGHTS = [
 ];
 
 const DEFAULT_MANAGEMENT =
-  "Operated by an Exira-verified partner. 24/7 performance monitoring and remote telemetry keep the upgraded equipment running at spec. Designed for a 10-year service life with scheduled preventative maintenance.";
+  "Operated by an Ascertainty-verified partner. 24/7 performance monitoring and remote telemetry keep the upgraded equipment running at spec. Designed for a 10-year service life with scheduled preventative maintenance.";
 
 const DEFAULT_FINANCIALS =
   "Returns are generated from the verified energy-cost savings of the upgraded equipment. Every month, a portion of those savings is swept on-chain and streamed to token holders pro-rata. All fund movements are auditable on Solana.";
@@ -61,8 +61,8 @@ function describeProject(p: ProjectRow): string {
   const upgrade = p.upgrade_type;
   return [
     `${p.msme_name} is a ${sector.toLowerCase()} MSME located in ${p.location}. The project finances the capital cost of ${upgrade}, a proven upgrade path that reduces the facility's primary energy bill while cutting tailpipe emissions.`,
-    `Exira originates the investment through a fixed-term debt structure: investors deposit USDC into an on-chain escrow, the facility operator receives funds at activation, and monthly repayments are streamed back to token holders based on audited, verified savings.`,
-    `An Exira-registered MRV auditor submits a baseline before funding and periodic verification reports during the repayment phase. Disbursements can only originate from the escrow PDA, and all MRV attestations are preserved on-chain for the life of the project.`,
+    `Ascertainty originates the investment through a fixed-term debt structure: investors deposit USDC into an on-chain escrow, the facility operator receives funds at activation, and monthly repayments are streamed back to token holders based on audited, verified savings.`,
+    `An Ascertainty-registered MRV auditor submits a baseline before funding and periodic verification reports during the repayment phase. Disbursements can only originate from the escrow PDA, and all MRV attestations are preserved on-chain for the life of the project.`,
   ].join("\n\n");
 }
 
@@ -143,10 +143,10 @@ async function main() {
         WHERE id = $9
         `,
         [
-          `${pool.name} is a diversified basket of Exira-originated MSME investments. Investors receive a single blended token; distributions from each underlying project stream into the pool vault and are pro-rated across holders.`,
+          `${pool.name} is a diversified basket of Ascertainty-originated MSME investments. Investors receive a single blended token; distributions from each underlying project stream into the pool vault and are pro-rated across holders.`,
           `${pool.name} combines multiple vetted projects into one position, reducing concentration risk while preserving the same escrow + MRV guarantees as single-project investments.`,
           JSON.stringify(COMMON_HIGHLIGHTS),
-          "Pool operations are managed by Exira. Underlying project selections are reviewed quarterly against MRV performance and repayment history.",
+          "Pool operations are managed by Ascertainty. Underlying project selections are reviewed quarterly against MRV performance and repayment history.",
           DEFAULT_FINANCIALS,
           JSON.stringify(DEFAULT_DOCUMENTS),
           80,

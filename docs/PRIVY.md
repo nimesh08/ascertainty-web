@@ -16,7 +16,7 @@ On [dashboard.privy.io](https://dashboard.privy.io/):
 
 ### 1. App creation
 
-Create a new app for `exira-web`. Copy:
+Create a new app for `ascertainty-web`. Copy:
 
 - **App ID** → `NEXT_PUBLIC_PRIVY_APP_ID`
 - **App secret** → `PRIVY_APP_SECRET` (server-only)
@@ -26,7 +26,7 @@ Create a new app for `exira-web`. Copy:
 Settings → Domains → add every origin the app will serve from:
 
 - `http://localhost:3000` (dev)
-- `https://<your-preview-host>` (e.g. `https://13.201.222.240`)
+- `https://<your-preview-host>` (e.g. `https://ascertainty.com`)
 - Any custom domain once DNS is ready
 
 Without this, the Privy modal will refuse to open.

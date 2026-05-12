@@ -1,7 +1,8 @@
 # Deployment
 
-This is the runbook for the reference production box
-(EC2 @ `13.201.222.240`). Adapt as needed for other hosts.
+This is the runbook for the production deployment at
+[ascertainty.com](https://ascertainty.com/) (Next.js on EC2 behind Caddy +
+pm2). Adapt as needed for other hosts.
 
 ## Topology
 
@@ -21,14 +22,12 @@ public internet ─┐
 ```
 
 - **Caddy** terminates TLS and reverse-proxies to Next.js on port 3100.
-  A shortlived-profile ACME cert is issued for the bare IP — the default
-  for quick preview deployments. Swap for a real domain + Let's Encrypt
-  when DNS is ready.
+  ACME issues a Let's Encrypt cert against the configured hostname; cert
+  renewal is automatic.
 - **pm2** supervises the Next.js `npm run start` process. Restart on
   failure, start on boot via `pm2 startup`.
-- **systemd** is a fallback alternative to pm2; see
-  [`deploy/exira-web-v2.service`](../deploy/exira-web-v2.service) and
-  [`deploy/README.md`](../deploy/README.md).
+- **systemd** is a fallback alternative to pm2 (out of scope for this
+  runbook).
 
 ## Host prep (one-time)
 
@@ -57,7 +56,7 @@ internet.
 
 ```bash
 # 1. Clone + install
-gh repo clone nimesh08/exira-web /home/ubuntu/exira-web
+gh repo clone nimesh08/ascertainty-web /home/ubuntu/exira-web
 cd /home/ubuntu/exira-web
 npm install --legacy-peer-deps
 
@@ -73,14 +72,15 @@ npm run db:seed-admin
 npm run build
 
 # 5. Start under pm2
-cp deploy/ecosystem.config.js .
-pm2 start ecosystem.config.js
+#    ecosystem.config.js lives on the box (not committed to the repo).
+#    Minimum config: pm2 start npm --name ascertainty-web -- run start
+pm2 start npm --name ascertainty-web -- run start
 pm2 save
 pm2 startup   # follow the printed instructions
 
-# 6. Caddy
-sudo cp deploy/Caddyfile.example /etc/caddy/Caddyfile
-$EDITOR /etc/caddy/Caddyfile   # replace <DOMAIN_OR_IP>
+# 6. Caddy (paste the reverse-proxy block into /etc/caddy/Caddyfile;
+#    point it at 127.0.0.1:3100 and your hostname)
+sudo $EDITOR /etc/caddy/Caddyfile
 sudo systemctl reload caddy
 ```
 
@@ -127,7 +127,7 @@ Or hit the HTTP endpoint:
 
 ```bash
 curl -X POST -H "x-indexer-key: $INDEXER_SECRET" \
-  https://13.201.222.240/api/indexer/sync
+  https://ascertainty.com/api/indexer/sync
 ```
 
 ### Caddy cert renewal
@@ -141,10 +141,9 @@ sudo journalctl -u caddy -n 100
 
 ## Scaling notes
 
-- Next.js runs single-process by default. To scale, bump
-  `instances` in `deploy/ecosystem.config.js` to `"max"` (pm2 cluster
-  mode). Make sure the app is stateless (it is — all state lives in
-  Postgres and on-chain).
+- Next.js runs single-process by default. To scale, restart pm2 in
+  cluster mode (`pm2 start npm --name ascertainty-web -i max -- run start`).
+  The app is stateless — all state lives in Postgres and on-chain.
 - The indexer is safe to run alongside HTTP traffic; if you want a
   dedicated indexer process, run `scripts/sync-all-cli.ts` on a timer
   (cron / systemd timer) on a second box.

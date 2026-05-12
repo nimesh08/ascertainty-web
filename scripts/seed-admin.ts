@@ -21,7 +21,7 @@ async function main() {
   const sql = postgres(process.env.DATABASE_URL!, { prepare: false });
   try {
     const adminWallet = "AMBKUrFo8LM9psLtppLZBbbXqNU99BQuw9tfeHME2Ltg";
-    await sql`INSERT INTO admin_wallets(wallet_pubkey, display_name) VALUES (${adminWallet}, 'Exira Admin') ON CONFLICT DO NOTHING`;
+    await sql`INSERT INTO admin_wallets(wallet_pubkey, display_name) VALUES (${adminWallet}, 'Ascertainty Admin') ON CONFLICT DO NOTHING`;
     const rows = await sql`SELECT * FROM admin_wallets`;
     console.log("admin_wallets:", rows);
   } finally {
