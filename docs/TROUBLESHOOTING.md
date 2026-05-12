@@ -45,18 +45,19 @@ identifiers (pubkey string, project id). If positions still lag, trigger
 `POST /api/indexer/sync` from `/admin` to force a full Postgres
 refresh.
 
-## TLS warning when opening https://13.201.222.240
+## TLS warning on a preview / staging box
 
 **Symptom**: browser shows "Your connection is not private" /
-`NET::ERR_CERT_COMMON_NAME_INVALID`.
+`NET::ERR_CERT_COMMON_NAME_INVALID` when opening a preview build by IP
+or by a hostname that doesn't match the cert.
 
-**Cause**: the ACME shortlived profile issues a certificate for the IP
-address. Some browsers distrust IP-SAN certs by default.
+**Cause**: Caddy's ACME shortlived profile issues a certificate for the
+configured server name. Hitting the box via a different name or via a
+bare IP doesn't match.
 
-**Fix**: add a DNS name (e.g. `preview.exira.dev`), point it at the
-box, and replace `13.201.222.240` in `/etc/caddy/Caddyfile` with the
-hostname. Caddy will auto-provision a Let's Encrypt cert and the
-warning disappears.
+**Fix**: configure a real DNS name in `/etc/caddy/Caddyfile`
+(e.g. `preview.ascertainty.com`), point it at the box, and reload Caddy.
+A Let's Encrypt cert is auto-provisioned and the warning disappears.
 
 ## `bigint-buffer` native binding noise at boot
 
