@@ -17,16 +17,47 @@ if (!process.env.DATABASE_URL) {
   }
 }
 
+// Default seed wallet retained for backwards compat — older runs of this script
+// pre-seeded this address. Override via --wallet <pubkey> --name "Display Name".
+const DEFAULT_SEED_WALLET = "AMBKUrFo8LM9psLtppLZBbbXqNU99BQuw9tfeHME2Ltg";
+const DEFAULT_SEED_NAME = "Ascertainty Admin";
+
+function parseArgs() {
+  const args = process.argv.slice(2);
+  let wallet: string | null = null;
+  let name: string | null = null;
+  for (let i = 0; i < args.length; i++) {
+    if (args[i] === "--wallet" && args[i + 1]) {
+      wallet = args[++i];
+    } else if (args[i] === "--name" && args[i + 1]) {
+      name = args[++i];
+    }
+  }
+  return { wallet, name };
+}
+
 async function main() {
+  const { wallet, name } = parseArgs();
+  const targetWallet = wallet ?? DEFAULT_SEED_WALLET;
+  const targetName = name ?? (wallet ? "Admin" : DEFAULT_SEED_NAME);
+
   const sql = postgres(process.env.DATABASE_URL!, { prepare: false });
   try {
-    const adminWallet = "AMBKUrFo8LM9psLtppLZBbbXqNU99BQuw9tfeHME2Ltg";
-    await sql`INSERT INTO admin_wallets(wallet_pubkey, display_name) VALUES (${adminWallet}, 'Ascertainty Admin') ON CONFLICT DO NOTHING`;
-    const rows = await sql`SELECT * FROM admin_wallets`;
-    console.log("admin_wallets:", rows);
+    await sql`
+      INSERT INTO admin_wallets(wallet_pubkey, display_name)
+      VALUES (${targetWallet}, ${targetName})
+      ON CONFLICT (wallet_pubkey) DO UPDATE SET display_name = EXCLUDED.display_name
+    `;
+    console.log(`✓ upserted admin: ${targetWallet} (${targetName})`);
+    const rows = await sql`SELECT wallet_pubkey, display_name, added_at FROM admin_wallets ORDER BY added_at`;
+    console.log("\nadmin_wallets:");
+    for (const r of rows) console.log(" ", r);
   } finally {
     await sql.end();
   }
 }
 
-main();
+main().catch((e) => {
+  console.error(e);
+  process.exit(1);
+});

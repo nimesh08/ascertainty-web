@@ -80,9 +80,14 @@ export default async function LenderDealPage({
         title={`${filledEcms} ECM${filledEcms === 1 ? "" : "s"} · ${sector}`}
         description="Live underwriting from the auditor's measurements. P5 lower bound is the conservative floor used for debt sizing — soft commitment is conditional on realized savings ≥ P5 at Day 30."
         right={
-          <Link href={`/lender/${encodeURIComponent(deal_id)}/soft-commit`}>
-            <Button size="lg">Sign soft commitment →</Button>
-          </Link>
+          <div className="flex flex-wrap gap-2">
+            <Link href={`/lender/${encodeURIComponent(deal_id)}/timeline`}>
+              <Button variant="outline">View audit timeline</Button>
+            </Link>
+            <Link href={`/lender/${encodeURIComponent(deal_id)}/soft-commit`}>
+              <Button size="lg">Sign soft commitment →</Button>
+            </Link>
+          </div>
         }
       />
 

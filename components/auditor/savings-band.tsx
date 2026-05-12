@@ -74,7 +74,7 @@ export function SavingsBand({
       </div>
 
       {/* Numeric callouts */}
-      <div className="grid grid-cols-3 gap-2 text-sm">
+      <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
         <div>
           <div className="text-xs uppercase tracking-wide text-zinc-500">P5 (lender floor)</div>
           <div className="font-medium text-emerald-700 dark:text-emerald-300">

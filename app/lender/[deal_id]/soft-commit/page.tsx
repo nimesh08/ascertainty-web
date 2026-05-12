@@ -86,7 +86,7 @@ export default async function SoftCommitPage({
           <CardTitle>Letter of Soft Commitment</CardTitle>
         </CardHeader>
         <CardContent className="space-y-6 leading-relaxed">
-          <div className="grid grid-cols-2 gap-x-6 gap-y-1 text-sm">
+          <div className="grid grid-cols-1 gap-x-6 gap-y-1 text-sm sm:grid-cols-2">
             <div>
               <span className="text-zinc-500">Date:</span> {today}
             </div>
@@ -125,8 +125,8 @@ export default async function SoftCommitPage({
             <h3 className="mb-2 text-sm font-medium uppercase tracking-wide text-zinc-500">
               Indicative loan terms
             </h3>
-            <div className="overflow-hidden rounded-md border border-zinc-200 dark:border-zinc-800">
-              <table className="w-full text-sm">
+            <div className="overflow-x-auto rounded-md border border-zinc-200 dark:border-zinc-800">
+              <table className="w-full min-w-[480px] text-sm">
                 <tbody>
                   <tr className="border-b border-zinc-100 dark:border-zinc-800">
                     <td className="px-3 py-2 text-zinc-500">Total investment (capex)</td>
@@ -196,7 +196,7 @@ export default async function SoftCommitPage({
             </ol>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 pt-6 print:pt-12">
+          <div className="grid grid-cols-1 gap-8 pt-6 sm:grid-cols-2 print:grid-cols-2 print:pt-12">
             <div>
               <div className="border-b border-zinc-300 pb-1 dark:border-zinc-700">&nbsp;</div>
               <div className="mt-1 text-xs text-zinc-500">Lender signature, name, date</div>

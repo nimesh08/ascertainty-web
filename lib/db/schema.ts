@@ -335,6 +335,31 @@ export const underwritingResults = pgTable(
   })
 );
 
+export const underwritingSnapshots = pgTable(
+  "underwriting_snapshots",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    underwritingResultId: uuid("underwriting_result_id")
+      .notNull()
+      .references(() => underwritingResults.id, { onDelete: "cascade" }),
+    snapshotDay: integer("snapshot_day"),                 // Day in 1..30 of the live audit; null if auto/unknown
+    snapshotAt: timestamp("snapshot_at", { withTimezone: true }).defaultNow().notNull(),
+    inputsJson: jsonb("inputs_json").notNull(),
+    predictionJson: jsonb("prediction_json").notNull(),
+    modelUsed: text("model_used"),
+    pinnSavingsKwh: numeric("pinn_savings_kwh", { precision: 20, scale: 2 }),
+    pinnP5LowerKwh: numeric("pinn_p5_lower_kwh", { precision: 20, scale: 2 }),
+    pinnP95UpperKwh: numeric("pinn_p95_upper_kwh", { precision: 20, scale: 2 }),
+    pinnSigmaKwh: numeric("pinn_sigma_kwh", { precision: 20, scale: 2 }),
+    confidenceGrade: text("confidence_grade"),
+    label: text("label"),                                  // optional human-readable label (e.g. "Day 5 — leakage measured")
+  },
+  (t) => ({
+    underwritingIdx: index("snapshot_underwriting_idx").on(t.underwritingResultId),
+    dayIdx: index("snapshot_day_idx").on(t.underwritingResultId, t.snapshotDay),
+  })
+);
+
 export const softCommitments = pgTable(
   "soft_commitments",
   {
@@ -438,6 +463,14 @@ export const underwritingResultsRelations = relations(underwritingResults, ({ on
     references: [mrvProjects.id],
   }),
   softCommitments: many(softCommitments),
+  snapshots: many(underwritingSnapshots),
+}));
+
+export const underwritingSnapshotsRelations = relations(underwritingSnapshots, ({ one }) => ({
+  underwritingResult: one(underwritingResults, {
+    fields: [underwritingSnapshots.underwritingResultId],
+    references: [underwritingResults.id],
+  }),
 }));
 
 export const softCommitmentsRelations = relations(softCommitments, ({ one }) => ({
@@ -477,3 +510,5 @@ export type UnderwritingResult = typeof underwritingResults.$inferSelect;
 export type NewUnderwritingResult = typeof underwritingResults.$inferInsert;
 export type SoftCommitment = typeof softCommitments.$inferSelect;
 export type NewSoftCommitment = typeof softCommitments.$inferInsert;
+export type UnderwritingSnapshot = typeof underwritingSnapshots.$inferSelect;
+export type NewUnderwritingSnapshot = typeof underwritingSnapshots.$inferInsert;

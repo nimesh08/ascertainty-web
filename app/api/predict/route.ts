@@ -110,7 +110,36 @@ export async function POST(req: Request) {
         },
       })
       .returning({ id: schema.underwritingResults.id });
-    return NextResponse.json({ id: inserted[0]?.id, prediction });
+
+    const underwritingId = inserted[0]?.id;
+
+    // Append a snapshot row — every /predict call is a point in time on the
+    // Day 1 → Day 30 audit timeline. The timeline page replays these for the
+    // lender to see how the P5 floor firmed up as measurements came in.
+    if (underwritingId) {
+      const snapshotDay = body.snapshot_day != null ? Number(body.snapshot_day) : null;
+      const snapshotLabel = body.snapshot_label ? String(body.snapshot_label) : null;
+      try {
+        await db.insert(schema.underwritingSnapshots).values({
+          underwritingResultId: underwritingId,
+          snapshotDay: Number.isFinite(snapshotDay) ? snapshotDay : null,
+          inputsJson: predictReq as unknown as object,
+          predictionJson: prediction as unknown as object,
+          modelUsed: prediction.model_used,
+          pinnSavingsKwh: prediction.predicted_savings_kwh.toString(),
+          pinnP5LowerKwh: prediction.savings_lower_p5_kwh.toString(),
+          pinnP95UpperKwh: prediction.savings_upper_p95_kwh.toString(),
+          pinnSigmaKwh: prediction.sigma_kwh.toString(),
+          confidenceGrade: prediction.confidence_grade,
+          label: snapshotLabel,
+        });
+      } catch (snapErr) {
+        // Snapshot failures shouldn't fail the prediction response.
+        console.error("snapshot insert failed (non-fatal)", snapErr);
+      }
+    }
+
+    return NextResponse.json({ id: underwritingId, prediction });
   } catch (err) {
     console.error("underwriting upsert", err);
     return NextResponse.json(

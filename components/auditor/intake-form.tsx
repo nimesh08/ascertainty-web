@@ -215,8 +215,8 @@ export function AuditorIntakeForm({ dealId, initial }: AuditorIntakeFormProps) {
   const electricityRate = Number(watched.electricity_rate_inr_kwh) || 8.0;
 
   return (
-    <div className="grid grid-cols-1 gap-6 lg:grid-cols-5">
-      <Card className="lg:col-span-3">
+    <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
+      <Card className="md:col-span-2 lg:col-span-3">
         <CardHeader>
           <div className="flex items-center justify-between">
             <CardTitle>Compressed-air leakage ECM</CardTitle>
@@ -426,7 +426,7 @@ export function AuditorIntakeForm({ dealId, initial }: AuditorIntakeFormProps) {
         </CardContent>
       </Card>
 
-      <Card className="lg:col-span-2">
+      <Card className="md:col-span-2 lg:col-span-2">
         <CardHeader>
           <CardTitle>Live confidence band</CardTitle>
         </CardHeader>
