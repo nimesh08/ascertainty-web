@@ -186,6 +186,18 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
               <Link className="a-btn a-btn--ghost" href="/portfolio">
                 My portfolio
               </Link>
+              <Link
+                href="/docs/underwriting-policy"
+                style={{
+                  alignSelf: "center",
+                  fontSize: 12,
+                  color: "var(--fg-muted)",
+                  textDecoration: "underline",
+                  textUnderlineOffset: 2,
+                }}
+              >
+                Read the underwriting policy ↗
+              </Link>
             </div>
             <div className="a-hero__meta">
               <div>
@@ -406,7 +418,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
           idx="03"
           kicker="BENCHMARKS"
           title="Calibrated, not just confident."
-          intro="Our underwriting model produces a calibrated 90% confidence interval — meaning the P5 lower bound is honest, not an LLM hallucination. Numbers below come from leave-one-out cross-validation on the 72-ECM training corpus; reproduction script is one curl away."
+          intro="Our underwriting model produces a calibrated 90% confidence interval — meaning the P5 lower bound is honest, not an LLM hallucination. Numbers below come from leave-one-out cross-validation on the 72-ECM KISEM corpus after pretraining on 14,000 real IAC industrial audits; reproduction script is one curl away."
         />
         <div className="shell" style={{ paddingBottom: 56 }}>
           <div className="bench-grid" style={{ marginTop: 32 }}>
@@ -436,26 +448,32 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>Leakage-known compressed-air only</td>
                 </tr>
                 <tr>
-                  <td>XGBoost (no physics)</td>
-                  <td style={{ color: "var(--fg-muted)" }}>pending IAC pretrain</td>
-                  <td style={{ color: "var(--fg-muted)" }}>pending</td>
-                  <td style={{ color: "var(--fg-muted)" }}>pending</td>
-                  <td>Control baseline</td>
+                  <td>Ascertainty PINN v0.1 (physics-head)</td>
+                  <td>−0.07</td>
+                  <td>42.3%</td>
+                  <td>88% (native σ-scaling)</td>
+                  <td>Internal physics-informed neural network on KISEM-only</td>
                 </tr>
                 <tr style={{ background: "rgba(16,185,129,0.06)" }}>
-                  <td><b>Ascertainty PINN (this product)</b></td>
-                  <td><b>−0.07</b></td>
-                  <td><b>42.3%</b></td>
-                  <td><b>88%</b></td>
-                  <td>Physics-head + per-category σ-scaling, n=72 LOO</td>
+                  <td><b>Ascertainty CatBoost v0.2 (this product)</b></td>
+                  <td><b>+0.28</b></td>
+                  <td><b>44.7%</b></td>
+                  <td><b>90% PI via split-conformal (±67,679 kWh)</b></td>
+                  <td><b>IAC (14,000 audits) pretrain + KISEM (n=72) finetune</b></td>
                 </tr>
               </tbody>
             </table>
             <p style={{ marginTop: 16, fontSize: 12, color: "var(--fg-muted)" }}>
-              Trained on a 72-ECM corpus of industrial energy audits. Public-dataset pretraining
-              (US-DOE Industrial Assessment Center, ~17k audits) is in progress; we expect R² to
-              clear 0.5 once it lands. Until then, the per-category σ-scaling — not the raw R² —
-              is what keeps the P5 floor honest for lenders.
+              v0.2 = pretrained on the US Department of Energy Industrial Assessment Center
+              database (14,000 implemented recommendations with client-reported realized
+              savings, 1981–2024) and finetuned on the Indian KISEM 72-ECM cohort. Split-conformal
+              prediction wrapped around CatBoost gives a distribution-free 90% PI: predicted ±67,679
+              kWh/yr, derived from leave-one-out residuals on the KISEM hold-outs.
+              <br /><br />
+              Caveat (important for lenders): IAC's "realized savings" is client-reported at
+              6–9 month phone follow-up, not metered M&V. Our own metered M&V loop closes the
+              gap post-deployment via IPMVP Option B telemetry. TabPFN v2 (Hollmann et al.,
+              <i>Nature</i> 2025) is the next training upgrade once we negotiate licensing.
             </p>
 
             <div className="bench-snippet" style={{ marginTop: 28 }}>
@@ -944,6 +962,18 @@ curl -s https://inference.ascertainty.com/v1/predict \\
             </Link>
             <Link className="a-btn a-btn--ghost" href="/pools">
               Browse pools
+            </Link>
+            <Link
+              href="/docs/underwriting-policy"
+              style={{
+                alignSelf: "center",
+                fontSize: 12,
+                color: "var(--fg-muted)",
+                textDecoration: "underline",
+                textUnderlineOffset: 2,
+              }}
+            >
+              Underwriting Policy ↗
             </Link>
           </div>
         </div>

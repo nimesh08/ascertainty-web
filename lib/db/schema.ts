@@ -326,12 +326,52 @@ export const underwritingResults = pgTable(
     auditorWallet: text("auditor_wallet"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+    // --- Policy v0.2 additions (UNDERWRITING_POLICY.md §1.0) ------------------
+    // Borrower financials backstop (§5.1 EBITDA Coverage)
+    borrowerEbitdaInr: numeric("borrower_ebitda_inr", { precision: 20, scale: 2 }),
+    ebitdaCoverageRatio: numeric("ebitda_coverage_ratio", { precision: 10, scale: 4 }),
+    // Cached DSCR computations (§5.1)
+    dscrAtP5: numeric("dscr_at_p5", { precision: 10, scale: 4 }),
+    dscrAtP50: numeric("dscr_at_p50", { precision: 10, scale: 4 }),
+    // Eligibility (§4-5)
+    eligibilityStatus: text("eligibility_status").default("pending"),
+    ineligibilityReasons: jsonb("ineligibility_reasons").$type<
+      Array<{ code: string; message: string; policySection: string }>
+    >(),
+    // Carbon credits (§11)
+    carbonEligible: boolean("carbon_eligible").default(false),
+    carbonTco2PerYear: numeric("carbon_tco2_per_year", { precision: 20, scale: 2 }),
+    carbonMethodology: text("carbon_methodology"),
   },
   (t) => ({
     dealIdx: index("underwriting_deal_idx").on(t.dealId),
     projectIdx: index("underwriting_project_idx").on(t.projectId),
     statusIdx: index("underwriting_status_idx").on(t.status),
     dealEcmUq: uniqueIndex("underwriting_deal_ecm_uq").on(t.dealId, t.ecmId),
+    eligibilityIdx: index("underwriting_eligibility_idx").on(t.eligibilityStatus),
+  })
+);
+
+// Concentration tracking per vault (§5.5 limits: single borrower 15%, sector 40%, etc.)
+export const vaultAllocations = pgTable(
+  "vault_allocations",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    vaultId: text("vault_id").notNull(), // human-readable vault identifier
+    underwritingResultId: uuid("underwriting_result_id")
+      .notNull()
+      .references(() => underwritingResults.id, { onDelete: "cascade" }),
+    navBps: integer("nav_bps").notNull(), // share of vault NAV in basis points (10000 = 100%)
+    // Denormalized for fast concentration queries without 5-column join
+    sector: text("sector"),
+    state: text("state"),
+    equipmentCategory: text("equipment_category"),
+    auditorWallet: text("auditor_wallet"),
+    addedAt: timestamp("added_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => ({
+    vaultIdx: index("vault_alloc_vault_idx").on(t.vaultId),
+    underwritingIdx: index("vault_alloc_underwriting_idx").on(t.underwritingResultId),
   })
 );
 
@@ -512,3 +552,5 @@ export type SoftCommitment = typeof softCommitments.$inferSelect;
 export type NewSoftCommitment = typeof softCommitments.$inferInsert;
 export type UnderwritingSnapshot = typeof underwritingSnapshots.$inferSelect;
 export type NewUnderwritingSnapshot = typeof underwritingSnapshots.$inferInsert;
+export type VaultAllocation = typeof vaultAllocations.$inferSelect;
+export type NewVaultAllocation = typeof vaultAllocations.$inferInsert;
