@@ -22,7 +22,6 @@
  * more inputs so the band evolution is real model output, not hand-fabricated.
  */
 
-import "dotenv/config";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import postgres from "postgres";
