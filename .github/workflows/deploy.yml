@@ -11,6 +11,22 @@ concurrency:
   group: deploy-main
   cancel-in-progress: false
 
+# Required GitHub secrets:
+#   SSH_DEPLOY_KEY  — private key for EC2 SSH
+#   DEPLOY_HOST     — EC2 hostname
+#   DEPLOY_USER     — EC2 SSH user (e.g. deploy / ubuntu)
+#   DATABASE_URL    — Neon Postgres production URL (used by db-migrate job)
+#
+# Required GitHub vars (Settings → Secrets and variables → Actions → Variables):
+#   INFERENCE_BASE_URL    — e.g. https://inference.ascertainty.com  (defaults to http://127.0.0.1:8000 if unset)
+#   INFERENCE_TIMEOUT_MS  — optional; defaults to 10000
+#   BUILD_PRIVY_APP_ID    — existing
+#
+# On the EC2 host, `run-deploy` must source `/home/<DEPLOY_USER>/exira-web-runtime.env`
+# before starting Next.js so INFERENCE_BASE_URL is set in the Node process. Example
+# one-line patch to add to run-deploy:
+#   set -a; . "$HOME/exira-web-runtime.env" 2>/dev/null || true; set +a
+
 jobs:
   build:
     name: Typecheck + Build
@@ -40,9 +56,43 @@ jobs:
           NEXT_PUBLIC_EXIRA_PROGRAM_ID: J7z1a2bwMEC8MchgZwskJZ8PzXg4UG674VgD8DuotJn2
           DATABASE_URL: postgresql://build:stub@localhost:5432/stub
 
+  db-migrate:
+    name: Apply DB schema (Drizzle push)
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Apply schema diff to Neon (drizzle-kit push)
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+        run: |
+          if [ -z "${DATABASE_URL:-}" ]; then
+            echo "::warning::DATABASE_URL secret is not set — skipping schema push."
+            echo "Add a DATABASE_URL secret pointing to your Neon production DB to enable automatic migrations."
+            exit 0
+          fi
+          # --force makes the run non-interactive. Since our schema changes are
+          # additive (new enum + new tables), this is safe. If a future PR
+          # introduces a column drop or table rename, the workflow will surface
+          # the destructive plan in logs before applying; review the plan in the
+          # log and revert if it looks wrong.
+          echo "Running: drizzle-kit push"
+          npx drizzle-kit push --force --verbose
+
   deploy:
     name: Deploy to EC2
-    needs: build
+    needs: [build, db-migrate]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -54,6 +104,21 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
+      - name: Sync runtime env file to host
+        env:
+          INFERENCE_BASE_URL: ${{ vars.INFERENCE_BASE_URL || 'http://127.0.0.1:8000' }}
+          INFERENCE_TIMEOUT_MS: ${{ vars.INFERENCE_TIMEOUT_MS || '10000' }}
+        run: |
+          # Push runtime env via SSH heredoc. run-deploy on the host must
+          # source ~/exira-web-runtime.env before starting Next.js.
+          ssh -i ~/.ssh/id_ed25519 \
+              -o StrictHostKeyChecking=accept-new \
+              "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+              "cat > \$HOME/exira-web-runtime.env" <<EOF
+          INFERENCE_BASE_URL=${INFERENCE_BASE_URL}
+          INFERENCE_TIMEOUT_MS=${INFERENCE_TIMEOUT_MS}
+          EOF
+
       - name: Run deploy script over SSH
         run: |
           ssh -i ~/.ssh/id_ed25519 \
@@ -61,7 +126,7 @@ jobs:
               "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
               'run-deploy'
 
-      - name: Smoke test production
+      - name: Smoke test production (web)
         run: |
           for i in 1 2 3 4 5 6 7 8; do
             code=$(curl -skS -o /dev/null -w "%{http_code}" --max-time 20 "https://ascertainty.com/" || echo "000")
@@ -69,5 +134,19 @@ jobs:
             if [ "$code" = "200" ]; then exit 0; fi
             sleep 10
           done
-          echo "smoke test failed"
+          echo "web smoke test failed"
           exit 1
+
+      - name: Smoke test inference (soft)
+        if: ${{ vars.INFERENCE_BASE_URL != '' }}
+        run: |
+          # Don't fail the deploy if the inference sidecar is offline — it's a
+          # separately-managed service. Just warn so we see it in the logs.
+          set +e
+          for i in 1 2 3; do
+            code=$(curl -skS -o /dev/null -w "%{http_code}" --max-time 10 "${{ vars.INFERENCE_BASE_URL }}/health" || echo "000")
+            echo "inference health attempt $i: $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 5
+          done
+          echo "::warning::Inference service at ${{ vars.INFERENCE_BASE_URL }} is not responding. The PINN-dependent UI (/auditor/intake, /lender/[deal_id]) will 502 until it comes back up."

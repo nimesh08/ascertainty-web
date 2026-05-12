@@ -1,0 +1,13 @@
+{
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1778579209961,
+      "tag": "0000_underwriting_v01",
+      "breakpoints": true
+    }
+  ]
+}

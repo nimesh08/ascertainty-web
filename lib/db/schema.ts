@@ -43,6 +43,14 @@ export const mrvProjectStatusEnum = pgEnum("mrv_project_status", [
   "rejected",
 ]);
 
+export const underwritingStatusEnum = pgEnum("underwriting_status", [
+  "pending",          // ECM created, no prediction yet
+  "predicted",        // PINN inference done
+  "soft_committed",   // lender signed soft commit letter
+  "finalized",        // Day-30 audit complete, realized savings recorded
+  "reconciled",       // ±15%/±20% pass/fail computed
+]);
+
 export const txTypeEnum = pgEnum("tx_type", [
   "init_platform",
   "create_project",
@@ -269,6 +277,88 @@ export const transactions = pgTable(
 );
 
 // ---------------------------------------------------------------------------
+// underwriting / PINN predictions (v0.1)
+// ---------------------------------------------------------------------------
+
+export const underwritingResults = pgTable(
+  "underwriting_results",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    // FK targets (both nullable: an auditor may start before on-chain project exists)
+    projectId: uuid("project_id").references(() => projects.id, { onDelete: "cascade" }),
+    mrvProjectId: uuid("mrv_project_id").references(() => mrvProjects.id, { onDelete: "cascade" }),
+    // Auditor-supplied identifiers
+    dealId: text("deal_id").notNull(),         // human-readable, used for /lender/[deal_id] URL
+    ecmId: text("ecm_id").notNull(),           // auditor-supplied ECM ordinal/name within the deal
+    equipmentType: text("equipment_type").notNull(),
+    sector: text("sector").notNull(),
+    description: text("description"),
+    // Raw audit inputs (the PredictRequest payload)
+    auditInputsJson: jsonb("audit_inputs_json").notNull(),
+    // PINN prediction (the PredictResponse payload, mirrored to typed columns for query speed)
+    predictionJson: jsonb("prediction_json"),
+    modelUsed: text("model_used"),
+    sigmaScaleApplied: numeric("sigma_scale_applied", { precision: 10, scale: 4 }),
+    pinnSavingsKwh: numeric("pinn_savings_kwh", { precision: 20, scale: 2 }),
+    pinnP5LowerKwh: numeric("pinn_p5_lower_kwh", { precision: 20, scale: 2 }),
+    pinnP95UpperKwh: numeric("pinn_p95_upper_kwh", { precision: 20, scale: 2 }),
+    pinnSigmaKwh: numeric("pinn_sigma_kwh", { precision: 20, scale: 2 }),
+    confidenceGrade: text("confidence_grade"),  // A / B / C
+    // Cost / loan
+    baselineKwhPerYear: numeric("baseline_kwh_per_year", { precision: 20, scale: 2 }).notNull(),
+    investmentInr: numeric("investment_inr", { precision: 20, scale: 2 }),
+    electricityRateInrKwh: numeric("electricity_rate_inr_kwh", { precision: 10, scale: 2 }).default("8.00"),
+    annualSavingsInr: numeric("annual_savings_inr", { precision: 20, scale: 2 }),
+    paybackMonths: numeric("payback_months", { precision: 10, scale: 2 }),
+    p5PaybackMonths: numeric("p5_payback_months", { precision: 10, scale: 2 }),
+    recommendedLoanInr: numeric("recommended_loan_inr", { precision: 20, scale: 2 }),
+    // Physics-only fallback (when PINN flags low confidence)
+    physicsSavingsKwh: numeric("physics_savings_kwh", { precision: 20, scale: 2 }),
+    // Status
+    status: underwritingStatusEnum("status").default("pending").notNull(),
+    // Reconciliation (filled at Day-30)
+    realizedSavingsKwh: numeric("realized_savings_kwh", { precision: 20, scale: 2 }),
+    realizedAt: timestamp("realized_at", { withTimezone: true }),
+    pointEstimateDeltaPct: numeric("point_estimate_delta_pct", { precision: 10, scale: 2 }),
+    p5ViolatedFlag: boolean("p5_violated_flag"),
+    reconciliationPasses: boolean("reconciliation_passes"),
+    // Audit trail
+    auditorWallet: text("auditor_wallet"),
+    createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true }).defaultNow().notNull(),
+  },
+  (t) => ({
+    dealIdx: index("underwriting_deal_idx").on(t.dealId),
+    projectIdx: index("underwriting_project_idx").on(t.projectId),
+    statusIdx: index("underwriting_status_idx").on(t.status),
+    dealEcmUq: uniqueIndex("underwriting_deal_ecm_uq").on(t.dealId, t.ecmId),
+  })
+);
+
+export const softCommitments = pgTable(
+  "soft_commitments",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    underwritingResultId: uuid("underwriting_result_id")
+      .notNull()
+      .references(() => underwritingResults.id, { onDelete: "cascade" }),
+    lenderName: text("lender_name").notNull(),
+    lenderWallet: text("lender_wallet"),         // optional — stand-in lenders may not have wallets
+    lenderEmail: text("lender_email"),
+    loanAmountInr: numeric("loan_amount_inr", { precision: 20, scale: 2 }).notNull(),
+    interestRateBps: integer("interest_rate_bps"),
+    tenureMonths: integer("tenure_months"),
+    p5FloorKwh: numeric("p5_floor_kwh", { precision: 20, scale: 2 }).notNull(),
+    letterPdfUrl: text("letter_pdf_url"),
+    signedAt: timestamp("signed_at", { withTimezone: true }).defaultNow().notNull(),
+    notes: text("notes"),
+  },
+  (t) => ({
+    underwritingIdx: index("soft_commit_underwriting_idx").on(t.underwritingResultId),
+  })
+);
+
+// ---------------------------------------------------------------------------
 // relations
 // ---------------------------------------------------------------------------
 
@@ -338,6 +428,25 @@ export const transactionsRelations = relations(transactions, ({ one }) => ({
   }),
 }));
 
+export const underwritingResultsRelations = relations(underwritingResults, ({ one, many }) => ({
+  project: one(projects, {
+    fields: [underwritingResults.projectId],
+    references: [projects.id],
+  }),
+  mrvProject: one(mrvProjects, {
+    fields: [underwritingResults.mrvProjectId],
+    references: [mrvProjects.id],
+  }),
+  softCommitments: many(softCommitments),
+}));
+
+export const softCommitmentsRelations = relations(softCommitments, ({ one }) => ({
+  underwritingResult: one(underwritingResults, {
+    fields: [softCommitments.underwritingResultId],
+    references: [underwritingResults.id],
+  }),
+}));
+
 // ---------------------------------------------------------------------------
 // inferred types
 // ---------------------------------------------------------------------------
@@ -364,3 +473,7 @@ export type Auditor = typeof auditors.$inferSelect;
 export type NewAuditor = typeof auditors.$inferInsert;
 export type Transaction = typeof transactions.$inferSelect;
 export type NewTransaction = typeof transactions.$inferInsert;
+export type UnderwritingResult = typeof underwritingResults.$inferSelect;
+export type NewUnderwritingResult = typeof underwritingResults.$inferInsert;
+export type SoftCommitment = typeof softCommitments.$inferSelect;
+export type NewSoftCommitment = typeof softCommitments.$inferInsert;

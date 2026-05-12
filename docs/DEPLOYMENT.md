@@ -84,6 +84,96 @@ sudo $EDITOR /etc/caddy/Caddyfile
 sudo systemctl reload caddy
 ```
 
+## v0.1 portal MVP — one-time setup
+
+The PINN-backed pages (`/auditor/intake`, `/lender/[deal_id]`,
+`/lender/[deal_id]/soft-commit`) need three pieces beyond the Next.js bundle:
+
+### 1. GitHub secrets + vars (Settings → Secrets and variables → Actions)
+
+Add:
+- **Secret** `DATABASE_URL` — Neon production URL (used by the new
+  `db-migrate` CI job to apply schema changes via `drizzle-kit push`).
+- **Variable** `INFERENCE_BASE_URL` — public URL of the inference service,
+  e.g. `https://inference.ascertainty.com` (defaults to `http://127.0.0.1:8000`
+  if unset, which works when inference runs as an EC2 sidecar).
+- **Variable** `INFERENCE_TIMEOUT_MS` — optional, defaults to 10000.
+
+### 2. Inference sidecar on the EC2 (one-time, not in CI)
+
+The PINN inference service lives in the `exira-pinn` repo (currently not
+in git; copy via rsync). On the EC2:
+
+```bash
+# From your laptop, push the directory once:
+rsync -avz --exclude .private --exclude .venv --exclude __pycache__ \
+  /path/to/exira-pinn/ deploy@<EC2>:/opt/exira-pinn/
+
+# On the EC2:
+ssh deploy@<EC2>
+cd /opt/exira-pinn/deploy
+bash install.sh        # venv, requirements.txt, systemd unit, smoke test
+
+# Add the Caddy block for inference.ascertainty.com (see deploy/Caddyfile.snippet)
+sudo $EDITOR /etc/caddy/Caddyfile
+sudo systemctl reload caddy
+
+# DNS: A record inference.ascertainty.com → EC2 elastic IP
+# Verify externally:
+curl -fsS https://inference.ascertainty.com/v1/health | jq .checkpoints
+```
+
+After every PINN retrain or `inference.py` change, re-rsync the exira-pinn
+directory and run `bash /opt/exira-pinn/deploy/update-inference.sh`.
+
+### 3. One-line patch to `run-deploy` on the EC2
+
+The CI workflow writes a runtime env file at `$HOME/exira-web-runtime.env`
+before invoking `run-deploy`. The script must source it and pass
+`--update-env` to pm2 so the Node process picks up `INFERENCE_BASE_URL`:
+
+```bash
+# Add near the top of ~/run-deploy on the EC2 host:
+set -a
+. "$HOME/exira-web-runtime.env" 2>/dev/null || true
+set +a
+
+# And change the pm2 line to:
+pm2 restart exira-web-v2 --update-env
+```
+
+Without `--update-env`, pm2 keeps the old environment and the
+`INFERENCE_BASE_URL` change won't take effect on restarts.
+
+### 4. Seed your wallet as an auditor (one-time)
+
+`/auditor/intake` checks the `auditors` table; the admin fallback covers
+shadow-dogfooding. Either:
+
+```bash
+# Easier — admin wallets are accepted as auditors during shadow mode:
+DATABASE_URL=<neon-prod> npm run db:seed-admin -- --wallet <your-Solana-pubkey>
+
+# Or insert a real auditor row:
+psql "$DATABASE_URL" <<SQL
+INSERT INTO auditors (wallet_pubkey, name, certification, is_active)
+VALUES ('<wallet>', 'Your Name', 'CEA-XXXXX', true);
+SQL
+```
+
+### Smoke-test the v0.1 loop
+
+1. Log in on `https://ascertainty.com/` with the seeded wallet.
+2. Visit `/auditor/intake`. Fill 5 fields: rated kW, hours/day, days/yr, leakage %, sector.
+3. Confidence band should populate live (proves inference URL + env + DNS).
+4. Click "Save & open lender preview" → redirects to `/lender/<deal-id>` with deal-level summary.
+5. Click "Sign soft commitment" → records to `soft_commitments` table.
+
+Failure modes:
+- Band never appears; network tab shows 502 on `/api/inference-preview` → inference service down or `INFERENCE_BASE_URL` wrong.
+- Save 500s with `relation "underwriting_results" does not exist` → DB migrate didn't run; check the `db-migrate` job log.
+- 401 on intake → wallet not in `admin_wallets` or `auditors`.
+
 ## Common operations
 
 ### Restart the web process
