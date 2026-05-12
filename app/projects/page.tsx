@@ -23,6 +23,7 @@ async function loadProjects() {
       targetUsdc: r.targetUsdc,
       tokensSold: r.tokensSold,
       termMonths: r.termMonths,
+      expectedApyBps: r.expectedApyBps ?? null,
       createdAt: r.createdAt.toISOString(),
     }));
   } catch (err) {

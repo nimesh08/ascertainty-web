@@ -1,0 +1,73 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-main
+  cancel-in-progress: false
+
+jobs:
+  build:
+    name: Typecheck + Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci --legacy-peer-deps
+
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+        env:
+          NODE_ENV: production
+          NEXT_PUBLIC_PRIVY_APP_ID: ${{ vars.BUILD_PRIVY_APP_ID || 'buildstubbuildstubbuildst' }}
+          NEXT_PUBLIC_SOLANA_RPC: https://api.devnet.solana.com
+          NEXT_PUBLIC_SOLANA_CLUSTER: devnet
+          NEXT_PUBLIC_EXIRA_PROGRAM_ID: J7z1a2bwMEC8MchgZwskJZ8PzXg4UG674VgD8DuotJn2
+          DATABASE_URL: postgresql://build:stub@localhost:5432/stub
+
+  deploy:
+    name: Deploy to EC2
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Set up SSH
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+          ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
+
+      - name: Run deploy script over SSH
+        run: |
+          ssh -i ~/.ssh/id_ed25519 \
+              -o StrictHostKeyChecking=accept-new \
+              "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+              'run-deploy'
+
+      - name: Smoke test production
+        run: |
+          for i in 1 2 3 4 5 6 7 8; do
+            code=$(curl -skS -o /dev/null -w "%{http_code}" --max-time 20 "https://ascertainty.com/" || echo "000")
+            echo "attempt $i: HTTPS $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 10
+          done
+          echo "smoke test failed"
+          exit 1

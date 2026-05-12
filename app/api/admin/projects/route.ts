@@ -92,6 +92,43 @@ export async function POST(req: Request) {
         termMonths: Number(body.termMonths),
         status: "funding",
         mrvProjectId: mrv.id,
+        // Optional admin content (all NULLABLE)
+        description:
+          typeof body.description === "string" && body.description.trim()
+            ? String(body.description)
+            : null,
+        aboutProject:
+          typeof body.aboutProject === "string" && body.aboutProject.trim()
+            ? String(body.aboutProject)
+            : null,
+        managementText:
+          typeof body.managementText === "string" && body.managementText.trim()
+            ? String(body.managementText)
+            : null,
+        financialsText:
+          typeof body.financialsText === "string" && body.financialsText.trim()
+            ? String(body.financialsText)
+            : null,
+        highlights: Array.isArray(body.highlights)
+          ? (body.highlights as Array<{
+              title: string;
+              detail: string;
+              icon?: string;
+            }>)
+          : null,
+        documents: Array.isArray(body.documents)
+          ? (body.documents as Array<{ name: string; url: string }>)
+          : null,
+        trustScore:
+          typeof body.trustScore === "number" &&
+          Number.isFinite(body.trustScore)
+            ? Math.round(body.trustScore)
+            : null,
+        expectedApyBps:
+          typeof body.expectedApyBps === "number" &&
+          Number.isFinite(body.expectedApyBps)
+            ? Math.round(body.expectedApyBps)
+            : null,
       })
       .returning();
 

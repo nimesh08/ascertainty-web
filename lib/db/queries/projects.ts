@@ -21,6 +21,17 @@ export interface ProjectListItem {
   usdcVault: string | null;
   activatedAt: string | null;
   createdAt: string;
+  // --- Admin-editable content (NULLABLE) -------------------------------------
+  description: string | null;
+  aboutProject: string | null;
+  highlights:
+    | Array<{ title: string; detail: string; icon?: string }>
+    | null;
+  managementText: string | null;
+  financialsText: string | null;
+  documents: Array<{ name: string; url: string }> | null;
+  trustScore: number | null;
+  expectedApyBps: number | null;
 }
 
 export interface ProjectListFilter {
@@ -48,6 +59,14 @@ function rowToProjectListItem(r: typeof schema.projects.$inferSelect): ProjectLi
     usdcVault: r.usdcVault,
     activatedAt: r.activatedAt ? r.activatedAt.toISOString() : null,
     createdAt: r.createdAt.toISOString(),
+    description: r.description ?? null,
+    aboutProject: r.aboutProject ?? null,
+    highlights: r.highlights ?? null,
+    managementText: r.managementText ?? null,
+    financialsText: r.financialsText ?? null,
+    documents: r.documents ?? null,
+    trustScore: r.trustScore ?? null,
+    expectedApyBps: r.expectedApyBps ?? null,
   };
 }
 

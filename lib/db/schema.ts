@@ -8,6 +8,7 @@ import {
   bigint,
   integer,
   boolean,
+  jsonb,
   primaryKey,
   index,
   uniqueIndex,
@@ -115,6 +116,17 @@ export const projects = pgTable(
     status: projectStatusEnum("status").default("pending").notNull(),
     mrvProjectId: uuid("mrv_project_id").references(() => mrvProjects.id),
     activatedAt: timestamp("activated_at", { withTimezone: true }),
+    // --- Admin-editable content (NULLABLE — safe for existing rows) ---------
+    description: text("description"),
+    aboutProject: text("about_project"),
+    highlights: jsonb("highlights").$type<
+      Array<{ title: string; detail: string; icon?: string }>
+    >(),
+    managementText: text("management_text"),
+    financialsText: text("financials_text"),
+    documents: jsonb("documents").$type<Array<{ name: string; url: string }>>(),
+    trustScore: integer("trust_score"),
+    expectedApyBps: integer("expected_apy_bps"),
     createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
     syncedAt: timestamp("synced_at", { withTimezone: true }),
   },
@@ -136,6 +148,16 @@ export const pools = pgTable("pools", {
   totalDistributed: numeric("total_distributed", { precision: 40, scale: 0 }).default("0").notNull(),
   cumulativePerToken: numeric("cumulative_per_token", { precision: 40, scale: 0 }).default("0").notNull(),
   status: poolStatusEnum("status").default("funding").notNull(),
+  // --- Admin-editable content (NULLABLE) ------------------------------------
+  aboutPool: text("about_pool"),
+  highlights: jsonb("highlights").$type<
+    Array<{ title: string; detail: string; icon?: string }>
+  >(),
+  managementText: text("management_text"),
+  financialsText: text("financials_text"),
+  documents: jsonb("documents").$type<Array<{ name: string; url: string }>>(),
+  trustScore: integer("trust_score"),
+  expectedApyBps: integer("expected_apy_bps"),
   createdAt: timestamp("created_at", { withTimezone: true }).defaultNow().notNull(),
   syncedAt: timestamp("synced_at", { withTimezone: true }),
 });

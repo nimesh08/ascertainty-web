@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/table";
 import { StatusBadge } from "@/components/admin/status-badge";
 import { AdminProjectActions } from "@/components/admin/project-actions";
+import { AdminEditContentPanel } from "@/components/admin/admin-edit-content-panel";
 import {
   fmtUsdc,
   shortSig,
@@ -280,6 +281,21 @@ export default async function AdminProjectDetailPage({
           </CardContent>
         </Card>
       </section>
+
+      <AdminEditContentPanel
+        scope="project"
+        id={project.id}
+        initial={{
+          description: project.description,
+          aboutProject: project.aboutProject,
+          managementText: project.managementText,
+          financialsText: project.financialsText,
+          expectedApyBps: project.expectedApyBps,
+          trustScore: project.trustScore,
+          highlights: project.highlights,
+          documents: project.documents,
+        }}
+      />
 
       <Card>
         <CardHeader>

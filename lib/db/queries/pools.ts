@@ -18,6 +18,14 @@ export interface PoolListItem {
   usdcVault: string | null;
   projectCount: number;
   createdAt: string;
+  // Admin-editable
+  aboutPool: string | null;
+  highlights: Array<{ title: string; detail: string; icon?: string }> | null;
+  managementText: string | null;
+  financialsText: string | null;
+  documents: Array<{ name: string; url: string }> | null;
+  trustScore: number | null;
+  expectedApyBps: number | null;
 }
 
 export interface PoolListFilter {
@@ -43,6 +51,13 @@ export async function listPools(
       poolTokenMint: schema.pools.poolTokenMint,
       usdcVault: schema.pools.usdcVault,
       createdAt: schema.pools.createdAt,
+      aboutPool: schema.pools.aboutPool,
+      highlights: schema.pools.highlights,
+      managementText: schema.pools.managementText,
+      financialsText: schema.pools.financialsText,
+      documents: schema.pools.documents,
+      trustScore: schema.pools.trustScore,
+      expectedApyBps: schema.pools.expectedApyBps,
       projectCount: sql<number>`(select count(*)::int from ${schema.poolProjects} where ${schema.poolProjects.poolId} = ${schema.pools.id})`,
     })
     .from(schema.pools)
@@ -69,6 +84,13 @@ export async function listPools(
     usdcVault: r.usdcVault,
     projectCount: r.projectCount ?? 0,
     createdAt: r.createdAt.toISOString(),
+    aboutPool: r.aboutPool ?? null,
+    highlights: r.highlights ?? null,
+    managementText: r.managementText ?? null,
+    financialsText: r.financialsText ?? null,
+    documents: r.documents ?? null,
+    trustScore: r.trustScore ?? null,
+    expectedApyBps: r.expectedApyBps ?? null,
   }));
 }
 
@@ -181,6 +203,13 @@ export async function getPool(idOrOnchainId: string): Promise<PoolDetail | null>
     usdcVault: poolRow.usdcVault,
     projectCount: underlying.length,
     createdAt: poolRow.createdAt.toISOString(),
+    aboutPool: poolRow.aboutPool ?? null,
+    highlights: poolRow.highlights ?? null,
+    managementText: poolRow.managementText ?? null,
+    financialsText: poolRow.financialsText ?? null,
+    documents: poolRow.documents ?? null,
+    trustScore: poolRow.trustScore ?? null,
+    expectedApyBps: poolRow.expectedApyBps ?? null,
     underlying,
     recentTransactions,
   };
