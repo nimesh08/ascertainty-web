@@ -35,7 +35,7 @@ export function PoolCard({ pool }: { pool: PoolCardPool }) {
       transition={{ duration: 0.2 }}
       className="h-full"
     >
-      <Card className="group relative h-full gap-0 overflow-hidden rounded-2xl border-line/60 bg-bg-1/50 p-0 transition-colors hover:border-violet/40">
+      <Card className="group relative h-full gap-0 overflow-hidden rounded-2xl border-line/60 bg-bg-1/50 p-0 transition-colors hover:border-accent/40">
         <div className="relative">
           <ProjectHero kind="pool" className="aspect-[16/9]" />
           <div className="absolute right-3 bottom-3">
@@ -62,7 +62,7 @@ export function PoolCard({ pool }: { pool: PoolCardPool }) {
             </div>
             <div className="h-1.5 overflow-hidden rounded-full bg-bg-0">
               <div
-                className="h-full rounded-full bg-violet transition-[width] duration-500"
+                className="h-full rounded-full bg-accent transition-[width] duration-500"
                 style={{ width: `${barWidth}%` }}
               />
             </div>
@@ -81,7 +81,7 @@ export function PoolCard({ pool }: { pool: PoolCardPool }) {
               value={
                 blendedApyPct != null ? `${blendedApyPct.toFixed(1)}%` : "—"
               }
-              valueClassName="text-violet"
+              valueClassName="text-accent"
             />
             <StatTile label="Raised" value={`${pct.toFixed(0)}%`} />
           </div>

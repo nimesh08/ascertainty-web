@@ -1,9 +1,9 @@
-import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
+import { Poppins, Geist_Mono, Instrument_Serif } from "next/font/google";
 
-export const geist = Geist({
+export const poppins = Poppins({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
-  variable: "--font-geist",
+  variable: "--font-poppins",
   display: "swap",
 });
 

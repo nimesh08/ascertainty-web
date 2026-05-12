@@ -120,7 +120,7 @@ export function AdminProjectActions(props: AdminProjectActionsProps) {
             </div>
             <div className="mono-num flex justify-between py-1">
               <span className="text-fg-muted">Origination fee (1.5%)</span>
-              <span className="text-magenta">
+              <span className="text-accent">
                 −{fmtUsdc(feeEstimate.toString())}
               </span>
             </div>

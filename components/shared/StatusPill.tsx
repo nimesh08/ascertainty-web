@@ -21,8 +21,8 @@ const STYLES: Record<
   },
   funding: {
     label: "Funding",
-    className: "border-cyan/40 bg-cyan/10 text-cyan",
-    dot: "bg-cyan",
+    className: "border-accent/40 bg-accent/10 text-accent",
+    dot: "bg-accent",
   },
   active: {
     label: "Active",
@@ -31,13 +31,13 @@ const STYLES: Record<
   },
   repaying: {
     label: "Repaying",
-    className: "border-violet/40 bg-violet/10 text-violet",
-    dot: "bg-violet",
+    className: "border-accent/40 bg-accent/10 text-accent",
+    dot: "bg-accent",
   },
   distributing: {
     label: "Distributing",
-    className: "border-violet/40 bg-violet/10 text-violet",
-    dot: "bg-violet",
+    className: "border-accent/40 bg-accent/10 text-accent",
+    dot: "bg-accent",
   },
   completed: {
     label: "Completed",

@@ -10,10 +10,10 @@ interface KpiTileProps {
 }
 
 const accentBg: Record<NonNullable<KpiTileProps["accent"]>, string> = {
-  magenta: "bg-magenta",
-  green: "bg-green",
-  cyan: "bg-cyan",
-  violet: "bg-violet",
+  magenta: "bg-accent",
+  green: "bg-accent",
+  cyan: "bg-accent",
+  violet: "bg-accent",
 };
 
 export function KpiTile({

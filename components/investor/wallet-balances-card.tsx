@@ -162,7 +162,7 @@ export function WalletBalancesCard({ owner }: WalletBalancesCardProps) {
       {exiraTokens.length > 0 ? (
         <div>
           <p className="text-xs uppercase tracking-[0.14em] text-fg-muted">
-            Your Exira tokens
+            Your Ascertainty tokens
           </p>
           <div className="mt-1 divide-y divide-line/60">
             {exiraTokens.map((t) => (

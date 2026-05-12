@@ -37,7 +37,8 @@ export default async function ProjectsPage() {
   return (
     <Container className="py-10 sm:py-14">
       <PageHeader
-        title="Projects"
+        kicker="Projects"
+        title="Underlying facilities, every meter on-chain."
         description="Back specific MSME upgrades. Each project mints a share-of-savings token that accrues USDC distributions as savings are realized on-chain."
       />
       <ProjectsList projects={projects} />

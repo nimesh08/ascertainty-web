@@ -38,7 +38,7 @@ export function PoolCard({ pool }: { pool: PoolCardModel }) {
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -2 }}
     >
-      <Card className="group relative gap-0 overflow-hidden p-0 transition-all duration-300 hover:border-violet/30 hover:shadow-[0_0_0_1px_rgba(167,139,250,0.12),0_20px_40px_-22px_rgba(167,139,250,0.3)]">
+      <Card className="group relative gap-0 overflow-hidden p-0 transition-all duration-300 hover:border-accent/30 hover:shadow-[0_0_0_1px_rgba(167,139,250,0.12),0_20px_40px_-22px_rgba(167,139,250,0.3)]">
         <div className="flex items-start justify-between gap-3 p-6 pb-3">
           <div className="min-w-0 space-y-1">
             <h3 className="truncate text-base font-semibold tracking-tight text-fg">
@@ -71,7 +71,7 @@ export function PoolCard({ pool }: { pool: PoolCardModel }) {
           </div>
           <div>
             <p className="text-fg-muted">Blend APY</p>
-            <p className="mono-num mt-0.5 text-violet">
+            <p className="mono-num mt-0.5 text-accent">
               {apy != null ? fmtPct(apy, 1) : "—"}
             </p>
           </div>

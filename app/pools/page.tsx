@@ -45,9 +45,9 @@ export default async function PoolsPage() {
   return (
     <Container className="py-10 sm:py-14">
       <PageHeader
-        title="Pools"
+        kicker="Pools"
+        title="Diversified baskets, one signed deposit."
         description="Diversify across a curated basket of MSME projects. One deposit, one claim, blended exposure."
-        accent="violet"
       />
       <PoolsList pools={pools} />
     </Container>

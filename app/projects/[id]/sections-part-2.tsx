@@ -69,14 +69,14 @@ export function BaselineImpactSection({
           {baseline ? (
             <div className="grid gap-3 sm:grid-cols-2">
               <MetricTile
-                icon={<Zap className="size-4 text-cyan" />}
+                icon={<Zap className="size-4 text-accent" />}
                 label="Baseline energy / yr"
                 value={`${Number(
                   baseline.energyKwhPerYear
                 ).toLocaleString()} kWh`}
               />
               <MetricTile
-                icon={<Flame className="size-4 text-magenta" />}
+                icon={<Flame className="size-4 text-accent" />}
                 label="Fuel type"
                 value={baseline.fuelType}
               />
@@ -288,13 +288,13 @@ export function TrustScoreSection({ score }: { score: number | null }) {
       ? "text-green"
       : tier === "medium"
         ? "text-[#eab308]"
-        : "text-magenta";
+        : "text-accent";
   const ringColor =
     tier === "high"
       ? "border-green/30 bg-green/5"
       : tier === "medium"
         ? "border-[#eab308]/30 bg-[#eab308]/5"
-        : "border-magenta/30 bg-magenta/5";
+        : "border-accent/30 bg-accent/5";
   return (
     <SectionCard delay={0.4}>
       <SectionTitle label="Trust" title="Net trust score" />

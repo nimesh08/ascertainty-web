@@ -39,7 +39,7 @@ export function SiteFooter() {
               <li className="flex items-center gap-2">
                 <Badge
                   variant="outline"
-                  className="border-cyan/40 bg-cyan/10 text-cyan capitalize"
+                  className="border-accent/40 bg-accent/10 text-accent capitalize"
                 >
                   {cluster}
                 </Badge>
@@ -84,7 +84,7 @@ export function SiteFooter() {
               Disclaimers
             </h3>
             <p className="text-xs leading-relaxed text-fg-muted">
-              Exira is a devnet preview. Tokens have no monetary value. Nothing
+              Ascertainty is a devnet preview. Tokens have no monetary value. Nothing
               here is investment advice. Energy savings are measured by
               licensed auditors and settled in devnet USDC.
             </p>
@@ -92,7 +92,7 @@ export function SiteFooter() {
         </div>
 
         <div className="mt-10 flex flex-col gap-3 border-t border-line/60 pt-6 text-xs text-fg-muted sm:flex-row sm:items-center sm:justify-between">
-          <p>© {new Date().getFullYear()} Exira Protocol. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} Ascertainty Protocol. All rights reserved.</p>
           <p className="mono-num text-fg/70">
             Built on Solana · Tokenized climate finance
           </p>

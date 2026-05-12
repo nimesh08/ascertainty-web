@@ -10,10 +10,10 @@ interface StatTileProps {
 }
 
 const ACCENTS = {
-  green: "from-green/15",
-  cyan: "from-cyan/15",
-  violet: "from-violet/15",
-  magenta: "from-magenta/15",
+  green: "from-accent/15",
+  cyan: "from-accent/15",
+  violet: "from-accent/15",
+  magenta: "from-accent/15",
 } as const;
 
 export function StatTile({ label, value, sub, accent = "green", className }: StatTileProps) {

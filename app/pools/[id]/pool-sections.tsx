@@ -28,7 +28,7 @@ export function PoolHeroCard({
       <div className="space-y-4 p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <h1 className="font-serif text-3xl italic leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-            <span className="bg-gradient-to-br from-violet via-cyan to-green bg-clip-text text-transparent">
+            <span className="bg-gradient-to-br from-accent via-accent to-green bg-clip-text text-transparent">
               {pool.name}
             </span>
           </h1>
@@ -74,7 +74,7 @@ export function UnderlyingProjectsSection({
               <Link
                 key={u.projectId}
                 href={`/projects/${u.projectId}`}
-                className="group block rounded-xl border border-line/60 bg-bg-2/40 p-4 transition-colors hover:border-violet/40 hover:bg-bg-2/60"
+                className="group block rounded-xl border border-line/60 bg-bg-2/40 p-4 transition-colors hover:border-accent/40 hover:bg-bg-2/60"
               >
                 <div className="mb-2 flex items-start justify-between gap-2">
                   <h3 className="truncate text-sm font-semibold text-fg">
@@ -101,12 +101,12 @@ export function UnderlyingProjectsSection({
                   </div>
                   <div className="h-1 w-full overflow-hidden rounded-full bg-bg-2">
                     <div
-                      className="h-full bg-violet transition-all"
+                      className="h-full bg-accent transition-all"
                       style={{ width: `${pct}%` }}
                     />
                   </div>
                 </div>
-                <div className="mt-3 inline-flex items-center gap-1 text-xs text-violet opacity-0 transition-opacity group-hover:opacity-100">
+                <div className="mt-3 inline-flex items-center gap-1 text-xs text-accent opacity-0 transition-opacity group-hover:opacity-100">
                   View project
                   <ArrowRight className="size-3" />
                 </div>

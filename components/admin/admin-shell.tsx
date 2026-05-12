@@ -53,11 +53,11 @@ function NavLinks({ onNavigate }: { onNavigate?: () => void }) {
             className={cn(
               "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
               active
-                ? "bg-magenta/10 text-fg"
+                ? "bg-accent/10 text-fg"
                 : "text-fg-muted hover:bg-bg-2/60 hover:text-fg"
             )}
           >
-            <Icon className={cn("size-4", active && "text-magenta")} />
+            <Icon className={cn("size-4", active && "text-accent")} />
             <span>{item.label}</span>
           </Link>
         );
@@ -86,7 +86,7 @@ export function AdminShell({
               Admin
             </p>
             <div className="flex items-center gap-2">
-              <span className="size-1.5 rounded-full bg-magenta" />
+              <span className="size-1.5 rounded-full bg-accent" />
               <span className="text-sm font-medium text-fg">Control panel</span>
             </div>
           </div>
@@ -96,7 +96,7 @@ export function AdminShell({
               Signer
             </p>
             <p className="mono-num mt-1 text-xs text-fg/90">{shortWallet}</p>
-            <Badge variant="outline" className="mt-2 border-magenta/40 bg-magenta/10 text-magenta text-[10px]">
+            <Badge variant="outline" className="mt-2 border-accent/40 bg-accent/10 text-accent text-[10px]">
               admin
             </Badge>
           </div>
@@ -110,7 +110,7 @@ export function AdminShell({
             <Button
               size="icon"
               variant="outline"
-              className="size-9 rounded-full border-magenta/40 bg-bg-1/80 backdrop-blur"
+              className="size-9 rounded-full border-accent/40 bg-bg-1/80 backdrop-blur"
               aria-label="Open admin menu"
             >
               <Menu className="size-4" />

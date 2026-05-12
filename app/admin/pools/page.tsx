@@ -52,7 +52,7 @@ export default async function AdminPoolsPage() {
         <Card>
           <CardContent className="py-16 text-center text-sm text-fg-muted">
             No pools yet.{" "}
-            <Link href="/admin/pools/new" className="text-magenta hover:underline">
+            <Link href="/admin/pools/new" className="text-accent hover:underline">
               Create one
             </Link>
             .

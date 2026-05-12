@@ -161,7 +161,7 @@ export default async function AdminPoolDetailPage({
               <Link
                 href={explorerAccount(pool.onchainPda)}
                 target="_blank"
-                className="mono-num block text-fg hover:text-magenta"
+                className="mono-num block text-fg hover:text-accent"
               >
                 PDA {shortSig(pool.onchainPda, 6)} ↗
               </Link>
@@ -170,7 +170,7 @@ export default async function AdminPoolDetailPage({
               <Link
                 href={explorerAccount(pool.poolTokenMint)}
                 target="_blank"
-                className="mono-num block text-fg-muted hover:text-magenta"
+                className="mono-num block text-fg-muted hover:text-accent"
               >
                 Mint {shortSig(pool.poolTokenMint, 6)} ↗
               </Link>

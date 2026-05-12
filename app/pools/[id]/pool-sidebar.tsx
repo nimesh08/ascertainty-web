@@ -47,7 +47,7 @@ export function PoolSidebar({
           <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-fg-muted">
             Blended return (XIRR)
           </p>
-          <p className="mono-num mt-1 text-4xl font-bold text-violet">
+          <p className="mono-num mt-1 text-4xl font-bold text-accent">
             {apyPct > 0 ? `${apyPct.toFixed(2)}%` : "—"}
           </p>
         </div>
@@ -65,7 +65,7 @@ export function PoolSidebar({
           </div>
           <Progress
             value={pct}
-            className="h-1.5 [&_[data-slot=progress-indicator]]:bg-violet"
+            className="h-1.5 [&_[data-slot=progress-indicator]]:bg-accent"
           />
           <div className="mt-2 flex items-center justify-between text-xs">
             <span className="mono-num text-fg">
@@ -102,8 +102,8 @@ export function PoolSidebar({
         {hasPosition ? (
           <>
             <div className="h-px w-full bg-line/60" />
-            <div className="space-y-2 rounded-lg border border-violet/20 bg-violet/5 p-3">
-              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-violet">
+            <div className="space-y-2 rounded-lg border border-accent/20 bg-accent/5 p-3">
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-accent">
                 Your position
               </p>
               <div className="flex items-center justify-between text-sm">
