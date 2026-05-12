@@ -18,38 +18,40 @@ type PoolStatus =
 
 export type AnyStatus = ProjectStatus | PoolStatus;
 
+// Single-accent palette: open/operational states use the theme accent (green),
+// terminal/inactive states fade to neutral, cancelled stays destructive.
 const STYLES: Record<
   AnyStatus,
   { label: string; className: string; dot: string }
 > = {
   pending: {
     label: "Pending",
-    className: "border-fg-faint/40 bg-bg-2 text-fg-muted",
-    dot: "bg-fg-muted",
+    className: "border-line bg-bg-2 text-fg-faint",
+    dot: "bg-fg-faint",
   },
   funding: {
     label: "Funding",
-    className: "border-cyan/40 bg-cyan/10 text-cyan",
-    dot: "bg-cyan",
+    className: "border-accent/40 bg-accent/10 text-accent",
+    dot: "bg-accent",
   },
   active: {
     label: "Active",
-    className: "border-green/40 bg-green/10 text-green",
-    dot: "bg-green",
+    className: "border-accent/40 bg-accent/10 text-accent",
+    dot: "bg-accent",
   },
   repaying: {
     label: "Repaying",
-    className: "border-violet/40 bg-violet/10 text-violet",
-    dot: "bg-violet",
+    className: "border-line-strong bg-bg-2 text-fg",
+    dot: "bg-fg",
   },
   distributing: {
     label: "Distributing",
-    className: "border-violet/40 bg-violet/10 text-violet",
-    dot: "bg-violet",
+    className: "border-line-strong bg-bg-2 text-fg",
+    dot: "bg-fg",
   },
   completed: {
     label: "Completed",
-    className: "border-fg-muted/40 bg-bg-2 text-fg-muted",
+    className: "border-line bg-bg-2 text-fg-muted",
     dot: "bg-fg-muted",
   },
   cancelled: {

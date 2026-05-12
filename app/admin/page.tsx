@@ -152,7 +152,7 @@ export default async function AdminOverviewPage() {
             <CardTitle className="text-base">Recent activity</CardTitle>
             <Badge
               variant="outline"
-              className="border-magenta/40 bg-magenta/10 text-magenta text-[10px]"
+              className="border-accent/40 bg-accent/10 text-accent text-[10px]"
             >
               on-chain
             </Badge>
@@ -189,7 +189,7 @@ export default async function AdminOverviewPage() {
                       href={explorerTx(tx.txSig)}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex shrink-0 items-center gap-1 text-xs text-magenta hover:underline"
+                      className="inline-flex shrink-0 items-center gap-1 text-xs text-accent hover:underline"
                     >
                       Explorer <ExternalLink className="size-3" />
                     </a>

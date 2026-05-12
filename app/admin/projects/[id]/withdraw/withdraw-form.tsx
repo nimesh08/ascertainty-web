@@ -322,7 +322,7 @@ export function WithdrawForm(props: WithdrawFormProps) {
             </div>
             <div className="mono-num flex justify-between">
               <span className="text-fg-muted">Amount to withdraw</span>
-              <span className="text-magenta">
+              <span className="text-accent">
                 −{fmtUsdc(amountRaw.toString())}
               </span>
             </div>

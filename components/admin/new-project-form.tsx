@@ -333,7 +333,7 @@ export function NewProjectForm() {
                   <FormDescription>
                     The auditor submits the baseline in the same transaction;
                     they must already be whitelisted under{" "}
-                    <span className="text-magenta">Admin → Auditors</span>.
+                    <span className="text-accent">Admin → Auditors</span>.
                   </FormDescription>
                   <FormMessage />
                 </FormItem>

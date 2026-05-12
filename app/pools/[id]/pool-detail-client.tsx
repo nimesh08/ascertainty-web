@@ -149,7 +149,7 @@ export function PoolDetailClient({
       <div className="mt-4">
         <Progress
           value={pct}
-          className="h-1.5 [&_[data-slot=progress-indicator]]:bg-violet"
+          className="h-1.5 [&_[data-slot=progress-indicator]]:bg-accent"
         />
       </div>
 

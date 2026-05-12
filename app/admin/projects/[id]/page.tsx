@@ -184,7 +184,7 @@ export default async function AdminProjectDetailPage({
               <Link
                 href={explorerAccount(project.onchainPda)}
                 target="_blank"
-                className="mono-num block text-fg hover:text-magenta"
+                className="mono-num block text-fg hover:text-accent"
               >
                 PDA {shortSig(project.onchainPda, 6)} ↗
               </Link>
@@ -193,7 +193,7 @@ export default async function AdminProjectDetailPage({
               <Link
                 href={explorerAccount(project.tokenMint)}
                 target="_blank"
-                className="mono-num block text-fg-muted hover:text-magenta"
+                className="mono-num block text-fg-muted hover:text-accent"
               >
                 Token {shortSig(project.tokenMint, 6)} ↗
               </Link>
@@ -202,7 +202,7 @@ export default async function AdminProjectDetailPage({
               <Link
                 href={explorerAccount(project.usdcVault)}
                 target="_blank"
-                className="mono-num block text-fg-muted hover:text-magenta"
+                className="mono-num block text-fg-muted hover:text-accent"
               >
                 Vault {shortSig(project.usdcVault, 6)} ↗
               </Link>
@@ -347,7 +347,7 @@ export default async function AdminProjectDetailPage({
                           <Link
                             href={explorerTx(tx.txSig)}
                             target="_blank"
-                            className="mono-num text-xs text-magenta hover:underline"
+                            className="mono-num text-xs text-accent hover:underline"
                           >
                             {shortSig(tx.txSig, 6)} ↗
                           </Link>

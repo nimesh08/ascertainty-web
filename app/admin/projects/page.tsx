@@ -122,7 +122,7 @@ export default async function AdminProjectsPage({
               }}
               className={
                 (s === activeStatus
-                  ? "border-magenta/40 bg-magenta/10 text-magenta"
+                  ? "border-accent/40 bg-accent/10 text-accent"
                   : "border-line/70 text-fg-muted hover:text-fg") +
                 " rounded-full border px-2.5 py-1 text-[11px] capitalize transition-colors"
               }
@@ -143,7 +143,7 @@ export default async function AdminProjectsPage({
               }}
               className={
                 (activeSector === "all"
-                  ? "border-magenta/40 bg-magenta/10 text-magenta"
+                  ? "border-accent/40 bg-accent/10 text-accent"
                   : "border-line/70 text-fg-muted hover:text-fg") +
                 " rounded-full border px-2.5 py-1 text-[11px] capitalize transition-colors"
               }
@@ -162,7 +162,7 @@ export default async function AdminProjectsPage({
                 }}
                 className={
                   (activeSector === sec
-                    ? "border-magenta/40 bg-magenta/10 text-magenta"
+                    ? "border-accent/40 bg-accent/10 text-accent"
                     : "border-line/70 text-fg-muted hover:text-fg") +
                   " rounded-full border px-2.5 py-1 text-[11px] capitalize transition-colors"
                 }
@@ -180,7 +180,7 @@ export default async function AdminProjectsPage({
             No projects match these filters yet.{" "}
             <Link
               href="/admin/projects/new"
-              className="text-magenta hover:underline"
+              className="text-accent hover:underline"
             >
               Create one
             </Link>

@@ -83,10 +83,18 @@ export default async function ProjectDetailPage({
       </div>
 
       <header className="mt-6 space-y-3">
-        <h1 className="font-serif text-4xl italic leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
-          <span className="bg-gradient-to-br from-green via-cyan to-violet bg-clip-text text-transparent">
-            {detail.msmeName}
-          </span>
+        <h1
+          style={{
+            fontFamily: "var(--font-display)",
+            fontWeight: 400,
+            fontSize: "clamp(48px, 6vw, 84px)",
+            letterSpacing: "-0.035em",
+            lineHeight: 0.95,
+            color: "var(--fg)",
+            margin: 0,
+          }}
+        >
+          {detail.msmeName}
         </h1>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-fg-muted">
           <span className="inline-flex items-center gap-1.5">

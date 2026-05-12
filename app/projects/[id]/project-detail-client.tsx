@@ -26,7 +26,7 @@ import {
   type PositionData,
 } from "@/lib/solana/reads";
 import { fmtUsdc, fmtNumber, shortSig, explorerTx } from "@/lib/utils/format";
-import { ExternalLink, Leaf, Flame, IndianRupee, Zap } from "lucide-react";
+import { ExternalLink, Leaf, Flame, Banknote, Zap } from "lucide-react";
 
 interface ProjectData {
   id: string;
@@ -390,17 +390,17 @@ export function ProjectDetailClient({
                 ) : (
                   <div className="grid grid-cols-2 gap-4 text-sm">
                     <MrvMetric
-                      icon={<Zap className="size-4 text-cyan" />}
+                      icon={<Zap className="size-4 text-accent" />}
                       label="Energy / yr"
                       value={`${Number(baseline.energyKwhPerYear).toLocaleString()} kWh`}
                     />
                     <MrvMetric
-                      icon={<Flame className="size-4 text-magenta" />}
+                      icon={<Flame className="size-4 text-accent" />}
                       label="Fuel"
                       value={baseline.fuelType}
                     />
                     <MrvMetric
-                      icon={<IndianRupee className="size-4 text-green" />}
+                      icon={<Banknote className="size-4 text-accent" />}
                       label="Cost / yr"
                       value={`₹${Number(baseline.costInrPerYear).toLocaleString()}`}
                     />

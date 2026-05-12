@@ -11,9 +11,9 @@ export interface ProgressBarProps {
 }
 
 const COLORS: Record<NonNullable<ProgressBarProps["color"]>, string> = {
-  green: "bg-green",
-  cyan: "bg-cyan",
-  violet: "bg-violet",
+  green: "bg-accent",
+  cyan: "bg-accent",
+  violet: "bg-accent",
   amber: "bg-amber-400",
 };
 

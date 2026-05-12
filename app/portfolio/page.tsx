@@ -8,9 +8,9 @@ export default function PortfolioPage() {
   return (
     <Container className="py-10 sm:py-14">
       <PageHeader
-        title="Your portfolio"
+        kicker="Portfolio"
+        title="Your positions."
         description="Positions, claimable distributions, and transaction history — all pulled live from Solana devnet."
-        accent="cyan"
       />
       <PortfolioClient />
     </Container>

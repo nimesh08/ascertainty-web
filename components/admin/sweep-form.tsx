@@ -202,7 +202,7 @@ export function SweepForm(props: SweepFormProps) {
             </div>
             <div className="mono-num flex justify-between">
               <span className="text-fg-muted">Δ per token</span>
-              <span className="text-magenta">+{deltaPerToken.toString()}</span>
+              <span className="text-accent">+{deltaPerToken.toString()}</span>
             </div>
             <div className="mono-num flex justify-between border-t border-line/60 pt-2 font-medium">
               <span>After</span>

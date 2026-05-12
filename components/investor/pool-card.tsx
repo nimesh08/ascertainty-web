@@ -23,7 +23,7 @@ export function PoolCard({ pool }: { pool: PoolCardPool }) {
   const blendedApyPct = 11;
 
   return (
-    <Card className="group relative gap-0 overflow-hidden p-0 transition-all hover:border-violet/30 hover:shadow-[0_0_0_1px_rgba(167,139,250,0.15),0_20px_40px_-20px_rgba(167,139,250,0.25)]">
+    <Card className="group relative gap-0 overflow-hidden p-0 transition-all hover:border-accent/30 hover:shadow-[0_0_0_1px_rgba(31,107,71,0.12),0_20px_40px_-20px_rgba(31,107,71,0.20)]">
       <div className="flex items-start justify-between gap-3 p-5 pb-3">
         <div className="min-w-0 space-y-1">
           <h3 className="truncate text-base font-semibold tracking-tight text-fg">
@@ -43,7 +43,7 @@ export function PoolCard({ pool }: { pool: PoolCardPool }) {
             {fmtUsdc(pool.tokensSold)} / {fmtUsdc(pool.targetUsdc)}
           </span>
         </div>
-        <Progress value={pct} className="h-1.5 [&_[data-slot=progress-indicator]]:bg-violet" />
+        <Progress value={pct} className="h-1.5 [&_[data-slot=progress-indicator]]:bg-accent" />
       </div>
 
       <div className="mt-4 grid grid-cols-3 gap-3 border-t border-line/60 px-5 py-4 text-xs">
@@ -56,7 +56,7 @@ export function PoolCard({ pool }: { pool: PoolCardPool }) {
         </div>
         <div>
           <p className="text-fg-muted">Blend APY</p>
-          <p className="mono-num mt-0.5 text-violet">{fmtPct(blendedApyPct, 1)}</p>
+          <p className="mono-num mt-0.5 text-accent">{fmtPct(blendedApyPct, 1)}</p>
         </div>
         <div>
           <p className="text-fg-muted">Raised</p>
