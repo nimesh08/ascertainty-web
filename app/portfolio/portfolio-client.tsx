@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, Fragment } from "react";
 import Link from "next/link";
 import { ChevronDown, ChevronRight, ExternalLink, RefreshCw, Wallet } from "lucide-react";
 
@@ -314,8 +314,8 @@ export function PortfolioClient() {
                       const expanded = expandedRows.has(rowKey);
                       const demoVault = DEMO_VAULTS[i % DEMO_VAULTS.length];
                       return (
-                        <>
-                          <TableRow key={rowKey}>
+                        <Fragment key={rowKey}>
+                          <TableRow>
                             <TableCell>
                               <button
                                 type="button"
@@ -369,13 +369,13 @@ export function PortfolioClient() {
                             </TableCell>
                           </TableRow>
                           {expanded ? (
-                            <TableRow key={`${rowKey}-drill`}>
+                            <TableRow>
                               <TableCell colSpan={8} className="p-0">
                                 <PositionDrillDown vault={demoVault} />
                               </TableCell>
                             </TableRow>
                           ) : null}
-                        </>
+                        </Fragment>
                       );
                     })}
                   </TableBody>

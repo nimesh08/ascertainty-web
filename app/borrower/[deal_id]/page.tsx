@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { SavingsBand } from "@/components/auditor/savings-band";
 import { IoTMockChart } from "@/components/shared/IoTMockChart";
+import { CarbonCreditPanel } from "@/components/shared/CarbonCreditPanel";
 import { db, schema } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -201,6 +202,13 @@ export default async function BorrowerDealPage({
           )}
         </CardContent>
       </Card>
+
+      {/* Carbon credit revenue stream (§11) */}
+      <CarbonCreditPanel
+        equipmentType={ecms[0]?.equipmentType ?? ""}
+        predictedKwhPerYear={sumPredicted}
+        audienceLabel="to your lenders"
+      />
 
       {/* Payment schedule (mock) */}
       {schedule.length > 0 && (

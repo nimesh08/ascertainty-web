@@ -62,10 +62,15 @@ export function IoTMockChart({
     [series]
   );
 
+  // Skip SSR pass — recharts ResponsiveContainer needs DOM measurement
+  const [mounted, setMounted] = React.useState(false);
+  React.useEffect(() => setMounted(true), []);
+
   return (
     <div className="space-y-4">
-      <div style={{ width: "100%", height }}>
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="min-w-0" style={{ width: "100%", height }}>
+        {mounted ? (
+          <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={chartData} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
             <CartesianGrid strokeDasharray="3 3" stroke="var(--line-soft)" vertical={false} />
             <XAxis
@@ -135,6 +140,7 @@ export function IoTMockChart({
             />
           </ComposedChart>
         </ResponsiveContainer>
+        ) : null}
       </div>
 
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">

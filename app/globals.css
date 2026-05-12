@@ -550,6 +550,105 @@
     border-radius: 2px;
   }
 
+  /* benchmark verdict pills */
+  .bench-verdict {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.4;
+    white-space: nowrap;
+    background: var(--bg-1);
+  }
+  .bench-verdict--bad {
+    color: #c1474a;
+    border-color: rgba(193, 71, 74, 0.35);
+    background: rgba(193, 71, 74, 0.06);
+  }
+  .bench-verdict--ok {
+    color: #b87b1a;
+    border-color: rgba(184, 123, 26, 0.35);
+    background: rgba(184, 123, 26, 0.06);
+  }
+  .bench-verdict--good {
+    color: #1f7a55;
+    border-color: rgba(31, 122, 85, 0.4);
+    background: rgba(31, 122, 85, 0.07);
+  }
+  .bench-verdict--great {
+    color: #0d5536;
+    border-color: rgba(13, 85, 54, 0.5);
+    background: rgba(13, 85, 54, 0.1);
+  }
+
+  /* benchmark "what these metrics mean" expander */
+  .bench-explainer {
+    margin-top: 24px;
+    border: 1px solid var(--line);
+    background: var(--bg-1);
+  }
+  .bench-explainer > summary {
+    list-style: none;
+    cursor: pointer;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--fg);
+    user-select: none;
+    transition: background 0.12s;
+  }
+  .bench-explainer > summary::-webkit-details-marker { display: none; }
+  .bench-explainer > summary:hover { background: var(--bg-2); }
+  .bench-explainer__chevron {
+    display: inline-block;
+    font-family: var(--font-geist-mono);
+    color: var(--fg-muted);
+    transition: transform 0.18s;
+  }
+  .bench-explainer[open] > summary .bench-explainer__chevron {
+    transform: rotate(90deg);
+  }
+  .bench-explainer__body {
+    padding: 4px 18px 22px;
+    border-top: 1px solid var(--line);
+    display: grid;
+    gap: 22px;
+  }
+  .bench-explainer__metric h4 {
+    font-size: 13px;
+    font-weight: 600;
+    margin: 14px 0 8px;
+    color: var(--fg);
+  }
+  .bench-explainer__metric ul {
+    margin: 0 0 10px;
+    padding-left: 20px;
+    font-size: 12.5px;
+    color: var(--fg);
+    line-height: 1.6;
+  }
+  .bench-explainer__metric ul li { margin-bottom: 2px; }
+  .bench-explainer__scale {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 8px 0 10px;
+  }
+  .bench-explainer__context {
+    margin: 8px 0 0;
+    font-size: 12px;
+    color: var(--fg-muted);
+    line-height: 1.55;
+    max-width: 70ch;
+  }
+
   /* benchmark code block (verifiable claims section) */
   .a-code {
     display: block;

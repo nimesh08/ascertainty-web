@@ -429,6 +429,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <th>R² (LOO)</th>
                   <th>MAPE-median</th>
                   <th>90% CI coverage</th>
+                  <th>Verdict</th>
                   <th>Notes</th>
                 </tr>
               </thead>
@@ -438,6 +439,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>0.16</td>
                   <td>41.7%</td>
                   <td>—</td>
+                  <td><span className="bench-verdict bench-verdict--ok">🟡 Decent</span></td>
                   <td>What unaided underwriters do today</td>
                 </tr>
                 <tr>
@@ -445,6 +447,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>0.50</td>
                   <td>37.5%</td>
                   <td>—</td>
+                  <td><span className="bench-verdict bench-verdict--good">🟢 Good</span></td>
                   <td>Leakage-known compressed-air only</td>
                 </tr>
                 <tr>
@@ -452,6 +455,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>−0.07</td>
                   <td>42.3%</td>
                   <td>88% (native σ-scaling)</td>
+                  <td><span className="bench-verdict bench-verdict--bad">🔴 Worse than guessing</span></td>
                   <td>Physics-informed neural net, KISEM-only</td>
                 </tr>
                 <tr>
@@ -459,6 +463,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>+0.28</td>
                   <td>44.7%</td>
                   <td>±67,679 kWh (split-conformal)</td>
+                  <td><span className="bench-verdict bench-verdict--ok">🟡 Decent</span></td>
                   <td>IAC pretrain + KISEM finetune, deployed</td>
                 </tr>
                 <tr style={{ background: "rgba(16,185,129,0.06)" }}>
@@ -466,10 +471,82 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td><b>+0.56</b></td>
                   <td><b>41.6%</b></td>
                   <td><b>±69,254 kWh (split-conformal)</b></td>
+                  <td><b><span className="bench-verdict bench-verdict--good">🟢 Good — within SOTA band</span></b></td>
                   <td><b>TabPFN v2 in-context on IAC + KISEM. Hollmann et al., <i>Nature</i> 2025.</b></td>
                 </tr>
               </tbody>
             </table>
+
+            <details className="bench-explainer">
+              <summary>
+                <span className="bench-explainer__chevron">▸</span>
+                <span>What do R², MAPE-median, and 90% CI coverage mean?</span>
+              </summary>
+              <div className="bench-explainer__body">
+                <div className="bench-explainer__metric">
+                  <h4>R² · &quot;How much of the variation does the model explain?&quot;</h4>
+                  <ul>
+                    <li><b>+1.0</b> = perfect prediction every time</li>
+                    <li><b>0.0</b> = no better than always guessing the average</li>
+                    <li><b>Negative</b> = worse than guessing the average — the model is actively misleading</li>
+                  </ul>
+                  <div className="bench-explainer__scale">
+                    <span className="bench-verdict bench-verdict--bad">🔴 &lt; 0</span>
+                    <span className="bench-verdict bench-verdict--ok">🟡 0 – 0.3</span>
+                    <span className="bench-verdict bench-verdict--good">🟢 0.3 – 0.7 (SOTA band)</span>
+                    <span className="bench-verdict bench-verdict--great">🟢🟢 &gt; 0.7 (paper-grade)</span>
+                  </div>
+                  <p className="bench-explainer__context">
+                    Industrial energy savings prediction papers (ORNL 2025 IAC analyses) report
+                    R²=0.5–0.7. Residential-building papers with 10k+ rows reach 0.87 (Pampuri et al.,
+                    Riga). Our TabPFN v0.3 sits inside the industrial SOTA band with ~50× less
+                    training data, thanks to the foundation-model pretraining.
+                  </p>
+                </div>
+
+                <div className="bench-explainer__metric">
+                  <h4>MAPE-median · &quot;For a typical prediction, how far off is it (%)?&quot;</h4>
+                  <ul>
+                    <li><b>0%</b> = perfect</li>
+                    <li><b>10–20%</b> = excellent (rare on small data)</li>
+                    <li><b>20–40%</b> = good for lender debt-sizing with a P5 floor</li>
+                    <li><b>&gt;60%</b> = bad — don&apos;t underwrite from it alone</li>
+                  </ul>
+                  <p className="bench-explainer__context">
+                    Example: with our 41.6% MAPE-median, a 100,000 kWh prediction has a typical actual
+                    falling in the 60–140k range. That&apos;s why we never underwrite to the point estimate —
+                    we underwrite to the P5 lower bound (the conformal-calibrated floor).
+                  </p>
+                </div>
+
+                <div className="bench-explainer__metric">
+                  <h4>90% CI coverage · &quot;Is the uncertainty band honest?&quot;</h4>
+                  <ul>
+                    <li>Model claims: &quot;the real number is between X and Y with 90% confidence&quot;</li>
+                    <li>If reality lands inside [X, Y] <b>~90% of the time</b> → calibrated ✓</li>
+                    <li>If &lt;90% → overconfident (dangerous for lenders)</li>
+                    <li>If &gt;90% → bands too wide (safe but leaves money on the table)</li>
+                  </ul>
+                  <p className="bench-explainer__context">
+                    Split-conformal prediction (MAPIE 1.4) gives a <b>statistical guarantee</b> of
+                    coverage — not an estimate, a mathematical proof under the exchangeability
+                    assumption. That&apos;s the strongest claim in tabular ML right now, and the reason
+                    lenders can size debt against our P5 floor.
+                  </p>
+                </div>
+
+                <div className="bench-explainer__metric">
+                  <h4>Why R² matters more than MAPE for underwriting</h4>
+                  <p>
+                    A model can have low MAPE on individual predictions but high R² because it picks up
+                    the <em>direction</em> of variation across deals — &quot;this one will save much
+                    more than the average, that one less.&quot; That&apos;s exactly what a lender needs
+                    when sizing a portfolio. MAPE-median on a single deal is secondary; the calibrated
+                    P5 floor is what governs the loan amount.
+                  </p>
+                </div>
+              </div>
+            </details>
             <p style={{ marginTop: 16, fontSize: 12, color: "var(--fg-muted)" }}>
               v0.3 backbone = TabPFN v2 (Hollmann et al., <i>Nature</i> 2025) — a pretrained
               transformer that performs in-context tabular regression. Pretrained on ~130M
@@ -868,6 +945,115 @@ curl -s https://inference.ascertainty.com/v1/predict \\
         </div>
       </section>
 
+      {/* LIQUIDITY & EXIT — secondary market roadmap */}
+      <section className="a-section">
+        <SectionHead
+          idx="06.5"
+          kicker="LIQUIDITY & EXIT"
+          title="A clear path to secondary."
+          intro="LPs ask 'how do I exit?' before they wire. Our answer is dated, not vague — primary today, whitelisted OTC in Q1 2026, native in-house orderbook in Q3 2026."
+        />
+        <div
+          className="shell"
+          style={{ paddingTop: 32, paddingBottom: 80, maxWidth: 1100 }}
+        >
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gap: 16,
+            }}
+          >
+            {[
+              {
+                phase: "v0 — TODAY",
+                title: "Hold to maturity",
+                state: "shipped",
+                lines: [
+                  "Primary subscription only",
+                  "1–7 yr tenor, fixed schedule",
+                  "Cash-flow distributions in USDC",
+                ],
+              },
+              {
+                phase: "v1 — Q1 2026",
+                title: "Whitelisted OTC desk",
+                state: "in-flight",
+                lines: [
+                  "Centrifuge V3 wrapper",
+                  "Daily NAV transparency",
+                  "ERC-3643 KYC enforced on transfer",
+                ],
+              },
+              {
+                phase: "v2 — Q3 2026",
+                title: "In-house orderbook",
+                state: "planned",
+                lines: [
+                  "20 bps fee per secondary trade",
+                  "Cross-chain via Wormhole NTT",
+                  "Triggers when AUM > $50M",
+                ],
+              },
+            ].map((p, i) => {
+              const isActive = p.state === "in-flight";
+              const isShipped = p.state === "shipped";
+              return (
+                <div
+                  key={i}
+                  style={{
+                    border: isActive
+                      ? "1px solid var(--accent)"
+                      : "1px solid var(--line)",
+                    background: isActive
+                      ? "var(--accent-soft)"
+                      : "var(--bg-1)",
+                    padding: 18,
+                  }}
+                >
+                  <span
+                    className="label"
+                    style={{
+                      color: isActive
+                        ? "var(--accent-deep)"
+                        : "var(--fg-muted)",
+                    }}
+                  >
+                    {p.phase}
+                  </span>
+                  <h3
+                    style={{
+                      fontSize: 18,
+                      letterSpacing: "-0.01em",
+                      marginTop: 6,
+                      color: isActive ? "var(--accent-deep)" : "var(--fg)",
+                    }}
+                  >
+                    {p.title}
+                  </h3>
+                  <ul
+                    style={{
+                      marginTop: 12,
+                      fontSize: 12.5,
+                      color: "var(--fg-muted)",
+                      listStyle: "none",
+                      padding: 0,
+                    }}
+                  >
+                    {p.lines.map((l, j) => (
+                      <li key={j} style={{ padding: "3px 0" }}>
+                        {isShipped ? "✓ " : "· "}
+                        {l}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
       {/* FAQ */}
       <section className="a-section">
         <SectionHead idx="07" kicker="FAQ" title="Answers." />
@@ -915,6 +1101,140 @@ curl -s https://inference.ascertainty.com/v1/predict \\
               </AccordionItem>
             ))}
           </Accordion>
+        </div>
+      </section>
+
+      {/* MOAT — why this is hard to copy */}
+      <section className="a-section">
+        <SectionHead
+          idx="08"
+          kicker="MOAT"
+          title="What stops a copycat."
+          intro="Three reinforcing edges. The first is relational and copyable in 18 months. The second compounds with every loan we close. The third is a coordination problem no single counterparty wants to own."
+        />
+        <div
+          className="shell"
+          style={{ paddingTop: 32, paddingBottom: 80, maxWidth: 1100 }}
+        >
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: 16,
+            }}
+          >
+            {[
+              {
+                num: "01",
+                title: "KISEM funnel",
+                lead: "Top-of-funnel cost ≈ ₹0",
+                body: "Proprietary access to ~600 BEE/KISEM-audited MSMEs/year via IIT-Madras partnership. The 12 audits already in our corpus took a competitor 18 months to duplicate.",
+                kind: "relational",
+              },
+              {
+                num: "02",
+                title: "PINN data flywheel",
+                lead: "σ tightens with portfolio scale",
+                body: "Every realized M&V data point recalibrates per-category σ-scales. After 50 loans our P5 is meaningfully tighter than a competitor with 5 — meaning we can price more competitively, win more deals, generate more data.",
+                kind: "compounding",
+              },
+              {
+                num: "03",
+                title: "Coordination edge",
+                lead: "7 capabilities in rare combination",
+                body: "Auditor relationship + ML/physics underwriting + tokenization rails + Singapore-Asia regulatory wrappers + LP onboarding + NBFC INR disbursement + IoT M&V. Each individually doable; assembling all seven in parallel is the moat.",
+                kind: "structural",
+              },
+            ].map((p) => (
+              <div
+                key={p.num}
+                style={{
+                  border: "1px solid var(--line)",
+                  background: "var(--bg-1)",
+                  padding: 20,
+                  position: "relative",
+                  minHeight: 260,
+                }}
+              >
+                <span
+                  className="label"
+                  style={{
+                    color: "var(--fg-faint)",
+                    fontSize: 10,
+                  }}
+                >
+                  M / {p.num}
+                </span>
+                <h3
+                  style={{
+                    fontSize: 20,
+                    letterSpacing: "-0.01em",
+                    marginTop: 10,
+                    color: "var(--fg)",
+                  }}
+                >
+                  {p.title}
+                </h3>
+                <div
+                  style={{
+                    marginTop: 6,
+                    fontSize: 12,
+                    fontFamily: "var(--font-mono, ui-monospace)",
+                    color: "var(--accent-deep)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.06em",
+                  }}
+                >
+                  {p.lead}
+                </div>
+                <p
+                  style={{
+                    marginTop: 14,
+                    fontSize: 13,
+                    color: "var(--fg-muted)",
+                    lineHeight: 1.55,
+                  }}
+                >
+                  {p.body}
+                </p>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 12,
+                    right: 14,
+                    fontSize: 10,
+                    color: "var(--fg-faint)",
+                    textTransform: "uppercase",
+                    letterSpacing: "0.08em",
+                  }}
+                >
+                  {p.kind} moat
+                </div>
+              </div>
+            ))}
+          </div>
+          <p
+            style={{
+              marginTop: 24,
+              fontSize: 12,
+              color: "var(--fg-faint)",
+              maxWidth: "60ch",
+            }}
+          >
+            The KISEM relationship gets us the wedge. The PINN flywheel turns the
+            wedge into a durable position. The coordination edge keeps any
+            single-discipline team from collapsing the gap.{" "}
+            <Link
+              href="/docs/underwriting-policy"
+              style={{
+                color: "var(--fg-muted)",
+                textDecoration: "underline",
+                textUnderlineOffset: 2,
+              }}
+            >
+              Read the underwriting policy ↗
+            </Link>
+          </p>
         </div>
       </section>
 

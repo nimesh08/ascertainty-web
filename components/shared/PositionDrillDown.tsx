@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils/cn";
 import {
@@ -8,6 +9,10 @@ import {
   type DemoVault,
   type UnderlyingLoan,
 } from "@/lib/demo/lp-positions";
+import {
+  CARBON_PRICE_USD_PER_TCO2,
+  INDIA_GRID_TCO2_PER_MWH,
+} from "@/lib/demo/carbon";
 import { DistributionChart } from "./DistributionChart";
 
 interface PositionDrillDownProps {
@@ -26,25 +31,29 @@ function ConcentrationBar({
   rows: Array<{ name: string; pct: number; limitPct: number; breached: boolean }>;
   limitLabel: string;
 }) {
+  const limit = rows[0]?.limitPct;
   return (
     <div className="space-y-1.5">
       <div className="flex items-baseline justify-between text-[10px] uppercase tracking-wider text-fg-muted">
         <span>{limitLabel}</span>
-        <span>limit shown</span>
+        {limit != null ? (
+          <span className="text-fg-faint">§5.5 limit {limit}%</span>
+        ) : null}
       </div>
       <div className="space-y-1">
         {rows.map((r) => (
           <div key={r.name} className="grid grid-cols-12 items-center gap-2 text-xs">
-            <div className="col-span-3 truncate text-fg">{r.name}</div>
-            <div className="col-span-7 relative h-2 rounded-sm bg-bg-2 ring-1 ring-inset ring-line/60">
+            <div className="col-span-4 truncate text-fg sm:col-span-3" title={r.name}>
+              {r.name}
+            </div>
+            <div className="col-span-6 relative h-2 bg-bg-2 ring-1 ring-inset ring-line/60 sm:col-span-7">
               <div
                 className={cn(
-                  "absolute inset-y-0 left-0 rounded-sm",
+                  "absolute inset-y-0 left-0",
                   r.breached ? "bg-signal-down/70" : "bg-accent/70"
                 )}
                 style={{ width: `${Math.min(100, r.pct)}%` }}
               />
-              {/* limit marker */}
               <div
                 className="absolute inset-y-0 w-px bg-fg-faint"
                 style={{ left: `${Math.min(100, r.limitPct)}%` }}
@@ -87,7 +96,17 @@ export function PositionDrillDown({ vault, className }: PositionDrillDownProps) 
   const focusP5 = focusPredictedKwh - 1.645 * focusSigmaKwh;
   const focusP95 = focusPredictedKwh + 1.645 * focusSigmaKwh;
 
-  const carbonCount = vault.loans.filter((l) => l.carbonEligible).length;
+  const carbonLoans = vault.loans.filter((l) => l.carbonEligible);
+  const carbonCount = carbonLoans.length;
+  // Demo aggregate: assume ~12% of outstanding INR proxies annual saved kWh × 8.5 INR.
+  // Translate that back to MWh, then to tCO2 and USD.
+  const proxyAnnualKwh = carbonLoans.reduce(
+    (a, l) => a + (l.outstandingInr * 0.12) / 8.5,
+    0
+  );
+  const aggregateTco2 = (proxyAnnualKwh / 1000) * INDIA_GRID_TCO2_PER_MWH;
+  const aggregateUsd = aggregateTco2 * CARBON_PRICE_USD_PER_TCO2;
+  const lpShareUsd = aggregateUsd * 0.9; // 10% platform fee per §11
 
   return (
     <div className={cn("space-y-5 border-t border-line/60 bg-bg-1 p-4", className)}>
@@ -173,17 +192,49 @@ export function PositionDrillDown({ vault, className }: PositionDrillDownProps) 
         <ConcentrationBar rows={conc.byState} limitLabel="State concentration" />
       </div>
 
-      {/* Carbon credit summary */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border border-line bg-bg-0 px-3 py-2 text-xs">
-        <span className="text-fg-muted">
-          Carbon credits accruing on{" "}
-          <span className="text-fg font-medium">{carbonCount}</span> of{" "}
-          <span className="text-fg font-medium">{vault.loans.length}</span>{" "}
-          underlying loans (§11)
-        </span>
-        <span className="text-fg-faint">
-          Distributed to LPs net of 10% platform fee
-        </span>
+      {/* Carbon credit aggregate per §11 */}
+      <div className="border border-accent/30 bg-accent-soft/40 p-3">
+        <div className="flex items-baseline justify-between text-[10px] uppercase tracking-wider text-accent-deep">
+          <span>Carbon credit accrual · §11</span>
+          <Link
+            href="/docs/underwriting-policy#section-11"
+            className="text-fg-faint hover:text-accent"
+          >
+            policy ↗
+          </Link>
+        </div>
+        <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4 text-xs">
+          <div>
+            <div className="text-fg-muted">Eligible loans</div>
+            <div className="mt-0.5 font-medium tabular-nums text-fg">
+              {carbonCount} / {vault.loans.length}
+            </div>
+          </div>
+          <div>
+            <div className="text-fg-muted">tCO₂ avoided / yr</div>
+            <div className="mt-0.5 font-medium tabular-nums text-fg">
+              {aggregateTco2.toFixed(0)}
+            </div>
+          </div>
+          <div>
+            <div className="text-fg-muted">Gross / yr</div>
+            <div className="mt-0.5 font-medium tabular-nums text-fg">
+              ${Math.round(aggregateUsd).toLocaleString()}
+            </div>
+          </div>
+          <div>
+            <div className="text-fg-muted">LP share / yr</div>
+            <div className="mt-0.5 font-medium tabular-nums text-accent-deep">
+              ${Math.round(lpShareUsd).toLocaleString()}
+            </div>
+          </div>
+        </div>
+        <p className="mt-2 text-[11px] text-fg-faint">
+          Net of 10% platform fee. India grid factor 0.71 tCO₂/MWh @ $
+          {CARBON_PRICE_USD_PER_TCO2}/tCO₂. Demo estimate from outstanding
+          principal proxy; replace with realized M&V data once issuance
+          pipeline is live.
+        </p>
       </div>
 
       {/* Distribution chart for the dominant underlying */}
