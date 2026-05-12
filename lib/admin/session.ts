@@ -31,7 +31,13 @@ function getPrivyClient(): PrivyClient | null {
 export async function getSessionWallet(): Promise<string | null> {
   const jar = await cookies();
 
-  const idToken = jar.get("privy-id-token")?.value;
+  // Privy SDK has used different cookie names over versions:
+  //   - privy-id-token (older builds, JWT containing user id)
+  //   - privy-token    (current default in this app's bundle)
+  // Both are JWTs decodable by PrivyClient.getUser({ idToken }).
+  const idToken =
+    jar.get("privy-id-token")?.value ??
+    jar.get("privy-token")?.value;
   if (idToken) {
     const client = getPrivyClient();
     if (client) {
