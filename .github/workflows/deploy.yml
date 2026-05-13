@@ -22,21 +22,17 @@ concurrency:
 #   INFERENCE_TIMEOUT_MS  — optional; defaults to 10000
 #   BUILD_PRIVY_APP_ID    — existing
 #
-# Tier-2 deploy architecture (2026-05-13):
-#   CI builds the Next 15 standalone bundle (`output: 'standalone'` in
-#   next.config.ts). The bundle (~80MB tarball) is uploaded as a workflow
-#   artifact, downloaded by the deploy job, scp'd to EC2, and run directly
-#   via `node server.js` under pm2. EC2 no longer runs `npm install` or
-#   `npm run build` on deploys — the only EC2-side work is untar + pm2
-#   restart, total ~15s.
-#
-#   .env.local lives at /home/ubuntu/exira-web-v2/.env.local on EC2 and is
-#   sourced by the start-exira-web.sh wrapper before exec'ing node. The
-#   wrapper also sources ~/exira-web-runtime.env which the workflow syncs.
+# Deploy architecture (2026-05-13, reverted from broken Tier-2 standalone
+# experiment): CI typechecks + builds for fail-fast validation; EC2 deploys
+# via SSH+git-pull+npm-install (conditional on package-lock change)+npm-build
+# +pm2-restart. The Tier-2 standalone-artifact path is left in version
+# history if anyone wants to retry; it broke on the first migration because
+# scp's SFTP protocol couldn't handle EC2 shell-startup output AND because
+# `next start` is incompatible with `output: 'standalone'`.
 
 jobs:
   build:
-    name: Build standalone bundle
+    name: Typecheck + Build
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -68,7 +64,10 @@ jobs:
           restore-keys: |
             nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
 
-      - name: Build (Next standalone output)
+      - name: Typecheck
+        run: npx tsc --noEmit
+
+      - name: Build
         run: npm run build
         env:
           NODE_ENV: production
@@ -77,29 +76,6 @@ jobs:
           NEXT_PUBLIC_SOLANA_CLUSTER: devnet
           NEXT_PUBLIC_EXIRA_PROGRAM_ID: J7z1a2bwMEC8MchgZwskJZ8PzXg4UG674VgD8DuotJn2
           DATABASE_URL: postgresql://build:stub@localhost:5432/stub
-
-      # Next's standalone output is a self-contained server bundle but does NOT
-      # auto-copy /public or /.next/static. Splice them in, then tarball.
-      - name: Package standalone deploy artifact
-        run: |
-          set -euo pipefail
-          if [ ! -d .next/standalone ]; then
-            echo "::error::.next/standalone missing — is output: 'standalone' set in next.config.ts?"
-            exit 1
-          fi
-          cp -r public .next/standalone/public
-          mkdir -p .next/standalone/.next
-          cp -r .next/static .next/standalone/.next/static
-          tar -czf deploy.tgz -C .next/standalone .
-          ls -lh deploy.tgz
-
-      - name: Upload deploy artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: web-deploy-bundle
-          path: deploy.tgz
-          retention-days: 7
-          if-no-files-found: error
 
   db-migrate:
     name: Apply DB schema (Drizzle push)
@@ -140,11 +116,11 @@ jobs:
           npx drizzle-kit push --force --verbose
 
   deploy:
-    name: Deploy bundle to EC2
+    name: Deploy to EC2
     needs: [build, db-migrate]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     steps:
       - name: Set up SSH
         run: |
@@ -152,11 +128,6 @@ jobs:
           echo "${{ secrets.SSH_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
-
-      - name: Download deploy artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: web-deploy-bundle
 
       - name: Sync runtime env file to host
         env:
@@ -171,76 +142,29 @@ jobs:
           INFERENCE_TIMEOUT_MS=${INFERENCE_TIMEOUT_MS}
           EOF
 
-      - name: Generate EC2 wrapper script locally
+      - name: Run deploy chain over SSH
         run: |
-          cat > start-exira-web.sh <<'WRAPPER'
-          #!/usr/bin/env bash
-          set -euo pipefail
-          cd "$HOME/exira-web-bundle"
-          set -a
-          [ -f "$HOME/exira-web-v2/.env.local" ] && . "$HOME/exira-web-v2/.env.local"
-          [ -f "$HOME/exira-web-runtime.env" ] && . "$HOME/exira-web-runtime.env"
-          set +a
-          export PORT="${PORT:-3100}"
-          export HOSTNAME="${HOSTNAME:-127.0.0.1}"
-          exec node server.js
-          WRAPPER
-          chmod +x start-exira-web.sh
-
-      - name: Ship bundle + wrapper to EC2
-        run: |
-          # Pipe both files via tar over SSH instead of scp. OpenSSH 9.0+ scp
-          # uses SFTP protocol which fails with "Received message too long"
-          # when the remote ~/.bashrc / MOTD leaks any bytes on non-interactive
-          # sessions. tar piped through SSH stdin is immune to that since
-          # stdin is treated as opaque bytes.
-          tar -cf - deploy.tgz start-exira-web.sh \
-            | ssh -i ~/.ssh/id_ed25519 \
-                  -o StrictHostKeyChecking=accept-new \
-                  "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
-                  'cd /tmp && tar -xf -'
-
-      - name: Untar + start over SSH
-        run: |
-          # On EC2: atomic-swap bundle into place, install wrapper, ensure
-          # pm2 is running the standalone server. First-time migration:
-          # delete the old `npm start`-based process and start fresh with
-          # the wrapper. Subsequent deploys: pm2 restart (fast path).
+          # Inline deploy. Conditional npm install (skip when package-lock
+          # unchanged) saves ~60-90s on the common path. The full chain runs
+          # on EC2 — pull, install if needed, wipe .next, rebuild, pm2 restart.
           ssh -i ~/.ssh/id_ed25519 \
               -o StrictHostKeyChecking=accept-new \
               "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
-              "bash -s" <<'REMOTE'
-          set -euo pipefail
-          STAGING="$HOME/exira-web-bundle-staging"
-          LIVE="$HOME/exira-web-bundle"
-          PREV="$HOME/exira-web-bundle-previous"
-
-          rm -rf "$STAGING"
-          mkdir -p "$STAGING"
-          tar -xzf /tmp/deploy.tgz -C "$STAGING"
-          rm /tmp/deploy.tgz
-
-          if [ -d "$LIVE" ]; then
-            rm -rf "$PREV"
-            mv "$LIVE" "$PREV"
-          fi
-          mv "$STAGING" "$LIVE"
-
-          mv /tmp/start-exira-web.sh "$HOME/start-exira-web.sh"
-          chmod +x "$HOME/start-exira-web.sh"
-
-          # pm2 reconfigure: if exira-web-v2 isn't running the wrapper, delete + start fresh.
-          if pm2 describe exira-web-v2 2>/dev/null | grep -q "start-exira-web.sh"; then
-            pm2 restart exira-web-v2 --update-env
-          else
-            echo "Migrating pm2 to standalone wrapper"
-            pm2 delete exira-web-v2 2>/dev/null || true
-            pm2 start "$HOME/start-exira-web.sh" --name exira-web-v2 --update-env
-            pm2 save
-          fi
-
-          pm2 list | grep exira-web-v2 || true
-          REMOTE
+              'set -euo pipefail
+               cd ~/exira-web-v2
+               LOCK_BEFORE=$(md5sum package-lock.json | cut -d" " -f1)
+               git fetch --quiet origin main
+               git reset --hard origin/main
+               LOCK_AFTER=$(md5sum package-lock.json | cut -d" " -f1)
+               if [ "$LOCK_BEFORE" != "$LOCK_AFTER" ]; then
+                 echo "package-lock.json changed — running npm install"
+                 npm install --legacy-peer-deps --no-audit --no-fund
+               else
+                 echo "package-lock.json unchanged — skipping npm install"
+               fi
+               rm -rf .next
+               npm run build
+               pm2 restart exira-web-v2 --update-env'
 
       - name: Smoke test production (web)
         run: |
@@ -250,7 +174,7 @@ jobs:
             if [ "$code" = "200" ]; then exit 0; fi
             sleep 10
           done
-          echo "::error::web smoke test failed — bundle may be broken. Roll back on EC2 via: mv ~/exira-web-bundle-previous ~/exira-web-bundle && pm2 restart exira-web-v2 --update-env"
+          echo "web smoke test failed"
           exit 1
 
       - name: Smoke test inference (soft)
@@ -263,4 +187,4 @@ jobs:
             if [ "$code" = "200" ]; then exit 0; fi
             sleep 5
           done
-          echo "::warning::Inference service at ${{ vars.INFERENCE_BASE_URL }} is not responding. PINN-dependent routes (/auditor/intake, /lender/[deal_id]) will 502 until it returns."
+          echo "::warning::Inference service at ${{ vars.INFERENCE_BASE_URL }} is not responding."
