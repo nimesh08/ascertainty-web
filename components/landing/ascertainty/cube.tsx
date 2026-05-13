@@ -16,7 +16,7 @@ export const CUBE_MEANINGS: Record<Meaning, { label: string; faces: Face[] }> = 
     label: "Protocol Layers",
     faces: [
       { code: "01", title: "Origination", desc: "MSME + DC borrowers sourced via KISEM, ACMA, VITAS, KADIN networks.", rows: [["Pipeline", "$240M"], ["Active deals", "37"], ["Regions", "IN · ID · VN"]] },
-      { code: "02", title: "Underwriting", desc: "PINN-based thermal & cash-flow models. Audit baselines on-chain.", rows: [["Risk model", "PINN v3"], ["Auditors", "BEE · TÜV"], ["Avg. tier", "BBB+"]] },
+      { code: "02", title: "Underwriting", desc: "Calibrated, physics-verified savings model. 90% conformal PI. Audit baselines on-chain.", rows: [["Risk model", "PINN v0.1"], ["Auditors", "BEE · TÜV"], ["Avg. tier", "BBB+"]] },
       { code: "03", title: "Vaults", desc: "ERC-7540 async vaults. Per-tranche redemption. Composable shares.", rows: [["Standard", "7540 / 3643"], ["Tranches", "SR / JR"], ["Chains", "BASE · ETH"]] },
       { code: "04", title: "Compliance", desc: "ERC-3643 permissioned tokens. Sumsub KYC. Chainalysis KYT.", rows: [["KYC", "Sumsub"], ["AML", "Chainalysis"], ["IDs", "ONCHAINID"]] },
       { code: "05", title: "Settlement", desc: "USDC on Base, pUSD on Plume, XSGD for MAS-supervised SG corridor.", rows: [["Primary", "USDC"], ["SG corridor", "XSGD"], ["Latency", "< 4s"]] },

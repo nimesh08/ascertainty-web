@@ -698,6 +698,20 @@
     max-width: 70ch;
   }
 
+  /* §02.5 worked-example layout — 2 cols on tablet+, stack on phone */
+  @media (max-width: 880px) {
+    .we-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  /* §05 parallel-financing grid — 2 cols on tablet+, stack on phone */
+  @media (max-width: 880px) {
+    .pf-grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
   /* benchmark code block (verifiable claims section) */
   .a-code {
     display: block;

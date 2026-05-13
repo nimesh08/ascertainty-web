@@ -26,6 +26,9 @@ export interface LandingStats {
   poolCount: number;
   /** Best APY (%) across live projects. Null when none set. */
   bestApyPct?: number | null;
+  /** UUID of the HVAC Hotel seed deal — used by the §02.5 worked-example
+   *  CTA to deep-link into the live project page with matching numbers. */
+  featuredProjectId?: string | null;
 }
 
 type Meaning = "protocol" | "capital" | "asset";
@@ -88,9 +91,9 @@ const STEPS: Array<{
   {
     actor: "// PROTOCOL",
     title: "Vault routes to underwritten MSMEs.",
-    body: "PINN risk engine sizes per-deal exposure. Vault PDA disperses to borrower wallets through pre-authorised destinations.",
+    body: "A physics-verified savings model sizes per-deal exposure with a calibrated 90% PI. Vault PDA disperses to borrower wallets through pre-authorised destinations.",
     spec: [
-      ["Model", "PINN v3"],
+      ["Model", "PINN v0.1"],
       ["Hop", "0"],
       ["Gas", "$0.0001"],
     ],
@@ -409,6 +412,204 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* WORKED EXAMPLE — one live deal, end to end. Bridges the abstract
+          §02 primitives to the §03 model benchmarks with real numbers from
+          the HVAC Hotel seed. */}
+      <section id="02.5-worked-example" className="a-section">
+        <SectionHead
+          idx="02.5"
+          kicker="WORKED EXAMPLE"
+          title="One deal, end to end."
+          intro="Numbers from a live seed deal on this site. Click through to the same project page to verify."
+        />
+        <div className="shell" style={{ paddingTop: 32, paddingBottom: 80 }}>
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "minmax(0, 1.4fr) minmax(0, 1fr)",
+              gap: 28,
+              alignItems: "start",
+            }}
+            className="we-grid"
+          >
+            {/* LEFT — narrative */}
+            <div style={{ borderTop: "1px solid var(--line)" }}>
+              {[
+                {
+                  step: "01",
+                  actor: "Site",
+                  title: "Bangalore 4-star hotel · 142 rooms",
+                  body: "Baseline electricity draw 482,000 kWh/yr at ₹8.5/kWh.",
+                },
+                {
+                  step: "02",
+                  actor: "Retrofit",
+                  title: "Chiller plant + IoT setpoint controls",
+                  body: "Magnetic-bearing chillers replace existing units; occupancy-aware setpoint optimization across 142 rooms shifts cooling to off-peak.",
+                },
+                {
+                  step: "03",
+                  actor: "Forecast",
+                  title: "Calibrated savings prediction with 90% conformal PI",
+                  body: "P5 floor 76,800 kWh/yr · P50 124,500 kWh/yr · P95 upper 172,000 kWh/yr. Grade B (senior + junior tranche split).",
+                },
+                {
+                  step: "04",
+                  actor: "Underwriting",
+                  title: "Loan sized to the P5 floor, not the P50 point",
+                  body: "DSCR at P5 = 1.38× (≥ 1.30× covenant). DSCR at P50 = 1.85×. Recommended facility $25,000 over 36 months. Junior absorbs first-loss per §5.5.",
+                },
+              ].map((r) => (
+                <div
+                  key={r.step}
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "56px 1fr",
+                    gap: 20,
+                    padding: "22px 0",
+                    borderBottom: "1px solid var(--line)",
+                    alignItems: "start",
+                  }}
+                >
+                  <div
+                    className="num"
+                    style={{
+                      fontSize: 22,
+                      color: "var(--fg-faint)",
+                      letterSpacing: "-0.02em",
+                    }}
+                  >
+                    {r.step}
+                  </div>
+                  <div>
+                    <div
+                      className="label"
+                      style={{ marginBottom: 6, color: "var(--fg-faint)" }}
+                    >
+                      {r.actor}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 17,
+                        letterSpacing: "-0.01em",
+                        color: "var(--fg)",
+                        marginBottom: 6,
+                      }}
+                    >
+                      {r.title}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: 13,
+                        color: "var(--fg-muted)",
+                        lineHeight: 1.55,
+                      }}
+                    >
+                      {r.body}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            {/* RIGHT — math table */}
+            <div
+              style={{
+                border: "1px solid var(--line)",
+                background: "var(--bg-1)",
+                padding: 22,
+              }}
+            >
+              <div
+                style={{
+                  fontSize: 10.5,
+                  letterSpacing: "0.18em",
+                  textTransform: "uppercase",
+                  color: "var(--fg-muted)",
+                  marginBottom: 16,
+                }}
+              >
+                The math
+              </div>
+              {[
+                ["Baseline draw", "482,000 kWh/yr"],
+                ["Electricity rate", "₹8.5/kWh"],
+                ["Predicted savings (P50)", "124,500 kWh/yr"],
+                ["Annual savings @ P50", "₹1,058,250"],
+                ["Annual savings @ P5", "₹652,800"],
+                ["Carbon §11 accrual", "102.1 tCO₂/yr"],
+                ["DSCR @ P5", "1.38×"],
+                ["DSCR @ P50", "1.85×"],
+                ["Recommended facility", "$25,000 · 36 mo"],
+                ["Implied payback @ P5", "≈ 24 mo"],
+                ["Senior tranche LTV", "60%"],
+              ].map(([k, v], i, arr) => (
+                <div
+                  key={k}
+                  style={{
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "baseline",
+                    gap: 12,
+                    padding: "8px 0",
+                    borderBottom:
+                      i === arr.length - 1 ? "none" : "1px dashed var(--line)",
+                  }}
+                >
+                  <span
+                    style={{
+                      fontSize: 11,
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                      color: "var(--fg-muted)",
+                    }}
+                  >
+                    {k}
+                  </span>
+                  <span
+                    className="mono-num"
+                    style={{ fontSize: 13, color: "var(--fg)" }}
+                  >
+                    {v}
+                  </span>
+                </div>
+              ))}
+
+              <Link
+                href={
+                  stats.featuredProjectId
+                    ? `/projects/${stats.featuredProjectId}`
+                    : "/projects"
+                }
+                style={{
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 6,
+                  marginTop: 18,
+                  fontSize: 12.5,
+                  color: "var(--accent)",
+                  textDecoration: "none",
+                }}
+              >
+                See the live deal <span aria-hidden>→</span>
+              </Link>
+            </div>
+          </div>
+          <p
+            style={{
+              marginTop: 22,
+              fontSize: 12,
+              color: "var(--fg-faint)",
+              maxWidth: "70ch",
+            }}
+          >
+            Carbon §11 figures use 0.82 kgCO₂/kWh (India grid factor). Loan
+            sizing follows UNDERWRITING_POLICY §5 — DSCR @ P5 ≥ 1.30× is the
+            hard covenant. Senior/junior split per the confidence grade.
+          </p>
         </div>
       </section>
 
@@ -760,6 +961,191 @@ curl -s https://inference.ascertainty.com/v1/predict \\
           intro="No re-keying. No reconciliation. The borrower's meter is the lender's invoice."
         />
         <div className="shell" style={{ paddingBottom: 80 }}>
+          {/* PARALLEL FINANCING — the visceral compression story */}
+          <div style={{ marginTop: 36, marginBottom: 56 }}>
+            <div
+              style={{
+                fontSize: 12,
+                color: "var(--fg-muted)",
+                marginBottom: 18,
+                fontFamily: "var(--font-geist-mono)",
+                letterSpacing: "0.12em",
+                textTransform: "uppercase",
+              }}
+            >
+              Audit and underwriting collapse into one motion
+            </div>
+            <div
+              className="pf-grid"
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1fr 1fr",
+                gap: 24,
+              }}
+            >
+              {/* LEGACY (serial) */}
+              <div
+                style={{
+                  border: "1px solid var(--line)",
+                  background: "var(--bg-1)",
+                  padding: 22,
+                }}
+              >
+                <div
+                  className="label"
+                  style={{ color: "var(--fg-faint)", marginBottom: 14 }}
+                >
+                  Legacy · serial process
+                </div>
+                <div style={{ display: "grid", gap: 10 }}>
+                  {[
+                    ["Month 0–2", "Hire energy auditor → audit report"],
+                    ["Month 2–5", "Bank or ESCO re-underwrites the report from scratch"],
+                    ["Month 5–8", "Loan committee review + approval"],
+                    ["Month 8–12+", "PO, install, commission"],
+                  ].map(([when, what]) => (
+                    <div
+                      key={when}
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "92px 1fr",
+                        gap: 12,
+                        alignItems: "baseline",
+                      }}
+                    >
+                      <div
+                        className="mono-num"
+                        style={{
+                          fontSize: 11,
+                          color: "var(--fg-faint)",
+                          letterSpacing: "0.06em",
+                        }}
+                      >
+                        {when}
+                      </div>
+                      <div
+                        style={{
+                          height: 22,
+                          background: "var(--fg-dim)",
+                          padding: "3px 10px",
+                          fontSize: 12,
+                          color: "var(--fg)",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        {what}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div
+                  style={{
+                    marginTop: 16,
+                    paddingTop: 12,
+                    borderTop: "1px solid var(--line)",
+                    fontSize: 13,
+                    color: "var(--fg-muted)",
+                  }}
+                >
+                  End-to-end:{" "}
+                  <span className="mono-num" style={{ color: "var(--fg)" }}>
+                    9–18 months
+                  </span>
+                  . Most MSMEs drop out before signing.
+                </div>
+              </div>
+
+              {/* ASCERTAINTY (parallel) */}
+              <div
+                style={{
+                  border: "1px solid var(--accent)",
+                  background: "var(--accent-soft)",
+                  padding: 22,
+                }}
+              >
+                <div
+                  className="label"
+                  style={{ color: "var(--accent-deep)", marginBottom: 14 }}
+                >
+                  Ascertainty · parallel process
+                </div>
+                <div style={{ display: "grid", gap: 10 }}>
+                  {[
+                    ["Week 0–2", "Site audit + meter ingest → calibrated forecast = the underwriting"],
+                    ["Week 2–3", "Term sheet auto-generated from the conformal band"],
+                    ["Week 3–4", "Funds escrowed; PO issued to approved installer"],
+                    ["Week 4+", "Install, commission, IoT M&V live from day one"],
+                  ].map(([when, what]) => (
+                    <div
+                      key={when}
+                      style={{
+                        display: "grid",
+                        gridTemplateColumns: "92px 1fr",
+                        gap: 12,
+                        alignItems: "baseline",
+                      }}
+                    >
+                      <div
+                        className="mono-num"
+                        style={{
+                          fontSize: 11,
+                          color: "var(--accent-deep)",
+                          letterSpacing: "0.06em",
+                        }}
+                      >
+                        {when}
+                      </div>
+                      <div
+                        style={{
+                          height: 22,
+                          background: "var(--accent)",
+                          padding: "3px 10px",
+                          fontSize: 12,
+                          color: "var(--accent-ink)",
+                          display: "flex",
+                          alignItems: "center",
+                        }}
+                      >
+                        {what}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div
+                  style={{
+                    marginTop: 16,
+                    paddingTop: 12,
+                    borderTop: "1px solid var(--accent)",
+                    fontSize: 13,
+                    color: "var(--accent-deep)",
+                  }}
+                >
+                  End-to-end:{" "}
+                  <span className="mono-num" style={{ color: "var(--accent-deep)" }}>
+                    4–6 weeks
+                  </span>
+                  . One workflow, one output, one signature.
+                </div>
+              </div>
+            </div>
+            <p
+              style={{
+                marginTop: 18,
+                fontSize: 13,
+                color: "var(--fg-muted)",
+                maxWidth: "70ch",
+                lineHeight: 1.55,
+              }}
+            >
+              An audit and a loan underwriting ask the same question:{" "}
+              <em>how much will this site save?</em> Legacy lenders re-ask it
+              from scratch with their own analysts — wasted motion, serial
+              dependency. The calibrated savings forecast is loan-ready on
+              first output, so audit and finance happen as one motion.
+            </p>
+          </div>
+
           <div style={{ marginTop: 36, marginBottom: 56 }}>
             <div style={{ fontSize: 12, color: "var(--fg-muted)", marginBottom: 12, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
               Watch the underwriting tighten in real time
@@ -1176,7 +1562,7 @@ curl -s https://inference.ascertainty.com/v1/predict \\
           idx="08"
           kicker="MOAT"
           title="What stops a copycat."
-          intro="Four reinforcing edges. The first is relational and copyable in 18 months. The second compounds with every loan we close. The third is a coordination problem no single counterparty wants to own. The fourth is the structural advantage we have over every other on-chain credit protocol: our underwriting is verifiable from a curl, not an expert's reputation."
+          intro="Five reinforcing edges. The first is relational and copyable in 18 months. The second compounds with every loan we close. The third is a coordination problem no single counterparty wants to own. The fourth is the structural advantage over every other on-chain credit protocol: our underwriting is verifiable from a curl, not an expert's reputation. The fifth is the market itself — banks won't touch retrofits because the salvage leg is too weak, which is exactly why the gap exists and exactly why only a calibrated model can fill it."
         />
         <div
           className="shell"
@@ -1217,6 +1603,13 @@ curl -s https://inference.ascertainty.com/v1/predict \\
                 lead: "calibrated model, not human curators",
                 body: "Every other on-chain credit protocol underwrites via 'trust our independent experts' — a marketing claim, not a verifiable system. Ascertainty's underwriting is a calibrated ML model with a published 90% conformal PI (R²=+0.56 LOO, verifiable on /v1/health from a curl). DSCR @ P5 ≥ 1.30× is a quantitative covenant a lender writes into the contract. Reconciliation against realized Day-30 metered savings is mechanical. v0.5 commits a sha256 of every prediction's (inputs, outputs, git_commit) to a Solana Memo, making the audit trail tamper-evident on-chain.",
                 kind: "verifiability",
+              },
+              {
+                num: "05",
+                title: "Weak-salvage market",
+                lead: "the gap that filters out competitors",
+                body: "A $500K compressed-air retrofit resells for ~$50K post-default (vs. ~$300K for $500K of GPUs). Retrofit equipment is custom-fitted to a specific factory's pipework — uninstallation often costs more than resale, and the secondary market for used VFDs/chillers/heat-exchangers is thin. Banks therefore can't lend against the salvage leg, only against the cash-flow leg. Cash-flow underwriting demands a calibrated savings forecast. Without that, the market is unserved by banks and ESCOs alike. With it, the difficulty IS the moat — anyone with a balance sheet can compete in GPU credit; nobody can compete here without a calibrated physics model.",
+                kind: "structural",
               },
             ].map((p) => (
               <div
