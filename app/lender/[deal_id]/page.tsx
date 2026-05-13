@@ -98,6 +98,7 @@ export default async function LenderDealPage({
 
   const filledEcms = rows.length;
   const sector = rows[0]?.sector ?? "—";
+  const linkedProjectId = rows[0]?.projectId ?? null;
   const auditorWallet = rows[0]?.auditorWallet?.slice(0, 8) ?? "—";
   const dealEligibleForCommit =
     evaluation.status === "eligible" || evaluation.status === "eligible_enhanced_mv";
@@ -110,6 +111,14 @@ export default async function LenderDealPage({
         description="Live underwriting from the auditor's measurements. DSCR at P5 is the governing metric — soft commitment is conditional on every §5 threshold clearing."
         right={
           <div className="flex flex-wrap items-center gap-2">
+            {linkedProjectId ? (
+              <Link
+                href={`/projects/${linkedProjectId}`}
+                className="text-xs text-fg-muted underline underline-offset-2 hover:text-accent"
+              >
+                Investor view ↗
+              </Link>
+            ) : null}
             <Link
               href="/docs/underwriting-policy"
               className="text-xs text-fg-muted underline underline-offset-2 hover:text-accent"

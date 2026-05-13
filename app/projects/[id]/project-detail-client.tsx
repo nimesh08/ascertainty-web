@@ -23,7 +23,8 @@ import {
   BaselineImpactSection,
   FinancialsSection,
   ReturnsCalculatorSection,
-  TrustScoreSection,
+  ConfidenceGradeSection,
+  UnderwritingBriefSection,
   DocumentsSection,
   RepaymentHistorySection,
 } from "./sections-part-2";
@@ -85,6 +86,21 @@ interface DistributionData {
   createdAt: string;
 }
 
+interface UnderwritingData {
+  dealId: string;
+  modelUsed: string | null;
+  pinnSavingsKwh: string | null;
+  pinnP5LowerKwh: string | null;
+  pinnP95UpperKwh: string | null;
+  confidenceGrade: string | null;
+  electricityRateInrKwh: string | null;
+  dscrAtP5: string | null;
+  dscrAtP50: string | null;
+  carbonEligible: boolean | null;
+  carbonTco2PerYear: string | null;
+  carbonMethodology: string | null;
+}
+
 interface AuditorInfo {
   name: string;
   certification: string;
@@ -96,12 +112,14 @@ export function ProjectDetailClient({
   verifications,
   distributions,
   auditors,
+  underwriting,
 }: {
   project: ProjectData;
   baseline: BaselineData | null;
   verifications: VerificationData[];
   distributions: DistributionData[];
   auditors: Record<string, AuditorInfo>;
+  underwriting: UnderwritingData | null;
 }) {
   const { connected, connection, publicKey, login } = useInvestor();
   const [position, setPosition] = useState<PositionData | null>(null);
@@ -183,6 +201,8 @@ export function ProjectDetailClient({
 
         <ManagementSection text={project.managementText} />
 
+        <UnderwritingBriefSection underwriting={underwriting} />
+
         <BaselineImpactSection
           baseline={baseline}
           verifications={verifications}
@@ -201,7 +221,10 @@ export function ProjectDetailClient({
           termMonths={project.termMonths}
         />
 
-        <TrustScoreSection score={project.trustScore} />
+        <ConfidenceGradeSection
+          grade={(underwriting?.confidenceGrade as "A" | "B" | "C" | null) ?? null}
+          fallbackScore={project.trustScore}
+        />
 
         <DocumentsSection documents={project.documents ?? []} />
 
@@ -221,6 +244,15 @@ export function ProjectDetailClient({
           canInvest={canInvest}
           onInvest={() => setBuyOpen(true)}
           onClaim={() => setClaimOpen(true)}
+          underwriting={
+            underwriting
+              ? {
+                  dealId: underwriting.dealId,
+                  confidenceGrade: underwriting.confidenceGrade,
+                  modelUsed: underwriting.modelUsed,
+                }
+              : null
+          }
         />
       </aside>
 

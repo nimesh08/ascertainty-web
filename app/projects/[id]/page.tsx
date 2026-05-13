@@ -102,6 +102,24 @@ export default async function ProjectDetailPage({
             createdAt: t.createdAt.toISOString(),
           }))}
         auditors={Object.fromEntries(auditorMap)}
+        underwriting={
+          detail.underwriting
+            ? {
+                dealId: detail.underwriting.dealId,
+                modelUsed: detail.underwriting.modelUsed,
+                pinnSavingsKwh: detail.underwriting.pinnSavingsKwh,
+                pinnP5LowerKwh: detail.underwriting.pinnP5LowerKwh,
+                pinnP95UpperKwh: detail.underwriting.pinnP95UpperKwh,
+                confidenceGrade: detail.underwriting.confidenceGrade,
+                electricityRateInrKwh: detail.underwriting.electricityRateInrKwh,
+                dscrAtP5: detail.underwriting.dscrAtP5,
+                dscrAtP50: detail.underwriting.dscrAtP50,
+                carbonEligible: detail.underwriting.carbonEligible,
+                carbonTco2PerYear: detail.underwriting.carbonTco2PerYear,
+                carbonMethodology: detail.underwriting.carbonMethodology,
+              }
+            : null
+        }
       />
     </Container>
   );

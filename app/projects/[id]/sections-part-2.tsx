@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import {
@@ -10,16 +11,182 @@ import {
   BadgeCheck,
   Zap,
   Flame,
+  Leaf,
+  ArrowRight,
 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { Slider } from "@/components/ui/slider";
+import { SavingsBand } from "@/components/auditor/savings-band";
 import {
   formatUsd,
   shortSig,
   explorerTx,
 } from "@/lib/utils/format";
 import { SectionCard, SectionLabel, SectionTitle, ProseText } from "./sections-part-1";
+
+interface UnderwritingForCard {
+  dealId: string;
+  modelUsed: string | null;
+  pinnSavingsKwh: string | null;
+  pinnP5LowerKwh: string | null;
+  pinnP95UpperKwh: string | null;
+  confidenceGrade: string | null;
+  electricityRateInrKwh: string | null;
+  dscrAtP5: string | null;
+  dscrAtP50: string | null;
+  carbonEligible: boolean | null;
+  carbonTco2PerYear: string | null;
+  carbonMethodology: string | null;
+}
+
+/** Underwriting brief — TabPFN attribution, savings band, DSCR, carbon, lender link. */
+export function UnderwritingBriefSection({
+  underwriting,
+}: {
+  underwriting: UnderwritingForCard | null;
+}) {
+  if (!underwriting) return null;
+  const point = Number(underwriting.pinnSavingsKwh ?? 0);
+  const p5 = Number(underwriting.pinnP5LowerKwh ?? 0);
+  const p95 = Number(underwriting.pinnP95UpperKwh ?? 0);
+  const rate = Number(underwriting.electricityRateInrKwh ?? 8);
+  const grade = (underwriting.confidenceGrade ?? null) as "A" | "B" | "C" | null;
+  const dscrP5 = underwriting.dscrAtP5 != null ? Number(underwriting.dscrAtP5) : null;
+  const dscrP50 = underwriting.dscrAtP50 != null ? Number(underwriting.dscrAtP50) : null;
+  const carbonT = underwriting.carbonTco2PerYear != null ? Number(underwriting.carbonTco2PerYear) : null;
+
+  return (
+    <SectionCard delay={0.27}>
+      <SectionTitle label="Underwriting" title="Calibrated savings brief" />
+      <div className="space-y-6">
+        {point > 0 ? (
+          <SavingsBand
+            predictedKwh={point}
+            p5Kwh={p5}
+            p95Kwh={p95}
+            grade={grade ?? undefined}
+            electricityRateInrKwh={rate}
+            variant="full"
+            label="Predicted annual savings (TabPFN v2, 90% conformal PI)"
+          />
+        ) : null}
+
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+          {dscrP5 != null ? (
+            <MetricTile
+              label="DSCR @ P5"
+              value={`${dscrP5.toFixed(2)}×`}
+              hint={dscrP5 >= 1.3 ? "≥ 1.30× covenant" : "below covenant"}
+              tone={dscrP5 >= 1.3 ? "good" : "warn"}
+            />
+          ) : null}
+          {dscrP50 != null ? (
+            <MetricTile
+              label="DSCR @ P50"
+              value={`${dscrP50.toFixed(2)}×`}
+              hint={dscrP50 >= 1.75 ? "≥ 1.75× target" : "below target"}
+              tone={dscrP50 >= 1.75 ? "good" : "warn"}
+            />
+          ) : null}
+          {carbonT != null && underwriting.carbonEligible ? (
+            <MetricTile
+              icon={<Leaf className="size-4 text-green" />}
+              label="Carbon §11"
+              value={`${carbonT.toFixed(1)} tCO₂/yr`}
+              hint={underwriting.carbonMethodology ?? "monthly accrual"}
+              tone="good"
+            />
+          ) : null}
+        </div>
+
+        <div className="rounded-xl border border-line/60 bg-bg-2/40 p-4 text-sm text-fg/80">
+          <p className="leading-relaxed">
+            <span className="font-medium text-fg">
+              {underwriting.modelUsed ?? "PINN v0.1 unified"}
+            </span>{" "}
+            sized this facility under the DSCR-at-P5 ≥ 1.30× covenant. The serving model ingests
+            all 21 fields from the audit schema (leakage, rated kW, hours/days, plant context).
+            <span className="text-fg-muted">
+              {" "}
+              TabPFN v2 is the benchmark headline (R²=+0.56 LOO on a 6-feature corpus) and will
+              become the serving default in v0.4 once retrained on the audit schema —{" "}
+              <Link href="/#03-benchmarks" className="underline underline-offset-2 hover:text-accent">
+                see benchmarks
+              </Link>.
+            </span>{" "}
+            Carbon credits accrue on the same meter under the §11 disclosure schedule.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2 text-xs">
+            <Link
+              href={`/lender/${underwriting.dealId}`}
+              className="inline-flex items-center gap-1 rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1 text-accent transition-colors hover:bg-accent/20"
+            >
+              View lender brief <ArrowRight className="size-3" />
+            </Link>
+            <Link
+              href={`/lender/${underwriting.dealId}/timeline`}
+              className="inline-flex items-center gap-1 rounded-md border border-line/60 bg-bg-2/40 px-2.5 py-1 text-fg-muted transition-colors hover:text-fg"
+            >
+              Underwriting timeline <ArrowRight className="size-3" />
+            </Link>
+            <Link
+              href="/#03-benchmarks"
+              className="inline-flex items-center gap-1 rounded-md border border-line/60 bg-bg-2/40 px-2.5 py-1 text-fg-muted transition-colors hover:text-fg"
+            >
+              Model benchmarks <ArrowRight className="size-3" />
+            </Link>
+          </div>
+        </div>
+      </div>
+    </SectionCard>
+  );
+}
+
+/** A/B/C confidence grade tile — replaces the 0-100 trust score when grade is set. */
+export function ConfidenceGradeSection({
+  grade,
+  fallbackScore,
+}: {
+  grade: "A" | "B" | "C" | null;
+  fallbackScore: number | null;
+}) {
+  if (!grade) {
+    if (fallbackScore == null) return null;
+    return <TrustScoreSection score={fallbackScore} />;
+  }
+  const palette = {
+    A: { ring: "border-green/40 bg-green/10", text: "text-green", tranche: "Senior tranche eligible", explainer: "Narrow 90% conformal band (<25% of point estimate). Loan can be sized into the senior tranche at up to 60% LTV." },
+    B: { ring: "border-[#eab308]/40 bg-[#eab308]/10", text: "text-[#eab308]", tranche: "Senior + Junior split", explainer: "Moderate band width (25–50%). Senior eligible at a lower LTV; junior absorbs first-loss until Day-90 verification tightens the band." },
+    C: { ring: "border-accent/40 bg-accent/10", text: "text-accent", tranche: "Junior tranche only", explainer: "Wide band (>50%). Junior-only until a verified second audit period tightens the conformal coverage." },
+  }[grade];
+
+  return (
+    <SectionCard delay={0.4}>
+      <SectionTitle label="Confidence" title="Model confidence grade" />
+      <div className="flex flex-wrap items-center gap-6">
+        <div
+          className={[
+            "grid h-28 w-28 shrink-0 place-items-center rounded-full border",
+            palette.ring,
+          ].join(" ")}
+        >
+          <div className="text-center">
+            <div className={["mono-num text-5xl font-bold", palette.text].join(" ")}>{grade}</div>
+            <div className="text-[10px] uppercase tracking-widest text-fg-muted">grade</div>
+          </div>
+        </div>
+        <div className="max-w-md space-y-2">
+          <p className={["text-sm font-semibold", palette.text].join(" ")}>{palette.tranche}</p>
+          <p className="text-sm leading-relaxed text-fg/80">{palette.explainer}</p>
+          <p className="text-[11px] uppercase tracking-widest text-fg-muted">
+            Derived from (P95 − P5) / (2 × P50) · 90% conformal PI
+          </p>
+        </div>
+      </div>
+    </SectionCard>
+  );
+}
 
 /** Baseline + verification progress + auditor pills (absorbs old MRV tab). */
 export function BaselineImpactSection({
@@ -431,12 +598,22 @@ function MetricTile({
   value,
   icon,
   capitalize,
+  hint,
+  tone,
 }: {
   label: string;
   value: string;
   icon?: React.ReactNode;
   capitalize?: boolean;
+  hint?: string;
+  tone?: "good" | "warn";
 }) {
+  const valueClass =
+    tone === "good"
+      ? "text-green"
+      : tone === "warn"
+        ? "text-[#eab308]"
+        : "text-fg";
   return (
     <div className="rounded-xl border border-line/60 bg-bg-2/40 p-3">
       <div className="flex items-center gap-1.5 text-xs text-fg-muted">
@@ -445,12 +622,16 @@ function MetricTile({
       </div>
       <p
         className={[
-          "mono-num mt-1 text-sm font-medium text-fg",
+          "mono-num mt-1 text-sm font-medium",
+          valueClass,
           capitalize ? "capitalize" : "",
         ].join(" ")}
       >
         {value}
       </p>
+      {hint ? (
+        <p className="mt-0.5 text-[11px] leading-snug text-fg-muted">{hint}</p>
+      ) : null}
     </div>
   );
 }

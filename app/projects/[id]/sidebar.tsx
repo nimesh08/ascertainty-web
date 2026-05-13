@@ -1,6 +1,8 @@
 "use client";
 
+import Link from "next/link";
 import { motion } from "framer-motion";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { formatUsd, formatTokenAmount } from "@/lib/utils/format";
@@ -21,6 +23,11 @@ interface SidebarProps {
   canInvest: boolean;
   onInvest: () => void;
   onClaim: () => void;
+  underwriting?: {
+    dealId: string;
+    confidenceGrade: string | null;
+    modelUsed: string | null;
+  } | null;
 }
 
 export function Sidebar({
@@ -34,8 +41,17 @@ export function Sidebar({
   canInvest,
   onInvest,
   onClaim,
+  underwriting,
 }: SidebarProps) {
   const hasPosition = !!(position?.exists && position.tokensHeld > 0n);
+  const grade = underwriting?.confidenceGrade as "A" | "B" | "C" | null | undefined;
+  const gradePalette = grade === "A"
+    ? "border-green/40 bg-green/10 text-green"
+    : grade === "B"
+      ? "border-[#eab308]/40 bg-[#eab308]/10 text-[#eab308]"
+      : grade === "C"
+        ? "border-accent/40 bg-accent/10 text-accent"
+        : "";
 
   return (
     <motion.div
@@ -52,6 +68,23 @@ export function Sidebar({
           <p className="mono-num mt-1 text-4xl font-bold text-green">
             {apyPct > 0 ? `${apyPct.toFixed(2)}%` : "—"}
           </p>
+          {underwriting ? (
+            <div className="mt-2 flex flex-wrap items-center gap-1.5">
+              {grade ? (
+                <span
+                  className={[
+                    "inline-flex items-center rounded-md border px-1.5 py-0.5 text-[10px] font-medium",
+                    gradePalette,
+                  ].join(" ")}
+                >
+                  Grade {grade}
+                </span>
+              ) : null}
+              <span className="text-[10px] text-fg-muted">
+                {underwriting.modelUsed ?? "PINN v0.1"}
+              </span>
+            </div>
+          ) : null}
         </div>
 
         <div className="h-px w-full bg-line/60" />
@@ -146,6 +179,14 @@ export function Sidebar({
             Invest now
           </Button>
         )}
+        {underwriting ? (
+          <Link
+            href={`/lender/${underwriting.dealId}`}
+            className="inline-flex w-full items-center justify-center gap-1 rounded-md border border-line/60 bg-bg-2/40 px-3 py-1.5 text-[11px] text-fg-muted transition-colors hover:text-fg"
+          >
+            View lender brief <ArrowRight className="size-3" />
+          </Link>
+        ) : null}
         <p className="text-[11px] leading-relaxed text-fg-muted">
           * Capital at risk. Read offer documents carefully before investing.
         </p>

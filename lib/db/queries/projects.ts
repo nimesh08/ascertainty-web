@@ -173,12 +173,39 @@ export interface ProjectTxLite {
   createdAt: string;
 }
 
+export interface UnderwritingLite {
+  id: string;
+  dealId: string;
+  ecmId: string;
+  equipmentType: string;
+  modelUsed: string | null;
+  pinnSavingsKwh: string | null;
+  pinnP5LowerKwh: string | null;
+  pinnP95UpperKwh: string | null;
+  pinnSigmaKwh: string | null;
+  confidenceGrade: string | null;
+  electricityRateInrKwh: string | null;
+  annualSavingsInr: string | null;
+  recommendedLoanInr: string | null;
+  paybackMonths: string | null;
+  p5PaybackMonths: string | null;
+  dscrAtP5: string | null;
+  dscrAtP50: string | null;
+  carbonEligible: boolean | null;
+  carbonTco2PerYear: string | null;
+  carbonMethodology: string | null;
+  eligibilityStatus: string | null;
+  status: string;
+  createdAt: string;
+}
+
 export interface ProjectDetail extends ProjectListItem {
   mrvProject: MrvProjectLite | null;
   baseline: BaselineLite | null;
   verifications: VerificationLite[];
   recentTransactions: ProjectTxLite[];
   investorCount: number;
+  underwriting: UnderwritingLite | null;
 }
 
 export async function getProjectWithDetails(
@@ -272,6 +299,41 @@ export async function getProjectWithDetails(
     .from(schema.investorPositions)
     .where(eq(schema.investorPositions.projectId, base.id));
 
+  const [uwRow] = await db
+    .select()
+    .from(schema.underwritingResults)
+    .where(eq(schema.underwritingResults.projectId, base.id))
+    .orderBy(desc(schema.underwritingResults.createdAt))
+    .limit(1);
+
+  const underwriting: UnderwritingLite | null = uwRow
+    ? {
+        id: uwRow.id,
+        dealId: uwRow.dealId,
+        ecmId: uwRow.ecmId,
+        equipmentType: uwRow.equipmentType,
+        modelUsed: uwRow.modelUsed,
+        pinnSavingsKwh: uwRow.pinnSavingsKwh,
+        pinnP5LowerKwh: uwRow.pinnP5LowerKwh,
+        pinnP95UpperKwh: uwRow.pinnP95UpperKwh,
+        pinnSigmaKwh: uwRow.pinnSigmaKwh,
+        confidenceGrade: uwRow.confidenceGrade,
+        electricityRateInrKwh: uwRow.electricityRateInrKwh,
+        annualSavingsInr: uwRow.annualSavingsInr,
+        recommendedLoanInr: uwRow.recommendedLoanInr,
+        paybackMonths: uwRow.paybackMonths,
+        p5PaybackMonths: uwRow.p5PaybackMonths,
+        dscrAtP5: uwRow.dscrAtP5,
+        dscrAtP50: uwRow.dscrAtP50,
+        carbonEligible: uwRow.carbonEligible,
+        carbonTco2PerYear: uwRow.carbonTco2PerYear,
+        carbonMethodology: uwRow.carbonMethodology,
+        eligibilityStatus: uwRow.eligibilityStatus,
+        status: uwRow.status,
+        createdAt: uwRow.createdAt.toISOString(),
+      }
+    : null;
+
   return {
     ...base,
     mrvProject,
@@ -279,5 +341,6 @@ export async function getProjectWithDetails(
     verifications,
     recentTransactions,
     investorCount: countRow?.n ?? 0,
+    underwriting,
   };
 }
