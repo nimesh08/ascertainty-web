@@ -189,10 +189,16 @@ jobs:
 
       - name: Ship bundle + wrapper to EC2
         run: |
-          scp -i ~/.ssh/id_ed25519 \
-              -o StrictHostKeyChecking=accept-new \
-              deploy.tgz start-exira-web.sh \
-              "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/"
+          # Pipe both files via tar over SSH instead of scp. OpenSSH 9.0+ scp
+          # uses SFTP protocol which fails with "Received message too long"
+          # when the remote ~/.bashrc / MOTD leaks any bytes on non-interactive
+          # sessions. tar piped through SSH stdin is immune to that since
+          # stdin is treated as opaque bytes.
+          tar -cf - deploy.tgz start-exira-web.sh \
+            | ssh -i ~/.ssh/id_ed25519 \
+                  -o StrictHostKeyChecking=accept-new \
+                  "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
+                  'cd /tmp && tar -xf -'
 
       - name: Untar + start over SSH
         run: |
