@@ -78,7 +78,7 @@ export function Nav() {
   return (
     <nav className="a-nav">
       <Link className="a-nav__brand" href="/">
-        <CoinMark size={32} variant="ink" animateOnScroll scrollThresholdPx={480} />
+        <CoinMark size={32} variant="ink" />
         <span>ASCERTAINTY</span>
       </Link>
 

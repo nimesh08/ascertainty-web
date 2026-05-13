@@ -242,45 +242,6 @@
   }
   .hairline { background: var(--line); height: 1px; width: 100%; }
 
-  /* ─── Coin mark animation (Forest brand kit v0.3) ───────────────────────
-     The four mark layers grow upward in sequence — bottom arc → middle → top
-     → peak — then HOLD for the rest of the cycle, then restart. Total cycle
-     is 9.6s (~1.4s build + 8.2s hold), looped infinitely so the mark is alive
-     on every page without being distracting. The scroll-replay hook toggles
-     the .mk-anim class to re-sync the loop from frame 0 after each scroll
-     threshold. Respects prefers-reduced-motion (collapses to final state). */
-  @keyframes mk-grow {
-    /* Frames 0-14% = build (arc grows in). Frames 14-100% = hold (settled). */
-    0%   { transform: scaleY(0.05) translateY(8px); opacity: 0; }
-    8%   { opacity: 1; }
-    14%  { transform: scaleY(1) translateY(0); opacity: 1; }
-    100% { transform: scaleY(1) translateY(0); opacity: 1; }
-  }
-
-  .mk-anim .a-bottom,
-  .mk-anim .a-middle,
-  .mk-anim .a-top,
-  .mk-anim .a-tri {
-    transform-box: fill-box;
-    transform-origin: 50% 100%;
-    animation: mk-grow 9.6s cubic-bezier(.16, .84, .3, 1) infinite both;
-  }
-  .mk-anim .a-bottom { animation-delay: 0ms; }
-  .mk-anim .a-middle { animation-delay: 280ms; }
-  .mk-anim .a-top    { animation-delay: 560ms; }
-  .mk-anim .a-tri    { animation-delay: 840ms; }
-
-  @media (prefers-reduced-motion: reduce) {
-    .mk-anim .a-bottom,
-    .mk-anim .a-middle,
-    .mk-anim .a-top,
-    .mk-anim .a-tri {
-      animation: none;
-      transform: none;
-      opacity: 1;
-    }
-  }
-
   .bg-grid {
     background-image:
       linear-gradient(var(--line-dim) 1px, transparent 1px),

@@ -10,7 +10,6 @@ const PROGRAM_SHORT = PROGRAM_ID
 const SOLANA_EXPLORER_PROGRAM = PROGRAM_ID
   ? `https://explorer.solana.com/address/${PROGRAM_ID}?cluster=${CLUSTER}`
   : "#";
-const TODAY = new Date().toISOString().slice(0, 10);
 
 /**
  * Footer — Forest brand kit v0.3 (dark ground, inverse coin).
@@ -99,9 +98,16 @@ export function Footer() {
           </div>
         </div>
         <div className="a-footer__mono">
-          <span>© {new Date().getFullYear()} Ascertainty Protocol</span>
-          <span className="mono-num">Program · {PROGRAM_SHORT} · {TODAY}</span>
-          <span>Status · All systems nominal</span>
+          <span>© {new Date().getFullYear()} ascertainty.com. All rights reserved.</span>
+          <a
+            href={SOLANA_EXPLORER_PROGRAM}
+            target="_blank"
+            rel="noopener"
+            className="mono-num"
+            style={{ textDecoration: "none" }}
+          >
+            Program · {PROGRAM_SHORT} ↗
+          </a>
         </div>
       </div>
     </footer>

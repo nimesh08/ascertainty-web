@@ -15,7 +15,6 @@ import { Glyph } from "@/components/landing/ascertainty/glyph";
 import { SectionHead } from "@/components/landing/ascertainty/section-head";
 import { Sparkline } from "@/components/landing/ascertainty/sparkline";
 import { TerminalLog } from "@/components/landing/ascertainty/terminal-log";
-import { Ticker } from "@/components/landing/ascertainty/ticker";
 import { TimelineBandLoop } from "@/components/landing/ascertainty/timeline-band-loop";
 
 export interface LandingStats {
@@ -138,21 +137,6 @@ const STEPS: Array<{
       ["Compose", "Aave/Morpho"],
     ],
   },
-];
-
-const PARTNERS = [
-  "Solana Foundation",
-  "Privy",
-  "Helius",
-  "Circle",
-  "NVIDIA Inception",
-  "BEE",
-  "TÜV SÜD",
-  "ACMA",
-  "VITAS",
-  "KADIN",
-  "Centrifuge",
-  "MAS Project Guardian",
 ];
 
 export function LandingClient({ stats }: { stats: LandingStats }) {
@@ -285,30 +269,6 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
           </div>
         </div>
       </section>
-
-      {/* TICKER */}
-      <Ticker
-        items={[
-          {
-            k: "Total funded",
-            v: `$${totalFundedUsdc.toLocaleString("en-US", { maximumFractionDigits: 0 })}`,
-            d: 1,
-            dl: "live",
-          },
-          { k: "Active projects", v: String(stats.activeProjects), d: 1, dl: "live" },
-          { k: "Project count", v: String(stats.projectCount), d: 0, dl: "total" },
-          { k: "Pool count", v: String(stats.poolCount), d: 0, dl: "total" },
-          { k: "Best APY", v: `${bestApy}%`, d: 1, dl: "rolling" },
-          {
-            k: "Distributed 24h",
-            v: `$${totalDistributed.toLocaleString("en-US", { maximumFractionDigits: 2 })}`,
-            d: 1,
-            dl: "USDC",
-          },
-          { k: "Contract tests", v: "92", d: 1, dl: "passing" },
-          { k: "Default rate", v: "0.18%", d: -1, dl: "−4bp" },
-        ]}
-      />
 
       {/* AUDIENCE TRIPTYCH */}
       <section id="01-who-its-for" className="a-section">
@@ -1234,40 +1194,6 @@ curl -s https://inference.ascertainty.com/v1/predict \\
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-      {/* PARTNERS */}
-      <section className="a-section">
-        <div
-          className="shell"
-          style={{
-            padding: "48px 0",
-            display: "grid",
-            gridTemplateColumns: "auto 1fr",
-            gap: 48,
-            alignItems: "center",
-          }}
-        >
-          <span className="label">Composing capital across</span>
-          <div style={{ overflow: "hidden" }}>
-            <div className="a-ticker">
-              {[...PARTNERS, ...PARTNERS].map((p, i) => (
-                <span
-                  key={i}
-                  style={{
-                    fontSize: 22,
-                    letterSpacing: "-0.02em",
-                    color: "var(--fg-muted)",
-                    whiteSpace: "nowrap",
-                    marginRight: 56,
-                  }}
-                >
-                  {p}
-                </span>
-              ))}
-            </div>
           </div>
         </div>
       </section>

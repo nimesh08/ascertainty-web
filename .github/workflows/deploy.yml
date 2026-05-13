@@ -155,20 +155,27 @@ jobs:
       - name: Run deploy chain over SSH
         run: |
           # Inline deploy — pulls latest main, wipes the .next build cache to
-          # avoid stale chunks, reinstalls deps with --legacy-peer-deps
-          # (required for Recharts peer-dep drift), builds, and pm2-restarts
-          # the web process with --update-env so runtime env vars take effect.
-          # Replaces the prior `run-deploy` host script which never existed on
-          # the EC2 instance and caused this step to fail on every push.
+          # avoid stale chunks, conditionally reinstalls deps only when
+          # package-lock.json changed (--legacy-peer-deps required for Recharts
+          # peer-dep drift), builds, and pm2-restarts the web process with
+          # --update-env so runtime env vars take effect. The conditional install
+          # saves ~60-90s on the common path where no deps changed.
           ssh -i ~/.ssh/id_ed25519 \
               -o StrictHostKeyChecking=accept-new \
               "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
               'set -euo pipefail
                cd ~/exira-web-v2
+               LOCK_BEFORE=$(md5sum package-lock.json | cut -d" " -f1)
                git fetch --quiet origin main
                git reset --hard origin/main
+               LOCK_AFTER=$(md5sum package-lock.json | cut -d" " -f1)
+               if [ "$LOCK_BEFORE" != "$LOCK_AFTER" ]; then
+                 echo "package-lock.json changed — running npm install"
+                 npm install --legacy-peer-deps --no-audit --no-fund
+               else
+                 echo "package-lock.json unchanged — skipping npm install"
+               fi
                rm -rf .next
-               npm install --legacy-peer-deps --no-audit --no-fund
                npm run build
                pm2 restart exira-web-v2 --update-env'
 
