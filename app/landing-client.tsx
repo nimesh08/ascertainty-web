@@ -561,46 +561,46 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
               gap post-deployment via IPMVP Option B telemetry.
             </p>
 
-            <details style={{ marginTop: 16, fontSize: 13 }}>
-              <summary style={{ cursor: "pointer", fontWeight: 500 }}>
-                Why TabPFN is the benchmark headline, not the serving model — yet
+            <details className="bench-explainer">
+              <summary>
+                <span className="bench-explainer__chevron">▸</span>
+                <span>Why TabPFN is the benchmark headline, not the serving model — yet</span>
               </summary>
-              <div className="bench-explainer" style={{ marginTop: 12, padding: "12px 16px", borderLeft: "2px solid var(--accent)", color: "var(--fg-muted)" }}>
-                <p>
-                  Two models, two roles, on purpose:
-                </p>
-                <ul style={{ marginTop: 8, marginBottom: 8, paddingLeft: 20 }}>
-                  <li>
-                    <b style={{ color: "var(--fg)" }}>TabPFN v2 — headline benchmark.</b>{" "}
-                    R²=+0.56 LOO on a 6-feature corpus (baseline_kwh, sector,
-                    equipment_type, arc_group, source, log_baseline). That's the headline
-                    number above. It proves that a foundation-model approach generalises
-                    out-of-distribution from a tiny Indian audit set when conditioned on
-                    14k IAC rows.
-                  </li>
-                  <li style={{ marginTop: 6 }}>
-                    <b style={{ color: "var(--fg)" }}>PINN unified v0.1 — what serves live underwriting.</b>{" "}
-                    Trained on the same 72-ECM KISEM corpus but ingests all 21 fields the
-                    auditor actually collects (leakage_pct, rated_kw, hours/days, motor
-                    count, plant context). On a small ECM where TabPFN would output a P5
-                    near zero from the 6-feature blur, the PINN delivers a usable
-                    lender-grade band because it sees the richer audit signal.
-                  </li>
-                </ul>
-                <p style={{ marginTop: 8 }}>
-                  <b style={{ color: "var(--fg)" }}>v0.4 plan:</b> retrain TabPFN on the
-                  full 21-feature audit schema, validate per-sample bands no longer floor
-                  at zero for small ECMs, then flip the serving default. The headline
-                  number is preserved; the moat (the audit signal that only Ascertainty
-                  collects) becomes part of the model both at benchmark and at serve time.
-                </p>
-                <p style={{ marginTop: 8 }}>
-                  <b style={{ color: "var(--fg)" }}>What this means today:</b> every project
-                  page on this site says "Underwritten by PINN unified v0.1" because that's
-                  the model actually sizing the loan. The TabPFN R²=+0.56 claim above is
-                  honest — it's the LOO score on the corpus it was trained on, not a claim
-                  about live serving.
-                </p>
+              <div className="bench-explainer__body">
+                <div className="bench-explainer__metric">
+                  <h4>Two models, two roles, on purpose</h4>
+                  <ul>
+                    <li>
+                      <b>TabPFN v2 — headline benchmark.</b> R²=+0.56 LOO on a 6-feature
+                      corpus (baseline_kwh, sector, equipment_type, arc_group, source,
+                      log_baseline). That&apos;s the headline number above. It proves that
+                      a foundation-model approach generalises out-of-distribution from a
+                      tiny Indian audit set when conditioned on 14k IAC rows.
+                    </li>
+                    <li>
+                      <b>PINN unified v0.1 — what serves live underwriting.</b> Trained on
+                      the same 72-ECM KISEM corpus but ingests all 21 fields the auditor
+                      actually collects (leakage_pct, rated_kw, hours/days, motor count,
+                      plant context). On a small ECM where TabPFN would output a P5 near
+                      zero from the 6-feature blur, the PINN delivers a usable lender-grade
+                      band because it sees the richer audit signal.
+                    </li>
+                  </ul>
+                  <p className="bench-explainer__context">
+                    <b style={{ color: "var(--fg)" }}>v0.4 plan:</b> retrain TabPFN on the
+                    full 21-feature audit schema, validate per-sample bands no longer floor
+                    at zero for small ECMs, then flip the serving default. The headline
+                    number is preserved; the moat (the audit signal that only Ascertainty
+                    collects) becomes part of the model both at benchmark and at serve time.
+                  </p>
+                  <p className="bench-explainer__context">
+                    <b style={{ color: "var(--fg)" }}>What this means today:</b> every
+                    project page on this site says &quot;Underwritten by PINN unified
+                    v0.1&quot; because that&apos;s the model actually sizing the loan. The
+                    TabPFN R²=+0.56 claim above is honest — it&apos;s the LOO score on the
+                    corpus it was trained on, not a claim about live serving.
+                  </p>
+                </div>
               </div>
             </details>
 
