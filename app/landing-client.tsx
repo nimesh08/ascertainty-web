@@ -600,7 +600,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>0.16</td>
                   <td>41.7%</td>
                   <td>—</td>
-                  <td><span className="bench-verdict bench-verdict--ok">🟡 Decent</span></td>
+                  <td><span className="bench-verdict bench-verdict--ok">Decent</span></td>
                   <td>What unaided underwriters do today</td>
                 </tr>
                 <tr>
@@ -608,7 +608,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>0.50</td>
                   <td>37.5%</td>
                   <td>—</td>
-                  <td><span className="bench-verdict bench-verdict--good">🟢 Good</span></td>
+                  <td><span className="bench-verdict bench-verdict--good">Good</span></td>
                   <td>Leakage-known compressed-air only</td>
                 </tr>
                 <tr>
@@ -616,7 +616,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>−0.07</td>
                   <td>42.3%</td>
                   <td>88% (native σ-scaling)</td>
-                  <td><span className="bench-verdict bench-verdict--bad">🔴 Worse than guessing</span></td>
+                  <td><span className="bench-verdict bench-verdict--bad">Worse than guessing</span></td>
                   <td>Physics-informed neural net, KISEM-only</td>
                 </tr>
                 <tr>
@@ -624,7 +624,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>+0.28</td>
                   <td>44.7%</td>
                   <td>±67,679 kWh (split-conformal)</td>
-                  <td><span className="bench-verdict bench-verdict--ok">🟡 Decent</span></td>
+                  <td><span className="bench-verdict bench-verdict--ok">Decent</span></td>
                   <td>IAC pretrain + KISEM finetune, deployed</td>
                 </tr>
                 <tr style={{ background: "rgba(16,185,129,0.06)" }}>
@@ -632,7 +632,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td><b>+0.56</b></td>
                   <td><b>41.6%</b></td>
                   <td><b>±69,254 kWh (split-conformal)</b></td>
-                  <td><b><span className="bench-verdict bench-verdict--good">🟢 Good — within SOTA band</span></b></td>
+                  <td><b><span className="bench-verdict bench-verdict--good">Good — within SOTA band</span></b></td>
                   <td><b>TabPFN v2 in-context on IAC + KISEM. Hollmann et al., <i>Nature</i> 2025.</b></td>
                 </tr>
               </tbody>
@@ -652,10 +652,10 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                     <li><b>Negative</b> = worse than guessing the average — the model is actively misleading</li>
                   </ul>
                   <div className="bench-explainer__scale">
-                    <span className="bench-verdict bench-verdict--bad">🔴 &lt; 0</span>
-                    <span className="bench-verdict bench-verdict--ok">🟡 0 – 0.3</span>
-                    <span className="bench-verdict bench-verdict--good">🟢 0.3 – 0.7 (SOTA band)</span>
-                    <span className="bench-verdict bench-verdict--great">🟢🟢 &gt; 0.7 (paper-grade)</span>
+                    <span className="bench-verdict bench-verdict--bad">&lt; 0</span>
+                    <span className="bench-verdict bench-verdict--ok">0 – 0.3</span>
+                    <span className="bench-verdict bench-verdict--good">0.3 – 0.7 (SOTA band)</span>
+                    <span className="bench-verdict bench-verdict--great">&gt; 0.7 (paper-grade)</span>
                   </div>
                   <p className="bench-explainer__context">
                     Industrial energy savings prediction papers (ORNL 2025 IAC analyses) report
