@@ -66,7 +66,7 @@ export function Footer() {
               <li><Link href="/projects">Projects</Link></li>
               <li><Link href="/pools">Pools</Link></li>
               <li><Link href="/portfolio">Portfolio</Link></li>
-              <li><Link href="/admin/roles">Roles</Link></li>
+              <li><Link href="/roles">Roles</Link></li>
             </ul>
           </div>
           <div>

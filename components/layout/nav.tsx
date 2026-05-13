@@ -29,15 +29,10 @@ const NAV_LINKS: NavLink[] = [
   { label: "Projects", href: "/projects" },
   { label: "Pools", href: "/pools" },
   { label: "Portfolio", href: "/portfolio" },
+  { label: "How it works", href: "/#05-mechanics" },
+  { label: "Docs", href: "/docs/underwriting-policy" },
   { label: "Admin", href: "/admin", admin: true },
 ];
-
-const CLUSTER =
-  (process.env.NEXT_PUBLIC_SOLANA_CLUSTER || "devnet").toUpperCase();
-const PROGRAM_ID = process.env.NEXT_PUBLIC_EXIRA_PROGRAM_ID;
-const PROGRAM_SHORT = PROGRAM_ID
-  ? `${PROGRAM_ID.slice(0, 4)}…${PROGRAM_ID.slice(-4)}`
-  : null;
 
 function ConnectButton() {
   const { ready, authenticated, login, logout, user } = usePrivy();
@@ -88,10 +83,10 @@ export function Nav() {
       </Link>
 
       <div className="a-nav__links">
-        {visibleLinks.map((link, i) => {
+        {visibleLinks.map((link) => {
           const active =
             pathname === link.href ||
-            (link.href !== "/" && pathname.startsWith(link.href));
+            (link.href !== "/" && !link.href.startsWith("/#") && pathname.startsWith(link.href));
           return (
             <Link
               key={link.href}
@@ -99,7 +94,6 @@ export function Nav() {
               className="a-nav__link"
               aria-current={active ? "true" : undefined}
             >
-              <span className="a-nav__link-idx">{String(i + 1).padStart(2, "0")}</span>
               <span>{link.label}</span>
             </Link>
           );
@@ -107,11 +101,6 @@ export function Nav() {
       </div>
 
       <div className="a-nav__right">
-        <span className="a-nav__status hidden lg:inline-flex">
-          <span className="pulse"></span>
-          SOLANA · {CLUSTER}
-          {PROGRAM_SHORT ? <> · {PROGRAM_SHORT}</> : null}
-        </span>
         <div className="hidden md:block">
           <WalletBalancesPill />
         </div>

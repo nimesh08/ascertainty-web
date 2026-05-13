@@ -35,7 +35,7 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Pools", href: "/admin/pools", icon: Layers },
   { label: "Auditors", href: "/admin/auditors", icon: Users },
   { label: "MRV", href: "/admin/mrv", icon: FileBarChart2 },
-  { label: "Roles", href: "/admin/roles", icon: ShieldCheck },
+  { label: "Roles", href: "/roles", icon: ShieldCheck },
 ];
 
 function NavLinks({ onNavigate }: { onNavigate?: () => void }) {

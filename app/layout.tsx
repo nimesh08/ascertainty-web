@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { poppins, geistMono, serif } from "./fonts";
+import { poppins, geistMono } from "./fonts";
 import { Providers } from "./providers";
 import { BackgroundFX } from "@/components/layout/background-fx";
 import { Nav } from "@/components/layout/nav";
 import { Footer } from "@/components/layout/footer";
 
 export const metadata: Metadata = {
-  title: "Ascertainty — On-chain MSME climate finance",
+  title: "Ascertainty — Capital that meters itself",
   description:
-    "Ascertainty is a Solana protocol that channels community capital into measurable MSME energy upgrades.",
+    "Calibrated underwriting for Indian MSME industrial energy retrofits. Every kilowatt-hour of predicted savings is bounded by a verifiable conformal prediction interval; every repayment is settled at the meter.",
 };
 
 export default function RootLayout({
@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${geistMono.variable} ${serif.variable}`}
+      className={`${poppins.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
       <body className="overflow-x-clip antialiased">

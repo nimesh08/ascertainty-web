@@ -145,7 +145,7 @@ export function HeroCard({
       <ProjectHero kind="project" />
       <div className="space-y-4 p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <h1 className="font-serif text-3xl italic leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
+          <h1 className="text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
             <span className="bg-gradient-to-br from-green via-accent to-accent bg-clip-text text-transparent">
               {project.msmeName}
             </span>

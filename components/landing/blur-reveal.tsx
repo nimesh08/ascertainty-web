@@ -10,8 +10,8 @@ interface BlurRevealProps {
 
 /**
  * Splits text on word boundaries. Segments wrapped between asterisks
- * (e.g. "Finance that *compounds* MSME *savings*") are rendered in the
- * serif italic family with a gradient.
+ * (e.g. "Finance that *compounds* MSME *savings*") are rendered as the
+ * gradient-filled accent words with heavier Poppins weight.
  */
 export function BlurReveal({ text, className }: BlurRevealProps) {
   const parts = text.split(/(\*[^*]+\*)/g);
@@ -39,7 +39,7 @@ export function BlurReveal({ text, className }: BlurRevealProps) {
               className={cn(
                 "inline-block",
                 isAccent &&
-                  "bg-gradient-to-br from-green via-accent to-accent bg-clip-text font-serif italic text-transparent"
+                  "bg-gradient-to-br from-green via-accent to-accent bg-clip-text font-semibold tracking-tight text-transparent"
               )}
             >
               {w}

@@ -308,7 +308,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
       />
 
       {/* AUDIENCE TRIPTYCH */}
-      <section className="a-section">
+      <section id="01-who-its-for" className="a-section">
         <SectionHead
           idx="01"
           kicker="WHO IT'S FOR"
@@ -382,7 +382,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
       </section>
 
       {/* PRIMITIVES */}
-      <section className="a-section">
+      <section id="02-the-system" className="a-section">
         <SectionHead
           idx="02"
           kicker="THE SYSTEM"
@@ -413,7 +413,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
       </section>
 
       {/* BENCHMARKS — verifiable accuracy claims */}
-      <section className="a-section">
+      <section id="03-benchmarks" className="a-section">
         <SectionHead
           idx="03"
           kicker="BENCHMARKS"
@@ -643,7 +643,7 @@ curl -s https://inference.ascertainty.com/v1/predict \\
       </section>
 
       {/* LIVE PROOF */}
-      <section className="a-section">
+      <section id="04-live-proof" className="a-section">
         <SectionHead
           idx="04"
           kicker="LIVE PROOF"
@@ -752,7 +752,7 @@ curl -s https://inference.ascertainty.com/v1/predict \\
       </section>
 
       {/* MECHANICS */}
-      <section className="a-section">
+      <section id="05-mechanics" className="a-section">
         <SectionHead
           idx="05"
           kicker="MECHANICS"
@@ -887,7 +887,7 @@ curl -s https://inference.ascertainty.com/v1/predict \\
       </section>
 
       {/* ROADMAP */}
-      <section className="a-section">
+      <section id="06-roadmap" className="a-section">
         <SectionHead idx="06" kicker="ROADMAP" title="The path to mainnet." />
         <div
           className="shell"
@@ -1002,7 +1002,7 @@ curl -s https://inference.ascertainty.com/v1/predict \\
       </section>
 
       {/* LIQUIDITY & EXIT — secondary market roadmap */}
-      <section className="a-section">
+      <section id="06.5-liquidity" className="a-section">
         <SectionHead
           idx="06.5"
           kicker="LIQUIDITY & EXIT"
@@ -1121,7 +1121,7 @@ curl -s https://inference.ascertainty.com/v1/predict \\
       </section>
 
       {/* FAQ */}
-      <section className="a-section">
+      <section id="07-faq" className="a-section">
         <SectionHead idx="07" kicker="FAQ" title="Answers." />
         <div
           className="shell"
@@ -1171,7 +1171,7 @@ curl -s https://inference.ascertainty.com/v1/predict \\
       </section>
 
       {/* MOAT — why this is hard to copy */}
-      <section className="a-section">
+      <section id="08-moat" className="a-section">
         <SectionHead
           idx="08"
           kicker="MOAT"

@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { Container } from "@/components/layout/container";
 import { CoinMark } from "@/components/layout/coin-mark";
@@ -31,7 +30,7 @@ export default function BrandPage() {
           § Brand kit
         </span>
         <h1
-          className="mt-4 font-serif text-5xl italic leading-[1.05] tracking-tight text-fg sm:text-6xl"
+          className="mt-4 text-5xl font-bold leading-[1.05] tracking-tight text-fg sm:text-6xl"
           style={{ color: "var(--fg)" }}
         >
           The visual identity of <span style={{ color: "var(--accent)" }}>Ascertainty</span>.
@@ -121,18 +120,18 @@ export default function BrandPage() {
         <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div className="rounded-xl border border-line/60 bg-bg-1/50 p-8">
             <p className="text-[11px] uppercase tracking-[0.18em] text-fg-muted">
-              Serif · Display
+              Display
             </p>
-            <p className="mt-4 font-serif text-5xl italic leading-[1.05] tracking-tight text-fg">
+            <p className="mt-4 text-5xl font-bold leading-[1.05] tracking-tight text-fg">
               Calibrated underwriting.
             </p>
             <p className="mt-6 font-mono text-xs uppercase tracking-[0.14em] text-fg-muted">
-              Instrument Serif · 400 italic
+              Poppins · 700 · tight tracking
             </p>
           </div>
           <div className="rounded-xl border border-line/60 bg-bg-1/50 p-8">
             <p className="text-[11px] uppercase tracking-[0.18em] text-fg-muted">
-              Sans · Body & system
+              Body & system
             </p>
             <p className="mt-4 text-2xl leading-snug text-fg">
               On-chain MSME climate finance — settled to the kilowatt-hour.
@@ -147,13 +146,6 @@ export default function BrandPage() {
         </div>
       </section>
 
-      <footer className="mt-16 border-t border-line/60 pt-8 text-sm text-fg-muted">
-        Need something not listed here?{" "}
-        <Link href="/" className="text-accent hover:underline">
-          Email Yuxin via the contact form on the home page
-        </Link>
-        .
-      </footer>
     </Container>
   );
 }
@@ -161,7 +153,7 @@ export default function BrandPage() {
 function SectionHead({ idx, title }: { idx: string; title: string }) {
   return (
     <div className="flex flex-wrap items-baseline justify-between gap-4">
-      <h2 className="font-serif text-3xl italic leading-tight tracking-tight text-fg sm:text-4xl">
+      <h2 className="text-3xl font-bold leading-tight tracking-tight text-fg sm:text-4xl">
         // {title}
       </h2>
       <span className="font-mono text-xs uppercase tracking-[0.18em] text-fg-muted">
@@ -251,7 +243,7 @@ function Swatch({
         ) : null}
       </div>
       <div className="space-y-1 border-t border-line/60 bg-bg-0 px-4 py-3">
-        <p className="font-serif text-base italic text-fg">{name}</p>
+        <p className="text-base font-semibold tracking-tight text-fg">{name}</p>
         <p className="font-mono text-xs text-fg-muted">{hex}</p>
       </div>
     </div>

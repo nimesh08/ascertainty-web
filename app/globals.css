@@ -157,7 +157,10 @@
   --font-sans: var(--font-poppins), "Poppins", Arial, Helvetica, sans-serif;
   --font-mono: var(--font-poppins), "Poppins", Arial, Helvetica, sans-serif;
   --font-display: Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
-  --font-serif: var(--font-serif), Georgia, "Times New Roman", Times, serif;
+  /* Instrument Serif has been retired site-wide; `--font-serif` and the
+     `font-serif` Tailwind utility now resolve to Poppins so legacy callsites
+     re-theme automatically without per-file edits. */
+  --font-serif: var(--font-poppins), "Poppins", system-ui, sans-serif;
 }
 
 @layer base {
@@ -205,9 +208,9 @@
   }
 
   .serif {
-    font-family: var(--font-serif), Georgia, serif;
-    font-style: italic;
-    letter-spacing: -0.01em;
+    font-family: var(--font-poppins), "Poppins", system-ui, sans-serif;
+    font-weight: 600;
+    letter-spacing: -0.02em;
   }
 
   ::-webkit-scrollbar {
