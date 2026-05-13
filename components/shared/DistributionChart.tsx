@@ -100,13 +100,19 @@ export function DistributionChart({
               fontSize: 12,
               padding: "6px 10px",
             }}
-            formatter={(value, name) => {
-              if (name === "Density") return null;
-              return [Number(value).toFixed(4), String(name)];
-            }}
+            // Probability-density values aren't user-meaningful (Gaussian density at
+            // a single x-point is ~1e-6 for our kWh scales). Suppress all series
+            // values; only the X-axis label (kWh + ₹) carries information.
+            formatter={() => null}
             labelFormatter={(label) => {
               const kwh = Number(label) || 0;
-              return `${kwh.toLocaleString()} kWh/yr · ≈ ₹${Math.round(kwh * electricityRateInrKwh).toLocaleString("en-IN")}/yr`;
+              const inRange =
+                kwh >= p5Kwh && kwh <= p95Kwh
+                  ? "  ·  inside P5–P95 band"
+                  : kwh < p5Kwh
+                    ? "  ·  below P5 floor"
+                    : "  ·  above P95";
+              return `${kwh.toLocaleString()} kWh/yr · ≈ ₹${Math.round(kwh * electricityRateInrKwh).toLocaleString("en-IN")}/yr${inRange}`;
             }}
           />
           <Area

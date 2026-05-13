@@ -71,13 +71,9 @@ export function Footer() {
                 </a>
               </li>
               <li>
-                <a
-                  href="https://github.com/nimesh08/exira-web"
-                  target="_blank"
-                  rel="noopener"
-                >
-                  GitHub ↗
-                </a>
+                <span style={{ color: "rgba(255,255,255,0.4)", cursor: "default" }}>
+                  Docs (coming soon)
+                </span>
               </li>
             </ul>
           </div>

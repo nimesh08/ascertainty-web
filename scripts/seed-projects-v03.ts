@@ -449,7 +449,7 @@ async function main() {
             ${seed.confidenceGrade},
             ${seed.baselineKwhPerYear}, ${seed.electricityRateInrKwh},
             ${annualInr}, ${paybackMonths.toFixed(2)}, ${p5PaybackMonths.toFixed(2)}, ${recommendedLoanInr},
-            'underwritten',
+            'predicted',
             ${seed.dscrAtP5}, ${seed.dscrAtP50},
             'eligible',
             true, ${seed.carbonTco2PerYear}, 'CDM AMS-II.E (energy efficiency MSMEs)'
@@ -509,7 +509,7 @@ async function main() {
             ${grade},
             ${baseKwh}, ${8.0},
             ${Math.round(predicted * 8.0)}, ${Math.round(predicted * 8.0 * 3 * 0.65)},
-            'underwritten',
+            'predicted',
             ${grade === "A" ? 1.65 : grade === "B" ? 1.36 : 1.31}, ${grade === "A" ? 1.92 : grade === "B" ? 1.82 : 2.04},
             'eligible',
             true, ${carbonT}, 'CDM AMS-II.E (energy efficiency MSMEs)'

@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ascertainty · Meter</title>
+<style>
+  :root {
+    --cream: #fafafa;
+    --ink: #162421;
+    --sage: #5fa67f;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0; padding: 0;
+    background: var(--cream);
+    font-family: ui-monospace, 'JetBrains Mono', 'IBM Plex Mono', Menlo, monospace;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+  }
+  body {
+    min-height: 100vh;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .stage {
+    width: min(100vmin, 100vmin);
+    aspect-ratio: 1 / 1;
+    position: relative;
+  }
+  .stage svg {
+    width: 100%; height: 100%;
+    display: block;
+  }
+  /* SMIL handles the coin rotation. */
+</style>
+</head>
+<body>
+<div class="stage">
+  <svg viewBox="0 0 800 800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ascertainty meter">
+    <defs>
+      <!-- faint dot grid texture -->
+      <pattern id="dotGrid" x="0" y="0" width="22" height="22" patternUnits="userSpaceOnUse">
+        <circle cx="11" cy="11" r="0.9" fill="#162421" fill-opacity="0.09"></circle>
+      </pattern>
+      <!-- soft radial vignette on glass -->
+      <radialGradient id="glass" cx="50%" cy="42%" r="60%">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.0"></stop>
+        <stop offset="70%" stop-color="#162421" stop-opacity="0.0"></stop>
+        <stop offset="100%" stop-color="#162421" stop-opacity="0.06"></stop>
+      </radialGradient>
+    </defs>
+
+    <!-- background -->
+    <rect width="800" height="800" fill="#fafafa"></rect>
+    <rect width="800" height="800" fill="url(#dotGrid)"></rect>
+
+    <!-- technical drawing crop marks at corners -->
+    <g stroke="#162421" stroke-width="0.6" stroke-opacity="0.35" fill="none">
+      <path d="M 40 70 L 40 40 L 70 40"></path>
+      <path d="M 760 70 L 760 40 L 730 40"></path>
+      <path d="M 40 730 L 40 760 L 70 760"></path>
+      <path d="M 760 730 L 760 760 L 730 760"></path>
+    </g>
+
+    <!-- isometric centerlines -->
+    <g stroke="#162421" stroke-opacity="0.10" stroke-width="0.5" fill="none">
+      <line x1="400" y1="60" x2="400" y2="740"></line>
+      <line x1="60" y1="400" x2="740" y2="400"></line>
+      <line x1="160" y1="160" x2="640" y2="640" stroke-dasharray="2 4"></line>
+      <line x1="640" y1="160" x2="160" y2="640" stroke-dasharray="2 4"></line>
+    </g>
+
+    <!-- mounting plate (slight isometric drop shadow rim) -->
+    <g stroke="#162421" stroke-width="0.9" fill="none">
+      <!-- back rim depth, suggesting cylindrical body -->
+      <path d="M 110 408 C 110 468 240 480 400 480 C 560 480 690 468 690 408" stroke-width="1.1"></path>
+      <path d="M 124 416 C 200 452 600 452 676 416" stroke-width="0.5" stroke-dasharray="2 4"></path>
+      <!-- side vertical depth ticks -->
+      <line x1="110" y1="400" x2="110" y2="412"></line>
+      <line x1="690" y1="400" x2="690" y2="412"></line>
+    </g>
+
+
+
+    <!-- meter bezels -->
+    <g stroke="#162421" fill="none">
+      <circle cx="400" cy="400" r="290" stroke-width="1.8"></circle>
+      <circle cx="400" cy="400" r="278" stroke-width="0.6"></circle>
+      <circle cx="400" cy="400" r="270" stroke-width="0.5" stroke-opacity="0.5"></circle>
+      <!-- glass dial rim -->
+      <circle cx="400" cy="400" r="255" stroke-width="1.2"></circle>
+      <circle cx="400" cy="400" r="250" stroke-width="0.4" stroke-opacity="0.45"></circle>
+    </g>
+
+    <!-- glass face vignette -->
+    <circle cx="400" cy="400" r="255" fill="url(#glass)"></circle>
+
+    <!-- minute / unit tick marks ring -->
+    <g id="ticks" stroke="#162421" stroke-linecap="butt"></g>
+
+    <!-- inner radial guide above coin -->
+    <g stroke="#162421" stroke-opacity="0.18" stroke-width="0.4" fill="none">
+      <circle cx="400" cy="400" r="160"></circle>
+      <circle cx="400" cy="400" r="120" stroke-dasharray="1 3"></circle>
+    </g>
+
+    <!-- counter window: small mechanical odometer at lower portion of dial face -->
+    <g transform="translate(400 558)">
+      <!-- outer bracket frame -->
+      <rect x="-104" y="-26" width="208" height="52" stroke="#162421" stroke-width="0.6" stroke-opacity="0.5" fill="none" rx="3"></rect>
+      <!-- digit window -->
+      <rect x="-94" y="-22" width="188" height="44" stroke="#162421" stroke-width="1.2" fill="#fafafa" rx="2"></rect>
+      <!-- digit dividers -->
+      <g stroke="#162421" stroke-width="0.5" stroke-opacity="0.6">
+        <line x1="-56.4" y1="-22" x2="-56.4" y2="22"></line>
+        <line x1="-18.8" y1="-22" x2="-18.8" y2="22"></line>
+        <line x1="18.8" y1="-22" x2="18.8" y2="22"></line>
+        <line x1="56.4" y1="-22" x2="56.4" y2="22"></line>
+      </g>
+      <!-- horizontal middle scribe line, very faint -->
+      <line x1="-94" y1="0" x2="94" y2="0" stroke="#162421" stroke-width="0.3" stroke-opacity="0.25"></line>
+
+      <!-- digits -->
+      <g id="counter" font-family="ui-monospace, 'JetBrains Mono', Menlo, monospace"
+         font-size="28" font-weight="500" fill="#162421" stroke="none" text-anchor="middle">
+        <text class="d" x="-75.2" y="10">0</text>
+        <text class="d" x="-37.6" y="10">0</text>
+        <text class="d" x="0"     y="10">0</text>
+        <text class="d" x="37.6"  y="10">0</text>
+        <text class="d" x="75.2"  y="10">1</text>
+      </g>
+
+      <!-- technical label -->
+      <text font-family="ui-monospace, monospace" font-size="10" fill="#162421" fill-opacity="0.5" stroke="none" letter-spacing="2.5" text-anchor="end" x="104" y="-32">UNITS</text>
+    </g>
+
+    <!-- particles container, rendered above glass, below coin -->
+    <g id="particles"></g>
+
+    <!-- ROTATING COIN -->
+    <g class="coin-group">
+      <!-- coin disc -->
+      <circle cx="400" cy="400" r="86" fill="#fafafa" stroke="#162421" stroke-width="1"></circle>
+      <circle cx="400" cy="400" r="80" fill="none" stroke="#5fa67f" stroke-width="1.2" stroke-opacity="0.6"></circle>
+      <circle cx="400" cy="400" r="76" fill="none" stroke="#5fa67f" stroke-width="0.5" stroke-opacity="0.35"></circle>
+
+      <!-- brand mark, centered at (400,400) -->
+      <!-- original mark viewBox 0 0 240 240, content bounds y 30..262, x 28..212 -->
+      <!-- center of content ~ (120, 146). Scale 0.46 -> content height ~107 -->
+      <!-- translate so (120, 146) -> (400, 400): tx = 400 - 120*0.46 = 344.8; ty = 400 - 146*0.46 = 332.84 -->
+      <g transform="translate(344.8 332.84) scale(0.46)">
+        <g fill="none" stroke="#5fa67f" stroke-linecap="butt">
+          <path stroke-width="22" d="M 28 218 A 92 44 0 0 1 212 218"></path>
+          <path stroke-width="16" d="M 60 154 A 60 32 0 0 1 180 154"></path>
+          <path stroke-width="12" d="M 85 104 A 35 18 0 0 1 155 104"></path>
+        </g>
+        <path d="M 120 30 L 140 66 L 100 66 Z" fill="#5fa67f"></path>
+      </g>
+
+
+
+      <!-- 6-second clockwise rotation -->
+      <animateTransform attributeName="transform" type="rotate"
+        from="0 400 400" to="360 400 400"
+        dur="6s" repeatCount="indefinite"></animateTransform>
+    </g>
+
+    <!-- top index pointer (fixed, the coin rotates beneath it) -->
+    <g stroke="#162421" fill="#162421">
+      <path d="M 400 310 L 395 300 L 405 300 Z" stroke-width="0.6"></path>
+    </g>
+
+  </svg>
+</div>
+
+<script>
+  // ===== Tick marks =====
+  (function buildTicks() {
+    const ticks = document.getElementById('ticks');
+    const cx = 400, cy = 400;
+    const rOuter = 252;
+    const rMajor = 238;
+    const rMinor = 246;
+    const frag = [];
+    for (let i = 0; i < 60; i++) {
+      const deg = i * 6;
+      const rad = (deg - 90) * Math.PI / 180;
+      const isMajor = i % 5 === 0;
+      const ri = isMajor ? rMajor : rMinor;
+      const x1 = cx + Math.cos(rad) * rOuter;
+      const y1 = cy + Math.sin(rad) * rOuter;
+      const x2 = cx + Math.cos(rad) * ri;
+      const y2 = cy + Math.sin(rad) * ri;
+      const sw = isMajor ? 1.4 : 0.55;
+      const op = isMajor ? 1 : 0.7;
+      frag.push(
+        `<line x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" stroke-width="${sw}" stroke-opacity="${op}"/>`
+      );
+    }
+    ticks.innerHTML = frag.join('');
+  })();
+
+  // ===== Counter (1 Hz tick) =====
+  (function runCounter() {
+    const digits = document.querySelectorAll('#counter .d');
+    let count = 1;
+    function render() {
+      const s = String(count).padStart(5, '0');
+      for (let i = 0; i < 5; i++) digits[i].textContent = s[i];
+    }
+    render();
+    setInterval(() => { count = count >= 99999 ? 1 : count + 1; render(); }, 1000);
+  })();
+
+  // ===== Sage particles drifting upward =====
+  (function particles() {
+    const svgNS = 'http://www.w3.org/2000/svg';
+    const container = document.getElementById('particles');
+
+    function spawn() {
+      // origin on the dial face (avoid coin center)
+      const angle = Math.random() * Math.PI * 2;
+      const radius = 95 + Math.random() * 130;
+      const sx = 400 + Math.cos(angle) * radius;
+      const sy = 400 + Math.sin(angle) * radius * 0.5; // bias to upper/lower band
+
+      const drift = (Math.random() - 0.5) * 38;
+      const rise  = 120 + Math.random() * 140;
+      const dur   = 2800 + Math.random() * 1600;
+      const size  = 1.1 + Math.random() * 1.6;
+
+      const c = document.createElementNS(svgNS, 'circle');
+      c.setAttribute('cx', sx);
+      c.setAttribute('cy', sy);
+      c.setAttribute('r', size.toFixed(2));
+      c.setAttribute('fill', '#5fa67f');
+      c.setAttribute('opacity', 0);
+      container.appendChild(c);
+
+      const anim = c.animate(
+        [
+          { transform: 'translate(0px, 0px)', opacity: 0 },
+          { transform: `translate(${(drift*0.3).toFixed(1)}px, ${(-rise*0.25).toFixed(1)}px)`, opacity: 0.85, offset: 0.18 },
+          { transform: `translate(${(drift*0.7).toFixed(1)}px, ${(-rise*0.6).toFixed(1)}px)`, opacity: 0.55, offset: 0.6 },
+          { transform: `translate(${drift.toFixed(1)}px, ${(-rise).toFixed(1)}px)`, opacity: 0 }
+        ],
+        { duration: dur, easing: 'cubic-bezier(.22,.7,.3,1)', fill: 'forwards' }
+      );
+      anim.onfinish = () => c.remove();
+    }
+
+    // a few existing particles on load
+    for (let i = 0; i < 6; i++) setTimeout(spawn, i * 220);
+    // steady stream — ~1.4 spawns/sec for a calm rhythm
+    setInterval(spawn, 720);
+  })();
+</script>
+</body>
+</html>

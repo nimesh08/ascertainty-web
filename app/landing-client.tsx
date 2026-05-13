@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/accordion";
 
 import { CountUp } from "@/components/landing/count-up";
-import { Cube, CubeLegend } from "@/components/landing/ascertainty/cube";
+import { MeterAnimation } from "@/components/landing/meter-animation";
 import { Glyph } from "@/components/landing/ascertainty/glyph";
 import { SectionHead } from "@/components/landing/ascertainty/section-head";
 import { Sparkline } from "@/components/landing/ascertainty/sparkline";
@@ -29,8 +29,6 @@ export interface LandingStats {
    *  CTA to deep-link into the live project page with matching numbers. */
   featuredProjectId?: string | null;
 }
-
-type Meaning = "protocol" | "capital" | "asset";
 
 const PRIMITIVES = [
   {
@@ -144,9 +142,6 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
   const totalDistributed = Number(stats.totalDistributedRaw) / 1_000_000;
   const bestApy = stats.bestApyPct ?? 0;
 
-  const [meaning, setMeaning] = useState<Meaning>("protocol");
-  const [activeFace, setActiveFace] = useState(0);
-
   return (
     <>
       {/* HERO */}
@@ -155,11 +150,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
         <div className="shell a-hero__inner">
           <div>
             <h1 className="a-hero__heading">
-              Capital that
-              <br />
-              <em>meters</em>
-              <br />
-              <span className="accent">itself.</span>
+              Capital that <span className="accent">meters</span> itself.
             </h1>
             <p className="a-hero__sub">
               Ascertainty routes USDC into verified energy-efficiency projects for Asian
@@ -218,54 +209,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
           </div>
 
           <div>
-            <Cube meaning={meaning} onFaceFocus={setActiveFace} />
-            <div
-              style={{
-                marginTop: 28,
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-              }}
-            >
-              <div
-                style={{
-                  display: "flex",
-                  gap: 6,
-                  marginBottom: 14,
-                  flexWrap: "wrap",
-                  justifyContent: "center",
-                }}
-              >
-                {(
-                  [
-                    ["protocol", "Protocol"],
-                    ["capital", "Capital flow"],
-                    ["asset", "Asset class"],
-                  ] as Array<[Meaning, string]>
-                ).map(([k, l]) => (
-                  <button
-                    key={k}
-                    className={"a-chip" + (meaning === k ? " a-chip--active" : "")}
-                    onClick={() => setMeaning(k)}
-                  >
-                    {l}
-                  </button>
-                ))}
-              </div>
-              <CubeLegend
-                active={activeFace}
-                onFocus={setActiveFace}
-                meaning={meaning}
-              />
-              <div className="a-cube-instructions">
-                <span>
-                  <kbd>drag</kbd> rotate
-                </span>
-                <span>
-                  <kbd>click</kbd> a face to focus
-                </span>
-              </div>
-            </div>
+            <MeterAnimation />
           </div>
         </div>
       </section>
@@ -1664,7 +1608,7 @@ curl -s https://inference.ascertainty.com/v1/predict \\
             }}
           >
             On-chain capital,{" "}
-            <span className="serif" style={{ color: "var(--fg-muted)" }}>
+            <span className="serif" style={{ color: "var(--accent)" }}>
               verified
             </span>{" "}
             down to the kilowatt-hour.
