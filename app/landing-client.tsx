@@ -921,6 +921,21 @@ curl -s https://inference.ascertainty.com/v1/predict \\
                 t: "V2: Mainnet",
                 s: "Audited program. Real USDC. Real MSME projects.",
               },
+              {
+                d: false,
+                t: "V2.5: TabPFN serving + on-chain audit-hash",
+                s: "TabPFN v2 retrained on the full 21-feature audit schema, promoted from headline-benchmark to serving model. Every /v1/predict commits sha256(inputs, outputs, git_commit) as a Solana Memo — underwriting trail becomes tamper-evident on-chain.",
+              },
+              {
+                d: false,
+                t: "V3: Queue-priority liquidity",
+                s: "FIFO redemption queue + auction-priority bidding for early exits (junior absorbs first). Adapts the DePIN-credit QEV pattern to our monthly USDC sweep cadence. Triggered when senior tranche TVL ≥ $1M.",
+              },
+              {
+                d: false,
+                t: "V3.5: MSME insurance partner",
+                s: "Default + savings-shortfall cover via SBI General / ICICI Lombard / Bajaj Allianz (Indian-MSME analogue to the Munich Re collateral-value cover pattern). BD track, not engineering — flagged so it's not lost.",
+              },
             ].map((r, i) => (
               <div
                 key={i}
@@ -992,7 +1007,7 @@ curl -s https://inference.ascertainty.com/v1/predict \\
           idx="06.5"
           kicker="LIQUIDITY & EXIT"
           title="A clear path to secondary."
-          intro="LPs ask 'how do I exit?' before they wire. Our answer is dated, not vague — primary today, whitelisted OTC in Q1 2026, native in-house orderbook in Q3 2026."
+          intro="LPs ask 'how do I exit?' before they wire. Our answer is dated, not vague — primary today, whitelisted OTC in Q1 2026, native in-house orderbook in Q3 2026, and a queue-priority auction mechanism triggered once senior TVL crosses ~$1M."
         />
         <div
           className="shell"
@@ -1034,6 +1049,16 @@ curl -s https://inference.ascertainty.com/v1/predict \\
                   "20 bps fee per secondary trade",
                   "Cross-chain via Wormhole NTT",
                   "Triggers when AUM > $50M",
+                ],
+              },
+              {
+                phase: "v3 — when senior TVL ≥ $1M",
+                title: "Queue-priority auctions",
+                state: "planned",
+                lines: [
+                  "FIFO redemption queue + auction priority bidding",
+                  "Junior tranche absorbs queue stress first (§5.5)",
+                  "Adopts the DePIN-credit QEV pattern, adapted to monthly USDC sweeps",
                 ],
               },
             ].map((p, i) => {
@@ -1151,7 +1176,7 @@ curl -s https://inference.ascertainty.com/v1/predict \\
           idx="08"
           kicker="MOAT"
           title="What stops a copycat."
-          intro="Three reinforcing edges. The first is relational and copyable in 18 months. The second compounds with every loan we close. The third is a coordination problem no single counterparty wants to own."
+          intro="Four reinforcing edges. The first is relational and copyable in 18 months. The second compounds with every loan we close. The third is a coordination problem no single counterparty wants to own. The fourth is the structural advantage we have over every other on-chain credit protocol: our underwriting is verifiable from a curl, not an expert's reputation."
         />
         <div
           className="shell"
@@ -1185,6 +1210,13 @@ curl -s https://inference.ascertainty.com/v1/predict \\
                 lead: "7 capabilities in rare combination",
                 body: "Auditor relationship + ML/physics underwriting + tokenization rails + Singapore-Asia regulatory wrappers + LP onboarding + NBFC INR disbursement + IoT M&V. Each individually doable; assembling all seven in parallel is the moat.",
                 kind: "structural",
+              },
+              {
+                num: "04",
+                title: "Verifiable underwriting",
+                lead: "calibrated model, not human curators",
+                body: "Every other on-chain credit protocol underwrites via 'trust our independent experts' — a marketing claim, not a verifiable system. Ascertainty's underwriting is a calibrated ML model with a published 90% conformal PI (R²=+0.56 LOO, verifiable on /v1/health from a curl). DSCR @ P5 ≥ 1.30× is a quantitative covenant a lender writes into the contract. Reconciliation against realized Day-30 metered savings is mechanical. v0.5 commits a sha256 of every prediction's (inputs, outputs, git_commit) to a Solana Memo, making the audit trail tamper-evident on-chain.",
+                kind: "verifiability",
               },
             ].map((p) => (
               <div
