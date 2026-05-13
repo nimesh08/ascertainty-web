@@ -4,6 +4,11 @@ import path from "node:path";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   eslint: { ignoreDuringBuilds: true },
+  // Self-contained production bundle. CI ships .next/standalone/ to EC2;
+  // EC2 runs `node server.js` directly without rebuilding. Cuts deploy
+  // time from ~5min to ~60s. The CI step copies /public and /.next/static
+  // into the bundle (Next doesn't auto-copy them).
+  output: "standalone",
   outputFileTracingRoot: path.join(__dirname),
   transpilePackages: ["@anchor-lang/core"],
   experimental: { serverActions: { bodySizeLimit: "2mb" } },

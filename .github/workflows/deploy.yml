@@ -18,18 +18,25 @@ concurrency:
 #   DATABASE_URL    — Neon Postgres production URL (used by db-migrate job)
 #
 # Required GitHub vars (Settings → Secrets and variables → Actions → Variables):
-#   INFERENCE_BASE_URL    — e.g. https://inference.ascertainty.com  (defaults to http://127.0.0.1:8000 if unset)
+#   INFERENCE_BASE_URL    — e.g. http://127.0.0.1:8000 (defaults if unset)
 #   INFERENCE_TIMEOUT_MS  — optional; defaults to 10000
 #   BUILD_PRIVY_APP_ID    — existing
 #
-# On the EC2 host, `run-deploy` must source `/home/<DEPLOY_USER>/exira-web-runtime.env`
-# before starting Next.js so INFERENCE_BASE_URL is set in the Node process. Example
-# one-line patch to add to run-deploy:
-#   set -a; . "$HOME/exira-web-runtime.env" 2>/dev/null || true; set +a
+# Tier-2 deploy architecture (2026-05-13):
+#   CI builds the Next 15 standalone bundle (`output: 'standalone'` in
+#   next.config.ts). The bundle (~80MB tarball) is uploaded as a workflow
+#   artifact, downloaded by the deploy job, scp'd to EC2, and run directly
+#   via `node server.js` under pm2. EC2 no longer runs `npm install` or
+#   `npm run build` on deploys — the only EC2-side work is untar + pm2
+#   restart, total ~15s.
+#
+#   .env.local lives at /home/ubuntu/exira-web-v2/.env.local on EC2 and is
+#   sourced by the start-exira-web.sh wrapper before exec'ing node. The
+#   wrapper also sources ~/exira-web-runtime.env which the workflow syncs.
 
 jobs:
   build:
-    name: Typecheck + Build
+    name: Build standalone bundle
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -40,8 +47,6 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      # Cache node_modules between runs. Restores ~node_modules in ~5s on
-      # cache hit vs ~90s for a full `npm ci` reinstall.
       - name: Cache node_modules
         id: cache-node-modules
         uses: actions/cache@v4
@@ -55,8 +60,6 @@ jobs:
         if: steps.cache-node-modules.outputs.cache-hit != 'true'
         run: npm ci --legacy-peer-deps
 
-      # Cache the Next.js build cache directory. Reduces incremental build
-      # time when no source files have changed (e.g. CI re-runs on the same SHA).
       - name: Cache Next.js build
         uses: actions/cache@v4
         with:
@@ -65,10 +68,7 @@ jobs:
           restore-keys: |
             nextjs-${{ runner.os }}-${{ hashFiles('package-lock.json') }}-
 
-      - name: Typecheck
-        run: npx tsc --noEmit
-
-      - name: Build
+      - name: Build (Next standalone output)
         run: npm run build
         env:
           NODE_ENV: production
@@ -77,6 +77,29 @@ jobs:
           NEXT_PUBLIC_SOLANA_CLUSTER: devnet
           NEXT_PUBLIC_EXIRA_PROGRAM_ID: J7z1a2bwMEC8MchgZwskJZ8PzXg4UG674VgD8DuotJn2
           DATABASE_URL: postgresql://build:stub@localhost:5432/stub
+
+      # Next's standalone output is a self-contained server bundle but does NOT
+      # auto-copy /public or /.next/static. Splice them in, then tarball.
+      - name: Package standalone deploy artifact
+        run: |
+          set -euo pipefail
+          if [ ! -d .next/standalone ]; then
+            echo "::error::.next/standalone missing — is output: 'standalone' set in next.config.ts?"
+            exit 1
+          fi
+          cp -r public .next/standalone/public
+          mkdir -p .next/standalone/.next
+          cp -r .next/static .next/standalone/.next/static
+          tar -czf deploy.tgz -C .next/standalone .
+          ls -lh deploy.tgz
+
+      - name: Upload deploy artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-deploy-bundle
+          path: deploy.tgz
+          retention-days: 7
+          if-no-files-found: error
 
   db-migrate:
     name: Apply DB schema (Drizzle push)
@@ -92,7 +115,6 @@ jobs:
           node-version: '20'
           cache: 'npm'
 
-      # Reuse the same node_modules cache the build job created.
       - name: Cache node_modules
         id: cache-node-modules
         uses: actions/cache@v4
@@ -112,23 +134,17 @@ jobs:
         run: |
           if [ -z "${DATABASE_URL:-}" ]; then
             echo "::warning::DATABASE_URL secret is not set — skipping schema push."
-            echo "Add a DATABASE_URL secret pointing to your Neon production DB to enable automatic migrations."
             exit 0
           fi
-          # --force makes the run non-interactive. Since our schema changes are
-          # additive (new enum + new tables), this is safe. If a future PR
-          # introduces a column drop or table rename, the workflow will surface
-          # the destructive plan in logs before applying; review the plan in the
-          # log and revert if it looks wrong.
           echo "Running: drizzle-kit push"
           npx drizzle-kit push --force --verbose
 
   deploy:
-    name: Deploy to EC2
+    name: Deploy bundle to EC2
     needs: [build, db-migrate]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - name: Set up SSH
         run: |
@@ -137,13 +153,16 @@ jobs:
           chmod 600 ~/.ssh/id_ed25519
           ssh-keyscan -H "${{ secrets.DEPLOY_HOST }}" >> ~/.ssh/known_hosts 2>/dev/null || true
 
+      - name: Download deploy artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: web-deploy-bundle
+
       - name: Sync runtime env file to host
         env:
           INFERENCE_BASE_URL: ${{ vars.INFERENCE_BASE_URL || 'http://127.0.0.1:8000' }}
           INFERENCE_TIMEOUT_MS: ${{ vars.INFERENCE_TIMEOUT_MS || '10000' }}
         run: |
-          # Push runtime env via SSH heredoc. run-deploy on the host must
-          # source ~/exira-web-runtime.env before starting Next.js.
           ssh -i ~/.ssh/id_ed25519 \
               -o StrictHostKeyChecking=accept-new \
               "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
@@ -152,32 +171,70 @@ jobs:
           INFERENCE_TIMEOUT_MS=${INFERENCE_TIMEOUT_MS}
           EOF
 
-      - name: Run deploy chain over SSH
+      - name: Generate EC2 wrapper script locally
         run: |
-          # Inline deploy — pulls latest main, wipes the .next build cache to
-          # avoid stale chunks, conditionally reinstalls deps only when
-          # package-lock.json changed (--legacy-peer-deps required for Recharts
-          # peer-dep drift), builds, and pm2-restarts the web process with
-          # --update-env so runtime env vars take effect. The conditional install
-          # saves ~60-90s on the common path where no deps changed.
+          cat > start-exira-web.sh <<'WRAPPER'
+          #!/usr/bin/env bash
+          set -euo pipefail
+          cd "$HOME/exira-web-bundle"
+          set -a
+          [ -f "$HOME/exira-web-v2/.env.local" ] && . "$HOME/exira-web-v2/.env.local"
+          [ -f "$HOME/exira-web-runtime.env" ] && . "$HOME/exira-web-runtime.env"
+          set +a
+          export PORT="${PORT:-3100}"
+          export HOSTNAME="${HOSTNAME:-127.0.0.1}"
+          exec node server.js
+          WRAPPER
+          chmod +x start-exira-web.sh
+
+      - name: Ship bundle + wrapper to EC2
+        run: |
+          scp -i ~/.ssh/id_ed25519 \
+              -o StrictHostKeyChecking=accept-new \
+              deploy.tgz start-exira-web.sh \
+              "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/"
+
+      - name: Untar + start over SSH
+        run: |
+          # On EC2: atomic-swap bundle into place, install wrapper, ensure
+          # pm2 is running the standalone server. First-time migration:
+          # delete the old `npm start`-based process and start fresh with
+          # the wrapper. Subsequent deploys: pm2 restart (fast path).
           ssh -i ~/.ssh/id_ed25519 \
               -o StrictHostKeyChecking=accept-new \
               "${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}" \
-              'set -euo pipefail
-               cd ~/exira-web-v2
-               LOCK_BEFORE=$(md5sum package-lock.json | cut -d" " -f1)
-               git fetch --quiet origin main
-               git reset --hard origin/main
-               LOCK_AFTER=$(md5sum package-lock.json | cut -d" " -f1)
-               if [ "$LOCK_BEFORE" != "$LOCK_AFTER" ]; then
-                 echo "package-lock.json changed — running npm install"
-                 npm install --legacy-peer-deps --no-audit --no-fund
-               else
-                 echo "package-lock.json unchanged — skipping npm install"
-               fi
-               rm -rf .next
-               npm run build
-               pm2 restart exira-web-v2 --update-env'
+              "bash -s" <<'REMOTE'
+          set -euo pipefail
+          STAGING="$HOME/exira-web-bundle-staging"
+          LIVE="$HOME/exira-web-bundle"
+          PREV="$HOME/exira-web-bundle-previous"
+
+          rm -rf "$STAGING"
+          mkdir -p "$STAGING"
+          tar -xzf /tmp/deploy.tgz -C "$STAGING"
+          rm /tmp/deploy.tgz
+
+          if [ -d "$LIVE" ]; then
+            rm -rf "$PREV"
+            mv "$LIVE" "$PREV"
+          fi
+          mv "$STAGING" "$LIVE"
+
+          mv /tmp/start-exira-web.sh "$HOME/start-exira-web.sh"
+          chmod +x "$HOME/start-exira-web.sh"
+
+          # pm2 reconfigure: if exira-web-v2 isn't running the wrapper, delete + start fresh.
+          if pm2 describe exira-web-v2 2>/dev/null | grep -q "start-exira-web.sh"; then
+            pm2 restart exira-web-v2 --update-env
+          else
+            echo "Migrating pm2 to standalone wrapper"
+            pm2 delete exira-web-v2 2>/dev/null || true
+            pm2 start "$HOME/start-exira-web.sh" --name exira-web-v2 --update-env
+            pm2 save
+          fi
+
+          pm2 list | grep exira-web-v2 || true
+          REMOTE
 
       - name: Smoke test production (web)
         run: |
@@ -187,14 +244,12 @@ jobs:
             if [ "$code" = "200" ]; then exit 0; fi
             sleep 10
           done
-          echo "web smoke test failed"
+          echo "::error::web smoke test failed — bundle may be broken. Roll back on EC2 via: mv ~/exira-web-bundle-previous ~/exira-web-bundle && pm2 restart exira-web-v2 --update-env"
           exit 1
 
       - name: Smoke test inference (soft)
         if: ${{ vars.INFERENCE_BASE_URL != '' }}
         run: |
-          # Don't fail the deploy if the inference sidecar is offline — it's a
-          # separately-managed service. Just warn so we see it in the logs.
           set +e
           for i in 1 2 3; do
             code=$(curl -skS -o /dev/null -w "%{http_code}" --max-time 10 "${{ vars.INFERENCE_BASE_URL }}/health" || echo "000")
@@ -202,4 +257,4 @@ jobs:
             if [ "$code" = "200" ]; then exit 0; fi
             sleep 5
           done
-          echo "::warning::Inference service at ${{ vars.INFERENCE_BASE_URL }} is not responding. The PINN-dependent UI (/auditor/intake, /lender/[deal_id]) will 502 until it comes back up."
+          echo "::warning::Inference service at ${{ vars.INFERENCE_BASE_URL }} is not responding. PINN-dependent routes (/auditor/intake, /lender/[deal_id]) will 502 until it returns."
