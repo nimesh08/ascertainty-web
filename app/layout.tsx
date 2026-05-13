@@ -7,7 +7,7 @@ import { Nav } from "@/components/layout/nav";
 import { Footer } from "@/components/layout/footer";
 
 export const metadata: Metadata = {
-  title: "Ascertainty — Capital that meters itself",
+  title: "Ascertainty | Capital That Meters Itself",
   description:
     "Calibrated underwriting for Indian MSME industrial energy retrofits. Every kilowatt-hour of predicted savings is bounded by a verifiable conformal prediction interval; every repayment is settled at the meter.",
 };

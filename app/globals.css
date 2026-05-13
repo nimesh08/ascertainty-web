@@ -243,15 +243,17 @@
   .hairline { background: var(--line); height: 1px; width: 100%; }
 
   /* ─── Coin mark animation (Forest brand kit v0.3) ───────────────────────
-     Embedded keyframes for the four-layer mark inside CoinMark. The four
-     paths grow upward in sequence — bottom arc → middle → top → peak — over
-     a configurable loop. The .mk-anim class is toggled off/on by the
-     scroll-replay hook to restart the keyframes after each scroll threshold.
-     Respects prefers-reduced-motion (collapses to final state). */
+     The four mark layers grow upward in sequence — bottom arc → middle → top
+     → peak — then HOLD for the rest of the cycle, then restart. Total cycle
+     is 9.6s (~1.4s build + 8.2s hold), looped infinitely so the mark is alive
+     on every page without being distracting. The scroll-replay hook toggles
+     the .mk-anim class to re-sync the loop from frame 0 after each scroll
+     threshold. Respects prefers-reduced-motion (collapses to final state). */
   @keyframes mk-grow {
+    /* Frames 0-14% = build (arc grows in). Frames 14-100% = hold (settled). */
     0%   { transform: scaleY(0.05) translateY(8px); opacity: 0; }
-    18%  { opacity: 1; }
-    32%  { transform: scaleY(1) translateY(0); opacity: 1; }
+    8%   { opacity: 1; }
+    14%  { transform: scaleY(1) translateY(0); opacity: 1; }
     100% { transform: scaleY(1) translateY(0); opacity: 1; }
   }
 
@@ -261,7 +263,7 @@
   .mk-anim .a-tri {
     transform-box: fill-box;
     transform-origin: 50% 100%;
-    animation: mk-grow 4.2s cubic-bezier(.16, .84, .3, 1) both;
+    animation: mk-grow 9.6s cubic-bezier(.16, .84, .3, 1) infinite both;
   }
   .mk-anim .a-bottom { animation-delay: 0ms; }
   .mk-anim .a-middle { animation-delay: 280ms; }

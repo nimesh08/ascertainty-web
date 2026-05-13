@@ -31,7 +31,7 @@ export function Footer() {
               className="flex items-center gap-3"
               aria-label="Ascertainty — back to top"
             >
-              <CoinMark size={44} variant="white" ariaLabel="Ascertainty" />
+              <CoinMark size={44} variant="ink" ariaLabel="Ascertainty" />
               <span
                 style={{
                   letterSpacing: "0.18em",

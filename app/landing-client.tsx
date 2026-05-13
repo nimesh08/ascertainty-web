@@ -168,11 +168,11 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
         <div className="shell a-hero__inner">
           <div>
             <h1 className="a-hero__heading">
-              Finance that
+              Capital that
               <br />
-              <em>compounds</em>
+              <em>meters</em>
               <br />
-              <span className="accent">MSME savings.</span>
+              <span className="accent">itself.</span>
             </h1>
             <p className="a-hero__sub">
               Ascertainty routes USDC into verified energy-efficiency projects for Asian
