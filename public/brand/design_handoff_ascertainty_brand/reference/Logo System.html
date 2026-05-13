@@ -1,0 +1,2394 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ascertainty — Logo System (mark · animated · in context)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+
+<!-- TWEAKABLE DEFAULTS — host edits this block on disk -->
+<script>
+const TWEAKS = /*EDITMODE-BEGIN*/{
+  "markColor": "#5fa67f",
+  "groundColor": "#f7f7f8",
+  "strokeWidth": 30,
+  "loopMs": 5000,
+  "scrollReplayPx": 1000,
+  "showGuides": false,
+  "wordmarkFont": "mono",
+  "tokenVariant": "ink",
+  "headerVariant": "coin-ink"
+}/*EDITMODE-END*/;
+</script>
+
+<style>
+:root {
+  /* paper system — white-led (cream retired) */
+  --bone:        #ffffff;
+  --bone-soft:   #fafafa;
+  --bone-deep:   #e8e8e8;
+  --paper:       #ffffff;
+  --ink:         #162421;
+  --ink-soft:    rgba(22, 36, 33, 0.62);
+  --ink-mute:    rgba(22, 36, 33, 0.38);
+  --ink-faint:   rgba(22, 36, 33, 0.18);
+  --ink-dim:     rgba(22, 36, 33, 0.08);
+  --rule:        rgba(22, 36, 33, 0.14);
+  --rule-strong: rgba(22, 36, 33, 0.28);
+
+  /* the mark — drives every instance via currentColor */
+  --mark:        #3f8064;
+  --mark-soft:   rgba(63, 128, 100, 0.14);
+  --mark-deep:   #2d5d48;
+
+  --serif:       "Newsreader", "GT Sectra", Georgia, serif;
+  --mono:        "JetBrains Mono", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  background: var(--bone);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* subtle paper grain */
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: 200; pointer-events: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='180' height='180'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.07 0 0 0 0 0.04 0 0 0 0.05 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: 0.55; mix-blend-mode: multiply;
+}
+
+::selection { background: var(--mark); color: var(--paper); }
+
+.shell { max-width: 1380px; margin: 0 auto; padding: 0 56px; }
+.label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase; color: var(--ink-mute); }
+.serif-it { font-family: var(--serif); font-style: italic; }
+.num { font-variant-numeric: tabular-nums; }
+
+/* ═════════════ STICKY HEADER (real navigation, with the animated mark) ═════════════ */
+.site-head {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(235, 227, 207, 0.86);
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid var(--rule);
+}
+.site-head__inner {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 16px 56px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.site-head__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.site-head__brand .mk {
+  width: 28px; height: 28px;
+  color: var(--mark);
+  display: block;
+}
+.site-head__brand .wm {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.site-head__nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.site-head__nav a {
+  color: inherit;
+  text-decoration: none;
+}
+.site-head__nav a:hover { color: var(--ink); }
+.site-head__cta {
+  padding: 8px 14px;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+
+/* ═════════════ META STRIP ═════════════ */
+.meta-strip {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  padding: 18px 0;
+  border-bottom: 1px solid var(--rule);
+  font-size: 10px; letter-spacing: 0.20em; text-transform: uppercase;
+  color: var(--ink-mute);
+  gap: 24px;
+}
+.meta-strip .center { text-align: center; }
+.meta-strip .right  { text-align: right; }
+.meta-strip .live {
+  display: inline-flex; align-items: center; gap: 8px;
+}
+.meta-strip .live::before {
+  content: ""; display: inline-block;
+  width: 6px; height: 6px; background: var(--mark);
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px var(--mark-soft);
+  animation: pulse 2s ease-in-out infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+/* ═════════════ HERO ═════════════ */
+.hero {
+  padding: 96px 0 80px;
+  border-bottom: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+}
+.hero__stage {
+  aspect-ratio: 1;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  display: grid;
+  place-items: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero__stage::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(21,17,10,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(21,17,10,0.04) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+}
+.hero__stage .mk {
+  width: 62%;
+  color: var(--mark);
+  position: relative;
+  z-index: 1;
+}
+.hero__stage .corner {
+  position: absolute;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--ink-mute);
+  text-transform: uppercase;
+  z-index: 2;
+}
+.hero__stage .corner.tl { top: 18px; left: 22px; }
+.hero__stage .corner.tr { top: 18px; right: 22px; }
+.hero__stage .corner.bl { bottom: 18px; left: 22px; }
+.hero__stage .corner.br { bottom: 18px; right: 22px; }
+.hero__stage .replay {
+  position: absolute;
+  bottom: 22px; right: 22px;
+  z-index: 3;
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 6px 12px;
+  background: var(--ink);
+  color: var(--paper);
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  border: 0;
+  cursor: pointer;
+}
+.hero__stage .replay::before {
+  content: "▸";
+  font-size: 11px;
+}
+
+.hero__body h1 {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: clamp(48px, 6vw, 92px);
+  letter-spacing: -0.032em;
+  line-height: 0.96;
+  margin: 0 0 24px;
+}
+.hero__body h1 .soft { color: var(--ink-soft); }
+.hero__body p {
+  font-size: 14px;
+  line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 46ch;
+  margin: 0 0 14px;
+}
+.hero__body p b { color: var(--ink); font-weight: 400; }
+.hero__body p .it { font-family: var(--serif); font-style: italic; }
+.hero__body .verdict {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 32px;
+  padding: 14px 18px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+}
+.hero__body .verdict span:first-child {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.hero__body .verdict span:last-child {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+
+/* ═════════════ SECTION HEAD ═════════════ */
+.section-head {
+  padding: 96px 0 28px;
+  display: grid;
+  grid-template-columns: 220px 1fr auto;
+  gap: 56px;
+  align-items: end;
+  border-bottom: 1px solid var(--rule);
+}
+.section-head .num-big {
+  font-family: var(--serif); font-style: italic; font-weight: 300;
+  font-size: 64px; line-height: 0.9; color: var(--ink-faint);
+  letter-spacing: -0.03em;
+}
+.section-head h2 {
+  margin: 0;
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: clamp(36px, 4.2vw, 56px);
+  letter-spacing: -0.028em;
+  line-height: 0.98;
+  max-width: 22ch;
+}
+.section-head .corner {
+  text-align: right;
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--ink-mute);
+  max-width: 28ch;
+  line-height: 1.6;
+}
+
+/* ═════════════ CONSTRUCTION ═════════════ */
+.construct {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  border-bottom: 1px solid var(--rule);
+}
+.construct__stage {
+  padding: 80px 56px;
+  background: var(--paper);
+  border-right: 1px solid var(--rule);
+  display: grid; place-items: center;
+  position: relative;
+}
+.construct__stage svg.guide {
+  width: 100%;
+  max-width: 460px;
+}
+.construct__stage .lbl-corner {
+  position: absolute;
+  top: 18px; left: 56px; right: 56px;
+  display: flex; justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--ink-mute);
+  text-transform: uppercase;
+}
+.construct__rules {
+  padding: 80px 56px;
+}
+.construct__rules h4 {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: 28px; letter-spacing: -0.022em; margin: 12px 0 24px;
+}
+.construct__rules ol {
+  margin: 0; padding: 0; list-style: none; counter-reset: step;
+}
+.construct__rules li {
+  counter-increment: step;
+  padding: 16px 0;
+  border-top: 1px dashed var(--rule);
+  display: grid;
+  grid-template-columns: 36px 1fr;
+  gap: 14px;
+  font-size: 12.5px;
+  line-height: 1.65;
+}
+.construct__rules li:first-child { border-top: 0; }
+.construct__rules li::before {
+  content: counter(step, decimal-leading-zero);
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: 20px; color: var(--mark);
+}
+.construct__rules li b {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: 14.5px; display: block; margin-bottom: 3px;
+}
+
+/* ═════════════ SIZES ═════════════ */
+.sizes {
+  padding: 64px 56px;
+  border-bottom: 1px solid var(--rule);
+}
+.sizes__head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 48px; flex-wrap: wrap; gap: 24px;
+}
+.sizes__head h3 {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: clamp(28px, 3vw, 40px); letter-spacing: -0.025em;
+  margin: 4px 0 0;
+}
+.sizes__row {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 32px;
+  padding: 32px 24px;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  flex-wrap: wrap;
+}
+.size-cell {
+  display: flex; flex-direction: column; align-items: center; gap: 16px;
+  color: var(--mark);
+}
+.size-cell .lbl {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  color: var(--ink-mute);
+  text-transform: uppercase;
+}
+
+/* ═════════════ LOCKUPS ═════════════ */
+.lockups {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--rule);
+}
+.lockup {
+  padding: 64px 36px;
+  border-right: 1px solid var(--rule);
+  min-height: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  position: relative;
+}
+.lockup:last-child { border-right: 0; }
+.lockup .corner {
+  position: absolute; top: 18px; left: 24px; right: 24px;
+  display: flex; justify-content: space-between;
+  font-family: var(--mono);
+  font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.lockup .mk { width: 110px; height: 110px; color: var(--mark); }
+.lockup .wm {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 18px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.lockup--ink { background: var(--ink); }
+.lockup--ink .mk { color: var(--paper); }
+.lockup--ink .wm { color: var(--paper); }
+.lockup--ink .corner { color: rgba(255,255,255,0.42); }
+.lockup--mark { background: var(--mark); }
+.lockup--mark .mk { color: var(--paper); }
+.lockup--mark .wm { color: var(--paper); }
+.lockup--mark .corner { color: rgba(255,255,255,0.6); }
+
+/* ═════════════ ANIMATION STORYBOARD ═════════════ */
+.anim {
+  padding: 64px 56px;
+  border-bottom: 1px solid var(--rule);
+}
+.anim__head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 48px; flex-wrap: wrap; gap: 24px;
+}
+.anim__head h3 {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: clamp(28px, 3vw, 40px); letter-spacing: -0.025em;
+  margin: 4px 0 0;
+}
+.anim__row {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0;
+  border: 1px solid var(--rule);
+  background: var(--paper);
+}
+.anim__frame {
+  padding: 36px 16px 20px;
+  border-right: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  position: relative;
+}
+.anim__frame:last-child { border-right: 0; }
+.anim__frame .stage {
+  width: 100%;
+  aspect-ratio: 1;
+  display: grid; place-items: center;
+  color: var(--mark);
+}
+.anim__frame .stage svg { width: 80%; }
+.anim__frame .t {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  color: var(--ink-mute);
+  text-transform: uppercase;
+}
+.anim__frame .cap {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+}
+
+.anim__curve {
+  margin-top: 48px;
+  padding: 28px 32px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 48px;
+  align-items: center;
+}
+.anim__curve dl { margin: 0; display: grid; grid-template-columns: 130px 1fr; gap: 8px 18px; }
+.anim__curve dt {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.anim__curve dd {
+  margin: 0;
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+}
+
+/* ═════════════ SCROLL DEMO ═════════════ */
+.scroll-demo {
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+}
+.scroll-demo__intro {
+  padding: 64px 56px 32px;
+}
+.scroll-demo__intro h3 {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: clamp(28px, 3vw, 40px); letter-spacing: -0.025em;
+  margin: 4px 0 14px;
+  max-width: 22ch;
+}
+.scroll-demo__intro p {
+  font-size: 13.5px; line-height: 1.65;
+  color: var(--ink-soft);
+  max-width: 60ch;
+  margin: 0 0 6px;
+}
+.scroll-demo__intro b { color: var(--ink); font-weight: 400; }
+
+.scroll-track {
+  position: relative;
+  padding: 0 56px 96px;
+}
+.scroll-track__floor {
+  display: grid;
+  grid-template-columns: 1.1fr 2fr;
+  gap: 32px;
+  align-items: flex-start;
+}
+.scroll-track__rail {
+  position: sticky;
+  top: 96px;
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  min-height: 360px;
+}
+.scroll-track__rail .stage {
+  aspect-ratio: 1;
+  display: grid; place-items: center;
+  background: var(--bone-soft);
+  border: 1px dashed var(--rule);
+  color: var(--mark);
+  position: relative;
+}
+.scroll-track__rail .stage svg { width: 70%; }
+.scroll-track__rail .stage::after {
+  content: "live · scroll-triggered";
+  position: absolute;
+  bottom: 10px; left: 12px;
+  font-family: var(--mono);
+  font-size: 8.5px;
+  letter-spacing: 0.22em;
+  color: var(--ink-mute);
+  text-transform: uppercase;
+}
+.scroll-track__rail .meter {
+  display: flex; flex-direction: column; gap: 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.scroll-track__rail .meter .row {
+  display: flex; justify-content: space-between; align-items: center;
+}
+.scroll-track__rail .meter b {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  font-weight: 400;
+}
+.scroll-track__rail .bar {
+  height: 4px;
+  background: var(--ink-dim);
+  position: relative;
+  overflow: hidden;
+}
+.scroll-track__rail .bar i {
+  position: absolute;
+  top: 0; left: 0;
+  height: 100%;
+  background: var(--mark);
+  width: 0;
+  transition: width 0.2s linear;
+}
+
+.scroll-track__chapters {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.chapter {
+  padding: 56px 0;
+  border-bottom: 1px dashed var(--rule);
+}
+.chapter:last-child { border-bottom: 0; }
+.chapter .chap-num {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: var(--ink-mute);
+  text-transform: uppercase;
+}
+.chapter h4 {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: 32px;
+  letter-spacing: -0.022em;
+  margin: 12px 0 14px;
+  max-width: 18ch;
+}
+.chapter p {
+  font-size: 13px; line-height: 1.7;
+  color: var(--ink-soft);
+  max-width: 56ch;
+  margin: 0 0 12px;
+}
+.chapter p b { color: var(--ink); font-weight: 400; }
+.chapter p .it { font-family: var(--serif); font-style: italic; }
+
+/* ═════════════ SPECS ═════════════ */
+.specs {
+  padding: 56px 56px;
+  border-bottom: 1px solid var(--rule);
+}
+.specs__head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 40px; flex-wrap: wrap; gap: 24px;
+}
+.specs__head h3 {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: clamp(28px, 3vw, 40px); letter-spacing: -0.025em;
+  margin: 4px 0 0;
+}
+.specs__grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border-top: 1px solid var(--rule-strong);
+  border-bottom: 1px solid var(--rule-strong);
+}
+.spec-cell {
+  padding: 28px 24px;
+  border-right: 1px solid var(--rule);
+}
+.spec-cell:last-child { border-right: 0; }
+.spec-cell .k {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  color: var(--ink-mute);
+  text-transform: uppercase;
+}
+.spec-cell .v {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 22px;
+  letter-spacing: -0.018em;
+  margin: 8px 0 4px;
+}
+.spec-cell .v .num { font-family: var(--mono); font-style: normal; font-size: 18px; letter-spacing: 0.04em; }
+.spec-cell p {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  margin: 4px 0 0;
+  line-height: 1.55;
+}
+
+/* ═════════════ DOWNLOADS ═════════════ */
+.downloads {
+  padding: 56px;
+  border-bottom: 1px solid var(--rule);
+}
+.downloads__head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  margin-bottom: 32px; flex-wrap: wrap; gap: 24px;
+}
+.downloads__head h3 {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: clamp(28px, 3vw, 40px); letter-spacing: -0.025em;
+  margin: 4px 0 0;
+}
+.downloads__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+.dl-card {
+  border: 1px solid var(--rule);
+  background: var(--paper);
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  text-decoration: none;
+  color: var(--ink);
+  transition: border-color 0.15s, transform 0.15s;
+}
+.dl-card:hover {
+  border-color: var(--mark);
+  transform: translateY(-2px);
+}
+.dl-card .preview {
+  aspect-ratio: 2;
+  background: var(--bone-soft);
+  border: 1px dashed var(--rule);
+  display: grid; place-items: center;
+  color: var(--mark);
+}
+.dl-card .preview svg { width: 40%; }
+.dl-card .meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+.dl-card .name {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 18px;
+  letter-spacing: -0.012em;
+}
+.dl-card .type {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  color: var(--ink-mute);
+  text-transform: uppercase;
+}
+.dl-card .desc {
+  font-size: 11.5px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin: 0;
+}
+
+/* ═════════════ FOOTER ═════════════ */
+.site-foot {
+  background: var(--ink);
+  color: var(--paper);
+  padding: 88px 56px 56px;
+  position: relative;
+  overflow: hidden;
+}
+.site-foot::before {
+  content: ""; position: absolute;
+  bottom: -10%; left: 50%;
+  width: 80%; height: 60%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(63,128,100,0.18), transparent 70%);
+  pointer-events: none;
+}
+.site-foot__top {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 48px;
+  padding-bottom: 56px;
+  border-bottom: 1px solid rgba(255,255,255,0.14);
+  position: relative; z-index: 1;
+}
+.site-foot__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.site-foot__brand .mk {
+  width: 56px; height: 56px; color: var(--mark);
+}
+.site-foot__brand .wm {
+  font-family: var(--mono);
+  font-size: 14px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--paper);
+}
+.site-foot__brand .tag {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  color: rgba(255,255,255,0.62);
+  max-width: 28ch;
+  margin: 0;
+}
+.site-foot__col h5 {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.5);
+  margin: 6px 0 18px;
+}
+.site-foot__col ul {
+  margin: 0; padding: 0; list-style: none;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.site-foot__col a {
+  color: rgba(255,255,255,0.85);
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 12px;
+}
+.site-foot__col a:hover { color: var(--paper); }
+.site-foot__bottom {
+  padding-top: 32px;
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  color: rgba(255,255,255,0.5);
+  text-transform: uppercase;
+  position: relative; z-index: 1;
+  gap: 24px;
+  flex-wrap: wrap;
+}
+
+/* ═════════════ TWEAKS PANEL ═════════════ */
+.tweaks {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 320px;
+  background: var(--paper);
+  border: 1px solid var(--rule-strong);
+  box-shadow: 0 24px 56px -24px rgba(21,17,10,0.4);
+  z-index: 100;
+  font-family: var(--mono);
+  display: none;
+}
+.tweaks.active { display: block; }
+.tweaks__head {
+  padding: 12px 16px;
+  display: flex; justify-content: space-between; align-items: center;
+  border-bottom: 1px solid var(--rule);
+  background: var(--bone-deep);
+  font-size: 10px;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+}
+.tweaks__head button {
+  background: none; border: 0;
+  font-family: var(--mono);
+  font-size: 12px;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.tweaks__head button:hover { color: var(--ink); }
+.tweaks__body {
+  padding: 16px;
+  display: flex; flex-direction: column; gap: 16px;
+}
+.tweaks__row {
+  display: flex; flex-direction: column; gap: 8px;
+}
+.tweaks__row label {
+  display: flex; justify-content: space-between; align-items: baseline;
+  font-size: 9px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--ink-mute);
+}
+.tweaks__row label b {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+}
+.tweaks__row input[type=range] {
+  width: 100%;
+  accent-color: var(--mark);
+}
+.tweaks__row .swatches {
+  display: flex; gap: 8px; flex-wrap: wrap;
+}
+.tweaks__row .sw {
+  width: 28px; height: 28px;
+  border-radius: 4px;
+  border: 1px solid var(--rule);
+  cursor: pointer;
+  position: relative;
+}
+.tweaks__row .sw.active::after {
+  content: ""; position: absolute; inset: -3px;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  pointer-events: none;
+}
+.tweaks__row .seg {
+  display: flex; gap: 0; border: 1px solid var(--rule);
+}
+.tweaks__row .seg button {
+  flex: 1;
+  background: none; border: 0;
+  padding: 6px 8px;
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  cursor: pointer;
+  border-right: 1px solid var(--rule);
+}
+.tweaks__row .seg button:last-child { border-right: 0; }
+.tweaks__row .seg button.active {
+  background: var(--ink);
+  color: var(--paper);
+}
+
+.tweaks-toggle {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 44px; height: 44px;
+  background: var(--ink);
+  color: var(--paper);
+  border: 0;
+  border-radius: 50%;
+  cursor: pointer;
+  z-index: 99;
+  font-family: var(--mono);
+  font-size: 16px;
+  display: none;
+  box-shadow: 0 8px 24px -8px rgba(21,17,10,0.4);
+}
+.tweaks-toggle.active { display: grid; place-items: center; }
+
+/* ═════════════ TOKEN / COIN ═════════════ */
+.tokens {
+  border-bottom: 1px solid var(--rule);
+}
+.tokens__variants {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  border-bottom: 1px solid var(--rule);
+}
+.token-card {
+  padding: 56px 36px 36px;
+  border-right: 1px solid var(--rule);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  position: relative;
+  text-align: center;
+}
+.token-card:last-child { border-right: 0; }
+.token-card .corner {
+  position: absolute; top: 18px; left: 24px; right: 24px;
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.22em;
+  color: var(--ink-mute); text-transform: uppercase;
+}
+.token-card .coin {
+  width: 180px; height: 180px;
+  display: grid; place-items: center;
+}
+.token-card .coin svg { display: block; }
+.token-card .name {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: 26px; letter-spacing: -0.018em;
+}
+.token-card .meta {
+  font-family: var(--mono); font-size: 10px; letter-spacing: 0.22em;
+  color: var(--ink-mute); text-transform: uppercase;
+}
+.token-card .role {
+  font-size: 12px; line-height: 1.55; color: var(--ink-soft);
+  max-width: 30ch; margin: 0;
+}
+.token-card .role b { color: var(--ink); font-weight: 400; }
+.token-card.active {
+  background: var(--paper);
+}
+.token-card .pick {
+  margin-top: auto;
+  padding-top: 14px;
+  font-family: var(--mono); font-size: 9.5px; letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  border-top: 1px dashed var(--rule);
+  width: 100%;
+}
+.token-card.active .pick {
+  color: var(--mark);
+}
+.token-card.active .pick::before {
+  content: "→ ";
+}
+
+.tokens__sizes {
+  display: flex; align-items: flex-end; justify-content: space-between;
+  gap: 24px; flex-wrap: wrap;
+  padding: 56px 56px 48px;
+  border-bottom: 1px solid var(--rule);
+}
+.tokens__sizes-head {
+  display: flex; flex-direction: column; gap: 4px;
+  margin-right: auto;
+}
+.tokens__sizes-head h4 {
+  font-family: var(--serif); font-style: italic; font-weight: 400;
+  font-size: 22px; letter-spacing: -0.018em;
+  margin: 4px 0 0;
+}
+.tk-size {
+  display: flex; flex-direction: column; align-items: center; gap: 12px;
+}
+.tk-size .tk {
+  display: block;
+}
+.tk-size .lbl {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.22em;
+  color: var(--ink-mute); text-transform: uppercase;
+}
+
+.tokens__contexts {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  border-bottom: 1px solid var(--rule);
+}
+.ctx {
+  border-right: 1px solid var(--rule);
+  padding: 32px 24px 24px;
+  display: flex; flex-direction: column; gap: 16px;
+  min-height: 280px;
+  position: relative;
+}
+.ctx:last-child { border-right: 0; }
+.ctx .ctx-label {
+  font-family: var(--mono); font-size: 9px; letter-spacing: 0.22em;
+  color: var(--ink-mute); text-transform: uppercase;
+  margin-top: auto;
+}
+
+/* browser-tab context */
+.ctx-browser {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  overflow: hidden;
+  font-family: var(--mono);
+}
+.ctx-browser__bar {
+  background: var(--bone-deep);
+  padding: 6px 8px;
+  display: flex; gap: 8px; align-items: center;
+  border-bottom: 1px solid var(--rule);
+}
+.ctx-browser__dots {
+  display: flex; gap: 4px;
+}
+.ctx-browser__dots i {
+  width: 6px; height: 6px; border-radius: 50%;
+  display: inline-block; background: rgba(21,17,10,0.18);
+}
+.ctx-browser__tab {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: var(--paper);
+  padding: 4px 8px;
+  font-size: 9.5px;
+  border-radius: 4px 4px 0 0;
+  margin-bottom: -7px;
+  border: 1px solid var(--rule);
+  border-bottom: 0;
+}
+.ctx-browser__tab .tk { width: 12px; height: 12px; display: block; }
+.ctx-browser__url {
+  font-size: 9px;
+  color: var(--ink-mute);
+  letter-spacing: 0.02em;
+  padding: 4px 8px;
+  background: var(--bone);
+  border: 1px solid var(--rule);
+  border-radius: 4px;
+}
+.ctx-browser__body {
+  padding: 14px 12px;
+  display: flex; flex-direction: column; gap: 10px;
+  min-height: 64px;
+}
+.ctx-browser__hdr {
+  display: flex; align-items: center; gap: 6px;
+  font-family: var(--serif); font-style: italic;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+}
+.ctx-browser__hdr .tk { width: 16px; height: 16px; display: block; }
+.ctx-browser__chrome-row {
+  display: flex; align-items: center; gap: 6px;
+}
+
+/* linkedin avatar */
+.ctx-li {
+  background: #f4f2ed;
+  border: 1px solid var(--rule);
+  overflow: hidden;
+  position: relative;
+}
+.ctx-li__banner {
+  height: 48px;
+  background: linear-gradient(135deg, var(--ink) 0%, var(--mark) 100%);
+}
+.ctx-li__body {
+  padding: 36px 14px 16px;
+  position: relative;
+}
+.ctx-li__avatar {
+  position: absolute; top: -28px; left: 14px;
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  border: 3px solid #f4f2ed;
+  overflow: hidden;
+  display: grid; place-items: center;
+}
+.ctx-li__avatar .tk { width: 100%; height: 100%; display: block; }
+.ctx-li__name {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: -0.01em;
+  color: #111;
+}
+.ctx-li__tag {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 10.5px;
+  color: #555;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+
+/* twitter / x avatar */
+.ctx-x {
+  background: #000;
+  color: #e7e9ea;
+  border: 1px solid #2f3336;
+  padding: 14px;
+  display: flex; flex-direction: column; gap: 10px;
+}
+.ctx-x__row {
+  display: flex; gap: 10px; align-items: center;
+}
+.ctx-x__avatar {
+  width: 44px; height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex: none;
+  display: grid; place-items: center;
+}
+.ctx-x__avatar .tk { width: 100%; height: 100%; display: block; }
+.ctx-x__name {
+  font-family: 'Chirp', 'Helvetica Neue', Arial, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #e7e9ea;
+}
+.ctx-x__handle {
+  font-family: 'Chirp', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 12px;
+  color: #71767b;
+}
+.ctx-x__post {
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+  font-size: 12px;
+  color: #e7e9ea;
+  line-height: 1.4;
+}
+
+/* news byline */
+.ctx-news {
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  padding: 16px 14px;
+  font-family: 'Helvetica Neue', Arial, sans-serif;
+}
+.ctx-news__eyebrow {
+  font-family: var(--mono); font-size: 8.5px; letter-spacing: 0.22em;
+  color: var(--ink-mute); text-transform: uppercase;
+  margin-bottom: 10px;
+}
+.ctx-news__head {
+  font-family: var(--serif); font-style: normal; font-weight: 400;
+  font-size: 17px; line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+  margin-bottom: 12px;
+}
+.ctx-news__byline {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 10.5px;
+  color: var(--ink-soft);
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+}
+.ctx-news__byline .tk {
+  width: 18px; height: 18px; display: block; flex: none;
+}
+
+/* ios app tile */
+.ctx-tile {
+  background: linear-gradient(160deg, #2a2a2e 0%, #1a1a1d 100%);
+  border-radius: 16px;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  position: relative;
+}
+.ctx-tile__app {
+  aspect-ratio: 1;
+  border-radius: 10px;
+  display: grid; place-items: center;
+  overflow: hidden;
+}
+.ctx-tile__app--coin {
+  background: transparent;
+}
+.ctx-tile__app--coin .tk { width: 100%; height: 100%; display: block; }
+.ctx-tile__app--ghost {
+  background: rgba(255,255,255,0.05);
+}
+.ctx-tile__app--ghost::after {
+  content: ""; width: 40%; height: 40%;
+  background: rgba(255,255,255,0.12); border-radius: 6px;
+}
+.ctx-tile__dock {
+  position: absolute; bottom: 14px; left: 50%;
+  transform: translateX(-50%);
+  width: 40%; height: 5px;
+  background: rgba(255,255,255,0.5);
+  border-radius: 3px;
+}
+
+@media (max-width: 1280px) {
+  .tokens__contexts { grid-template-columns: 1fr 1fr; }
+  .ctx { border-right: 0; border-bottom: 1px solid var(--rule); }
+  .tokens__variants { grid-template-columns: 1fr; }
+  .token-card { border-right: 0; border-bottom: 1px solid var(--rule); }
+}
+
+@media (max-width: 1080px) {
+  .shell { padding: 0 24px; }
+  .site-head__inner { padding: 14px 24px; gap: 16px; }
+  .site-head__nav { gap: 14px; font-size: 10px; }
+  .hero { grid-template-columns: 1fr; padding: 56px 0; }
+  .construct, .lockups { grid-template-columns: 1fr; }
+  .construct__stage { border-right: 0; border-bottom: 1px solid var(--rule); }
+  .lockup { border-right: 0; border-bottom: 1px solid var(--rule); }
+  .scroll-track__floor { grid-template-columns: 1fr; }
+  .scroll-track__rail { position: relative; top: 0; }
+  .specs__grid, .downloads__grid { grid-template-columns: 1fr 1fr; }
+  .site-foot__top { grid-template-columns: 1fr 1fr; }
+  .anim__row { grid-template-columns: 1fr 1fr; }
+  .anim__curve { grid-template-columns: 1fr; gap: 24px; }
+  .section-head { grid-template-columns: 1fr; gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═════════════ STICKY HEADER (real navigation, animated mark) ═════════════ -->
+<header class="site-head" data-screen-label="01 Site Header">
+  <div class="site-head__inner">
+    <a href="#" class="site-head__brand">
+      <span class="mk" id="mk-header" data-coin="ink" data-animated="1"></span>
+      <span class="wm">Ascertainty</span>
+    </a>
+    <nav class="site-head__nav">
+      <a href="#protocol">Protocol</a>
+      <a href="#vaults">Vaults</a>
+      <a href="#borrow">Borrow</a>
+      <a href="#docs">Docs</a>
+    </nav>
+    <a class="site-head__cta" href="#">Open app →</a>
+  </div>
+</header>
+
+<div class="shell">
+
+  <!-- meta -->
+  <div class="meta-strip">
+    <div><span class="live">Brand · Mark system</span><span style="margin-left:24px;">v0.4 · arc + peak</span></div>
+    <div class="center">Static · animated · in context</div>
+    <div class="right">SVG · scales 16 → 1024 · loops 4.2s</div>
+  </div>
+
+  <!-- ═════════════ HERO ═════════════ -->
+  <section class="hero" data-screen-label="02 Hero">
+    <div class="hero__stage">
+      <span class="corner tl">// the mark</span>
+      <span class="corner tr">240²</span>
+      <span class="corner bl">arcs 22 / 16 / 12 · butt</span>
+      <span class="corner br">live · animated</span>
+      <span class="mk" id="mk-hero" data-coin="ink" data-animated="1"></span>
+      <button class="replay" id="replay-hero" type="button">Replay</button>
+    </div>
+    <div class="hero__body">
+      <h1>Three arcs.<br/><span class="serif-it">One peak.</span><br/><span class="soft">Layered ascent to a point.</span></h1>
+      <p>The mark reads as a <b>structure being built</b> — bottom course, second course, third course, capstone. Each arc emerges in turn, settles, and the peak resolves. <span class="it">Unresolved → ascertained.</span></p>
+      <p>Drawn as <b>elliptical-arc segments with squared ends</b>, the outer edges of every layer falling on a single line that converges at the peak. Geometric, not gestural. Scales legibly from 16&nbsp;px favicon to 14&nbsp;m signage panel without modification.</p>
+      <div class="verdict">
+        <span>// verdict</span>
+        <span>An instrument of ascent, drawn as a tool.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════ CONSTRUCTION ═════════════ -->
+  <div class="section-head">
+    <div class="num-big"><em class="serif-it">§ 01</em></div>
+    <h2>Five measurements, one square unit. <em class="serif-it" style="color:var(--ink-mute);">Stated, not freehand.</em></h2>
+    <div class="corner">240 × 240 canvas<br/>Unit u = 24 (canvas ÷ 10)<br/>All dims in multiples of u</div>
+  </div>
+
+  <section class="construct">
+    <div class="construct__stage">
+      <div class="lbl-corner">
+        <span>// canonical drawing</span>
+        <span>monochrome · stated</span>
+      </div>
+      <svg class="guide" viewBox="0 0 240 240">
+        <!-- modular grid -->
+        <g stroke="#3f8064" stroke-opacity="0.16" stroke-width="0.5">
+          <line x1="24" y1="0" x2="24" y2="240"></line>
+          <line x1="48" y1="0" x2="48" y2="240"></line>
+          <line x1="72" y1="0" x2="72" y2="240"></line>
+          <line x1="96" y1="0" x2="96" y2="240"></line>
+          <line x1="120" y1="0" x2="120" y2="240" stroke-opacity="0.32"></line>
+          <line x1="144" y1="0" x2="144" y2="240"></line>
+          <line x1="168" y1="0" x2="168" y2="240"></line>
+          <line x1="192" y1="0" x2="192" y2="240"></line>
+          <line x1="216" y1="0" x2="216" y2="240"></line>
+          <line x1="0" y1="24"  x2="240" y2="24"></line>
+          <line x1="0" y1="48"  x2="240" y2="48"></line>
+          <line x1="0" y1="72"  x2="240" y2="72"></line>
+          <line x1="0" y1="96"  x2="240" y2="96"></line>
+          <line x1="0" y1="120" x2="240" y2="120" stroke-opacity="0.32"></line>
+          <line x1="0" y1="144" x2="240" y2="144"></line>
+          <line x1="0" y1="168" x2="240" y2="168"></line>
+          <line x1="0" y1="192" x2="240" y2="192"></line>
+          <line x1="0" y1="216" x2="240" y2="216"></line>
+        </g>
+
+        <!-- the mark -->
+        <g fill="none" stroke="#162421" stroke-linecap="butt">
+          <path stroke-width="22" d="M 28 218 A 92 44 0 0 1 212 218"></path>
+          <path stroke-width="16" d="M 60 154 A 60 32 0 0 1 180 154"></path>
+          <path stroke-width="12" d="M 85 104 A 35 18 0 0 1 155 104"></path>
+        </g>
+        <path d="M 120 30 L 140 66 L 100 66 Z" fill="#162421"></path>
+
+        <!-- the silhouette lines — the structural promise of the mark -->
+        <g stroke="#3f8064" stroke-width="0.8" stroke-dasharray="3 3" fill="none" stroke-opacity="0.9">
+          <!-- left envelope: peak tip → triangle left → top outer left → middle outer left → bottom outer left -->
+          <line x1="120" y1="30" x2="17" y2="218"></line>
+          <line x1="120" y1="30" x2="223" y2="218"></line>
+        </g>
+
+        <!-- collinearity ticks at each arc's outer endpoint -->
+        <g fill="#3f8064">
+          <circle cx="17"  cy="218" r="1.8"></circle>
+          <circle cx="52"  cy="154" r="1.8"></circle>
+          <circle cx="79"  cy="104" r="1.8"></circle>
+          <circle cx="100" cy="66"  r="1.8"></circle>
+          <circle cx="120" cy="30"  r="2.2"></circle>
+          <circle cx="223" cy="218" r="1.8"></circle>
+          <circle cx="188" cy="154" r="1.8"></circle>
+          <circle cx="161" cy="104" r="1.8"></circle>
+          <circle cx="140" cy="66"  r="1.8"></circle>
+        </g>
+
+        <!-- dimension callouts -->
+        <g stroke="#3f8064" stroke-width="0.5" fill="none" stroke-opacity="0.8">
+          <line x1="17"  y1="226" x2="223" y2="226"></line>
+          <line x1="17"  y1="222" x2="17"  y2="230"></line>
+          <line x1="223" y1="222" x2="223" y2="230"></line>
+        </g>
+        <g font-family="JetBrains Mono" font-size="6.5" letter-spacing="0.5" fill="#3f8064">
+          <text x="120" y="234" text-anchor="middle">8.6u — bottom envelope</text>
+          <text x="120" y="22"  text-anchor="middle">peak · convergence</text>
+          <text x="232" y="220" text-anchor="end">b 218</text>
+          <text x="232" y="156" text-anchor="end">m 154</text>
+          <text x="232" y="106" text-anchor="end">t 104</text>
+        </g>
+      </svg>
+    </div>
+    <div class="construct__rules">
+      <span class="label">// drawing rules</span>
+      <h4>Five rules. The envelope is the law.</h4>
+      <ol>
+        <li><div><b>Set the envelope.</b>Draw two lines from the peak tip at (120, 30) to the bottom-arc outer endpoints (17, 218) and (223, 218). Every outer arc endpoint, the triangle base corners, and the peak tip live on these two lines.</div></li>
+        <li><div><b>Arcs are elliptical segments,</b>not strokes through control points. Each arc is rendered by stroking an SVG elliptical-arc path with <span class="num">stroke-linecap: butt</span> — the tangent at each endpoint is vertical, so the cap reads as a clean horizontal cut.</div></li>
+        <li><div><b>Bottom arc:</b>rx 92, ry 44, baseline y=218, stroke 22. Middle: rx 60, ry 32, baseline 154, stroke 16. Top: rx 35, ry 18, baseline 104, stroke 12. Each next arc is ~65% of the previous one.</div></li>
+        <li><div><b>Peak</b>is the only filled element. Sharp isoceles, tip (120, 30), base from (100, 66) to (140, 66). Width 40, height 36.</div></li>
+        <li><div><b>Stroke ratio is locked</b>at bottom : middle : top = 22 : 16 : 12 (= 1 : 0.73 : 0.55). When you tune stroke width, the three arcs move as one family — never solo.</div></li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ═════════════ SIZE SCALE ═════════════ -->
+  <div class="section-head">
+    <div class="num-big"><em class="serif-it">§ 02</em></div>
+    <h2>The peak persists. <em class="serif-it" style="color:var(--ink-mute);">From browser tab to wall panel.</em></h2>
+    <div class="corner">16 · 24 · 48 · 96 · 240 · 512 px</div>
+  </div>
+
+  <section class="sizes">
+    <div class="sizes__head">
+      <span class="label">// size scale</span>
+      <h3>Six steps, one geometry.</h3>
+    </div>
+    <div class="sizes__row">
+      <div class="size-cell"><span class="mk" data-size="16"></span><span class="lbl">16 · tab</span></div>
+      <div class="size-cell"><span class="mk" data-size="24"></span><span class="lbl">24 · nav</span></div>
+      <div class="size-cell"><span class="mk" data-size="48"></span><span class="lbl">48 · header</span></div>
+      <div class="size-cell"><span class="mk" data-size="96"></span><span class="lbl">96 · marketing</span></div>
+      <div class="size-cell"><span class="mk" data-size="160"></span><span class="lbl">160 · hero</span></div>
+      <div class="size-cell"><span class="mk" data-size="240"></span><span class="lbl">240 · canonical</span></div>
+    </div>
+  </section>
+
+  <!-- ═════════════ LOCKUPS ═════════════ -->
+  <div class="section-head">
+    <div class="num-big"><em class="serif-it">§ 03</em></div>
+    <h2>One mark, three grounds. <em class="serif-it" style="color:var(--ink-mute);">White, ink, signal.</em></h2>
+    <div class="corner">primary · inverse · stamped</div>
+  </div>
+
+  <section class="lockups">
+    <div class="lockup">
+      <div class="corner"><span>// primary · white</span><span>#ffffff</span></div>
+      <span class="mk" id="mk-lockup-1" data-coin="ink"></span>
+      <span class="wm">Ascertainty</span>
+    </div>
+    <div class="lockup lockup--ink">
+      <div class="corner"><span>// inverse · ink</span><span>#162421</span></div>
+      <span class="mk" id="mk-lockup-2" data-coin="white"></span>
+      <span class="wm">Ascertainty</span>
+    </div>
+    <div class="lockup lockup--mark">
+      <div class="corner"><span>// stamped · mark</span><span id="mark-hex-readout">#3f8064</span></div>
+      <span class="mk" id="mk-lockup-3" data-coin="mark"></span>
+      <span class="wm">Ascertainty</span>
+    </div>
+  </section>
+
+  <!-- ═════════════ THE TOKEN (coin) ═════════════ -->
+  <div class="section-head">
+    <div class="num-big"><em class="serif-it">§ 04</em></div>
+    <h2>Stamp the mark. <em class="serif-it" style="color:var(--ink-mute);">A struck coin for stand-alone use.</em></h2>
+    <div class="corner">avatar · favicon · app tile<br/>byline · news article<br/>three grounds · one geometry</div>
+  </div>
+
+  <section class="tokens" data-screen-label="04 Token">
+
+    <!-- three coin variants -->
+    <div class="tokens__variants">
+      <div class="token-card active" data-variant-card="ink">
+        <div class="corner"><span>// A</span><span>ink body</span></div>
+        <div class="coin"><span class="tk" data-variant="ink" data-size="180"></span></div>
+        <div>
+          <div class="meta">// inked</div>
+          <div class="name">Ink token</div>
+        </div>
+        <p class="role"><b>Default.</b>Dark coffee body with green ring + green mark. Reads as a struck obol on any ground — the highest-contrast variant for favicon and avatar.</p>
+        <div class="pick">Recommended default</div>
+      </div>
+      <div class="token-card" data-variant-card="white">
+        <div class="corner"><span>// B</span><span>white body</span></div>
+        <div class="coin"><span class="tk" data-variant="white" data-size="180"></span></div>
+        <div>
+          <div class="meta">// stamped</div>
+          <div class="name">White token</div>
+        </div>
+        <p class="role"><b>Editorial.</b>White body with green ring + green mark. The lightest variant — for documents, byline use, and white-ground websites like ascertainty.com.</p>
+        <div class="pick">For light surfaces</div>
+      </div>
+      <div class="token-card" data-variant-card="mark">
+        <div class="corner"><span>// C</span><span>green body</span></div>
+        <div class="coin"><span class="tk" data-variant="mark" data-size="180"></span></div>
+        <div>
+          <div class="meta">// saturated</div>
+          <div class="name">Green token</div>
+        </div>
+        <p class="role"><b>Signal.</b>Brand green body with white ring + white mark. The most saturated treatment — for marketing surfaces where the brand color must lead.</p>
+        <div class="pick">For brand-led surfaces</div>
+      </div>
+    </div>
+
+    <!-- size scale at favicon-relevant pixel sizes -->
+    <div class="tokens__sizes">
+      <div class="tokens__sizes-head">
+        <span class="label">// size scale · token</span>
+        <h4>16 to 240 — one geometry, one cut.</h4>
+      </div>
+      <div class="tk-size"><span class="tk" data-variant="ink" data-size="16"></span><span class="lbl">16 · favicon</span></div>
+      <div class="tk-size"><span class="tk" data-variant="ink" data-size="24"></span><span class="lbl">24 · tab @2x</span></div>
+      <div class="tk-size"><span class="tk" data-variant="ink" data-size="32"></span><span class="lbl">32 · tab @3x</span></div>
+      <div class="tk-size"><span class="tk" data-variant="ink" data-size="48"></span><span class="lbl">48 · ios sm</span></div>
+      <div class="tk-size"><span class="tk" data-variant="ink" data-size="64"></span><span class="lbl">64 · ios md</span></div>
+      <div class="tk-size"><span class="tk" data-variant="ink" data-size="96"></span><span class="lbl">96 · avatar</span></div>
+      <div class="tk-size"><span class="tk" data-variant="ink" data-size="128"></span><span class="lbl">128 · app tile</span></div>
+    </div>
+
+    <!-- five real-world contexts -->
+    <div class="tokens__contexts">
+
+      <!-- browser tab -->
+      <div class="ctx">
+        <div class="ctx-browser">
+          <div class="ctx-browser__bar">
+            <div class="ctx-browser__dots"><i></i><i></i><i></i></div>
+            <div class="ctx-browser__tab">
+              <span class="tk" data-variant="ink" data-size="12"></span>
+              <span>Ascertainty</span>
+            </div>
+          </div>
+          <div class="ctx-browser__chrome-row" style="padding:6px 8px;">
+            <div class="ctx-browser__url" style="flex:1;">ascertainty.com</div>
+          </div>
+          <div class="ctx-browser__body">
+            <div class="ctx-browser__hdr">
+              <span class="tk" data-variant="ink" data-size="16"></span>
+              <span>Ascertainty</span>
+            </div>
+          </div>
+        </div>
+        <span class="ctx-label">// browser tab · 16 px favicon</span>
+      </div>
+
+      <!-- linkedin avatar -->
+      <div class="ctx">
+        <div class="ctx-li">
+          <div class="ctx-li__banner"></div>
+          <div class="ctx-li__body">
+            <div class="ctx-li__avatar"><span class="tk" data-variant="ink"></span></div>
+            <div class="ctx-li__name">Ascertainty Labs</div>
+            <div class="ctx-li__tag">Industrial yield, ascertained.<br/>Singapore · 1,240 followers</div>
+          </div>
+        </div>
+        <span class="ctx-label">// linkedin · 200² square</span>
+      </div>
+
+      <!-- x.com / twitter avatar -->
+      <div class="ctx">
+        <div class="ctx-x">
+          <div class="ctx-x__row">
+            <div class="ctx-x__avatar"><span class="tk" data-variant="ink"></span></div>
+            <div>
+              <div class="ctx-x__name">Ascertainty</div>
+              <div class="ctx-x__handle">@ascertainty</div>
+            </div>
+          </div>
+          <div class="ctx-x__post">Calibrated underwriting against MRV-verified industrial yield. New vault: V-014, Penang.</div>
+        </div>
+        <span class="ctx-label">// x.com · circle crop</span>
+      </div>
+
+      <!-- news byline -->
+      <div class="ctx">
+        <div class="ctx-news">
+          <div class="ctx-news__eyebrow">Bloomberg · Asia · Climate finance</div>
+          <div class="ctx-news__head">Calibrated underwriting comes of age in Singapore.</div>
+          <div class="ctx-news__byline">
+            <span class="tk" data-variant="white" data-size="18"></span>
+            <span>By <b style="color:var(--ink);">Ascertainty Labs</b> · 14 May 2026 · 6 min read</span>
+          </div>
+        </div>
+        <span class="ctx-label">// news byline · 18 px inline</span>
+      </div>
+
+      <!-- ios app tile grid -->
+      <div class="ctx">
+        <div class="ctx-tile">
+          <div class="ctx-tile__app ctx-tile__app--coin"><span class="tk" data-variant="ink"></span></div>
+          <div class="ctx-tile__app ctx-tile__app--ghost"></div>
+          <div class="ctx-tile__app ctx-tile__app--ghost"></div>
+          <div class="ctx-tile__app ctx-tile__app--ghost"></div>
+          <div class="ctx-tile__app ctx-tile__app--ghost"></div>
+          <div class="ctx-tile__app ctx-tile__app--ghost"></div>
+          <div class="ctx-tile__dock"></div>
+        </div>
+        <span class="ctx-label">// ios · home-screen · 60 pt</span>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═════════════ ANIMATION STORYBOARD ═════════════ -->
+  <div class="section-head">
+    <div class="num-big"><em class="serif-it">§ 05</em></div>
+    <h2>Five frames. <em class="serif-it" style="color:var(--ink-mute);">Foundation, course, course, peak, settle.</em></h2>
+    <div class="corner">4.2 s loop · cubic ease-out · staggered 0.28 s</div>
+  </div>
+
+  <section class="anim">
+    <div class="anim__head">
+      <span class="label">// storyboard</span>
+      <h3>The growth, dimensioned.</h3>
+    </div>
+
+    <div class="anim__row" id="anim-storyboard">
+      <div class="anim__frame">
+        <div class="stage" data-t="0"></div>
+        <span class="t">t = 0.00 s</span>
+        <span class="cap">ground.</span>
+      </div>
+      <div class="anim__frame">
+        <div class="stage" data-t="0.28"></div>
+        <span class="t">t = 0.28 s</span>
+        <span class="cap">first course.</span>
+      </div>
+      <div class="anim__frame">
+        <div class="stage" data-t="0.56"></div>
+        <span class="t">t = 0.56 s</span>
+        <span class="cap">second course.</span>
+      </div>
+      <div class="anim__frame">
+        <div class="stage" data-t="0.82"></div>
+        <span class="t">t = 0.82 s</span>
+        <span class="cap">third course.</span>
+      </div>
+      <div class="anim__frame">
+        <div class="stage" data-t="1.10"></div>
+        <span class="t">t = 1.10 s</span>
+        <span class="cap">peak.</span>
+      </div>
+    </div>
+
+    <div class="anim__curve">
+      <dl>
+        <dt>// curve</dt>           <dd>cubic-bezier(.16, .84, .3, 1)</dd>
+        <dt>// total</dt>           <dd>4.2 s loop · ~3.0 s settled hold</dd>
+        <dt>// stagger</dt>         <dd>0.28 s between each layer</dd>
+        <dt>// reduced-motion</dt>  <dd>respects prefers-reduced-motion</dd>
+        <dt>// trigger</dt>         <dd>autoplay + scroll-replay</dd>
+      </dl>
+      <div>
+        <p style="font-family:var(--serif); font-style:italic; font-size:18px; letter-spacing:-0.012em; line-height:1.45; margin:0 0 12px;">
+          Each layer scales up from its own baseline and fades in. The bottom arc anchors first, the courses stack onto it, and the peak resolves last — like a structure being assembled.
+        </p>
+        <p style="font-size:12px; line-height:1.65; color:var(--ink-soft); margin:0;">
+          Encoded as inline CSS animations inside the SVG itself — no external runtime needed. The file works in any browser, in email, embedded as <span class="num">&lt;img&gt;</span>, dragged into Figma. The motion is the file.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════ SCROLL DEMO ═════════════ -->
+  <div class="section-head">
+    <div class="num-big"><em class="serif-it">§ 06</em></div>
+    <h2>Scroll loops the mark. <em class="serif-it" style="color:var(--ink-mute);">A heartbeat tied to the read.</em></h2>
+    <div class="corner">replay every <span class="num" id="replay-px-readout">480</span> px<br/>scroll-direction agnostic<br/>throttled to 1 replay / animation</div>
+  </div>
+
+  <section class="scroll-demo">
+    <div class="scroll-demo__intro">
+      <p><b>Try it:</b> scroll up and down through the chapters below. Each time you traverse roughly half a viewport, the mark in the sidebar — and the one in the page header — re-plays. The motion ties the rhythm of reading to the mark.</p>
+      <p>Tune the trigger distance via the <span class="it">Tweaks</span> panel (bottom right).</p>
+    </div>
+
+    <div class="scroll-track">
+      <div class="scroll-track__floor">
+
+        <aside class="scroll-track__rail">
+          <div class="stage">
+            <span class="mk" id="mk-rail" data-coin="ink" data-animated="1"></span>
+          </div>
+          <div class="meter">
+            <div class="row"><span>// replays</span><b id="replay-count">0</b></div>
+            <div class="row"><span>// scrolled</span><b id="scroll-px">0 px</b></div>
+            <div class="bar"><i id="scroll-bar"></i></div>
+            <div class="row" style="margin-top:6px;"><span>// next replay</span><b id="next-px">480 px</b></div>
+          </div>
+        </aside>
+
+        <div class="scroll-track__chapters">
+          <div class="chapter">
+            <span class="chap-num">// chapter 01</span>
+            <h4>Foundation.</h4>
+            <p>The first arc is the <b>widest, lowest, most material</b>. It carries the brand even when nothing else is visible. At 16&nbsp;px favicon scale, the bottom arc is the only thing the eye sees — and that's enough.</p>
+            <p>Build the foundation right and everything that stacks on it inherits the geometry.</p>
+          </div>
+          <div class="chapter">
+            <span class="chap-num">// chapter 02</span>
+            <h4>First course.</h4>
+            <p>The second arc inherits the symmetry axis and reduces by <span class="it">~30%</span>. It is the same gesture, smaller. The visual rhythm of the mark is the same rhythm of a <b>convergent estimate</b> — successive measurements, each narrower than the last.</p>
+            <p>Repetition with reduction. The protocol's job, rendered as form.</p>
+          </div>
+          <div class="chapter">
+            <span class="chap-num">// chapter 03</span>
+            <h4>Second course.</h4>
+            <p>The third arc is the <b>narrowest of the three</b>. At this point the eye reads the stack as ascent — three layers leaning toward a point that has not yet appeared.</p>
+            <p>Tension before resolution. The mark earns its peak.</p>
+          </div>
+          <div class="chapter">
+            <span class="chap-num">// chapter 04</span>
+            <h4>The peak.</h4>
+            <p>The peak is the only <b>filled, sharp</b> element in the mark. It is the calibrated point — the moment the estimate resolves into a value. Everything below it is process; the peak is the result.</p>
+            <p>This is also where the brand color does its hardest work. At signage scale, the peak is the first thing visible from across the room.</p>
+          </div>
+          <div class="chapter">
+            <span class="chap-num">// chapter 05</span>
+            <h4>Settle.</h4>
+            <p>After the peak resolves, the mark holds its final state for ~3 seconds before the loop restarts. The hold is intentional — it gives the brand <b>presence</b>, not just motion.</p>
+            <p>Continuously animating logos are noise. A logo that settles is a logo you can read.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════ SPECS ═════════════ -->
+  <div class="section-head">
+    <div class="num-big"><em class="serif-it">§ 07</em></div>
+    <h2>The numbers. <em class="serif-it" style="color:var(--ink-mute);">All of them.</em></h2>
+    <div class="corner">copy these into a brand book · paste into figma</div>
+  </div>
+
+  <section class="specs">
+    <div class="specs__head">
+      <span class="label">// specifications</span>
+      <h3>Mark · color · motion.</h3>
+    </div>
+    <div class="specs__grid">
+      <div class="spec-cell">
+        <span class="k">// canvas</span>
+        <div class="v"><span class="num">240 × 240</span></div>
+        <p>Square. Aspect 1:1. Padding 20 / 0 / 24 / 0 around the inked silhouette.</p>
+      </div>
+      <div class="spec-cell">
+        <span class="k">// stroke</span>
+        <div class="v"><span class="num">22 · 16 · 12</span> · butt</div>
+        <p>Three locked stroke weights — bottom : middle : top = 22 : 16 : 12. Butt linecaps cut the tangent perpendicular, yielding flat horizontal endpoints. No round-stroke gesture.</p>
+      </div>
+      <div class="spec-cell">
+        <span class="k">// color</span>
+        <div class="v"><span class="num" id="color-readout-1">#3f8064</span></div>
+        <p>oklch(0.55 0.078 156). A kiln-fired sage between forest and verdigris. Single saturation in the system.</p>
+      </div>
+      <div class="spec-cell">
+        <span class="k">// motion</span>
+        <div class="v"><span class="num">4.2 s</span> loop</div>
+        <p>1.1 s build · 3.1 s hold. Cubic ease-out, 0.28 s stagger between layers.</p>
+      </div>
+      <div class="spec-cell">
+        <span class="k">// min size</span>
+        <div class="v"><span class="num">16 px</span></div>
+        <p>At 16 px the bottom stroke beefs up to 28 px (in the 240 viewBox) to maintain legibility. Below 16 px, fall back to the filled "peak" glyph alone.</p>
+      </div>
+      <div class="spec-cell">
+        <span class="k">// clear-space</span>
+        <div class="v"><span class="num">2u</span> · all sides</div>
+        <p>Equal to bottom arc rise. The mark is never set closer than this to any other element.</p>
+      </div>
+      <div class="spec-cell">
+        <span class="k">// file format</span>
+        <div class="v">SVG · <span class="num">currentColor</span></div>
+        <p>Stroke inherits CSS color, so a single file serves every context. PNG exports at 16 / 32 / 64 / 128 / 256 / 512 / 1024.</p>
+      </div>
+      <div class="spec-cell">
+        <span class="k">// accessibility</span>
+        <div class="v">role · img</div>
+        <p>aria-label = "Ascertainty". prefers-reduced-motion respected — animation collapses to static end-state.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════ DOWNLOADS ═════════════ -->
+  <section class="downloads">
+    <div class="downloads__head">
+      <span class="label">// files in this project</span>
+      <h3>Drop-in assets.</h3>
+    </div>
+    <div class="downloads__grid">
+      <a class="dl-card" href="mark.svg" download>
+        <div class="preview"><span class="mk" id="mk-dl-1"></span></div>
+        <div class="meta">
+          <span class="name">mark.svg</span>
+          <span class="type">SVG · static</span>
+        </div>
+        <p class="desc">The mark only — no wordmark, no background. Uses currentColor; sets its tint from CSS. ~440 bytes.</p>
+      </a>
+      <a class="dl-card" href="mark-animated.svg" download>
+        <div class="preview"><span class="mk" id="mk-dl-2"></span></div>
+        <div class="meta">
+          <span class="name">mark-animated.svg</span>
+          <span class="type">SVG · looped</span>
+        </div>
+        <p class="desc">Same mark + embedded CSS keyframes. Self-contained: loops anywhere an SVG renders. ~2.1 KB.</p>
+      </a>
+      <a class="dl-card" href="mark-with-wordmark.svg" download>
+        <div class="preview"><span class="mk" id="mk-dl-3" style="transform:scale(0.85)"></span></div>
+        <div class="meta">
+          <span class="name">mark-with-wordmark.svg</span>
+          <span class="type">SVG · lockup</span>
+        </div>
+        <p class="desc">Vertical lockup — mark + ASCERTAINTY wordmark beneath, monospace, tracked +0.32em.</p>
+      </a>
+      <a class="dl-card" href="coin-ink.svg" download>
+        <div class="preview" style="background:transparent;border:0;"><span class="tk" data-variant="ink" data-size="120"></span></div>
+        <div class="meta">
+          <span class="name">coin-ink.svg</span>
+          <span class="type">SVG · token</span>
+        </div>
+        <p class="desc">Stamped coin · ink body, green ring + green mark. The default avatar / favicon / app-tile variant.</p>
+      </a>
+      <a class="dl-card" href="coin-white.svg" download>
+        <div class="preview" style="background:transparent;border:0;"><span class="tk" data-variant="white" data-size="120"></span></div>
+        <div class="meta">
+          <span class="name">coin-white.svg</span>
+          <span class="type">SVG · token</span>
+        </div>
+        <p class="desc">Stamped coin · white body, green ring + green mark. For documents, byline, and white-ground sites.</p>
+      </a>
+      <a class="dl-card" href="coin-mark.svg" download>
+        <div class="preview" style="background:transparent;border:0;"><span class="tk" data-variant="mark" data-size="120"></span></div>
+        <div class="meta">
+          <span class="name">coin-mark.svg</span>
+          <span class="type">SVG · token</span>
+        </div>
+        <p class="desc">Stamped coin · green body, white ring + white mark. The most saturated, brand-led variant.</p>
+      </a>
+    </div>
+  </section>
+
+</div><!-- /.shell -->
+
+<!-- ═════════════ FOOTER ═════════════ -->
+<footer class="site-foot" data-screen-label="03 Site Footer">
+  <div class="site-foot__top">
+    <div class="site-foot__brand">
+      <span class="mk" id="mk-footer" data-coin="white" data-animated="1"></span>
+      <span class="wm">Ascertainty</span>
+      <p class="tag">Industrial yield, ascertained. Singapore-domiciled, Solana-settled.</p>
+    </div>
+    <div class="site-foot__col">
+      <h5>// product</h5>
+      <ul>
+        <li><a href="#">Protocol</a></li>
+        <li><a href="#">Vaults</a></li>
+        <li><a href="#">Borrow</a></li>
+        <li><a href="#">PINN engine</a></li>
+      </ul>
+    </div>
+    <div class="site-foot__col">
+      <h5>// company</h5>
+      <ul>
+        <li><a href="#">Manifesto</a></li>
+        <li><a href="#">Underwriting</a></li>
+        <li><a href="#">Filings</a></li>
+        <li><a href="#">Careers</a></li>
+      </ul>
+    </div>
+    <div class="site-foot__col">
+      <h5>// resources</h5>
+      <ul>
+        <li><a href="#">Docs</a></li>
+        <li><a href="#">Whitepaper</a></li>
+        <li><a href="#">Brand</a></li>
+        <li><a href="#">Press</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="site-foot__bottom">
+    <span>© 2026 Ascertainty Labs · Singapore</span>
+    <span class="num">MAS-aligned · v0.4.0</span>
+    <span>Mark · CC-BY 4.0</span>
+  </div>
+</footer>
+
+<!-- TWEAKS PANEL -->
+<button class="tweaks-toggle" id="tweaks-toggle" type="button">⌥</button>
+<aside class="tweaks" id="tweaks">
+  <div class="tweaks__head">
+    <span>Tweaks</span>
+    <button id="tweaks-close" type="button" aria-label="Close">×</button>
+  </div>
+  <div class="tweaks__body">
+    <div class="tweaks__row">
+      <label>Mark color <b id="lbl-color">#3f8064</b></label>
+      <div class="swatches" id="sw-color">
+        <div class="sw" data-color="#3f8064" style="background:#3f8064"></div>
+        <div class="sw" data-color="#2d5d48" style="background:#2d5d48"></div>
+        <div class="sw" data-color="#5fa67f" style="background:#5fa67f"></div>
+        <div class="sw" data-color="#162421" style="background:#162421"></div>
+        <div class="sw" data-color="#b65021" style="background:#b65021"></div>
+        <div class="sw" data-color="#1f4d76" style="background:#1f4d76"></div>
+      </div>
+    </div>
+    <div class="tweaks__row">
+      <label>Ground <b id="lbl-ground">white</b></label>
+      <div class="swatches" id="sw-ground">
+        <div class="sw" data-ground="#ffffff" style="background:#ffffff"></div>
+        <div class="sw" data-ground="#fafafa" style="background:#fafafa"></div>
+        <div class="sw" data-ground="#f7f7f8" style="background:#f7f7f8"></div>
+        <div class="sw" data-ground="#162421" style="background:#162421"></div>
+      </div>
+    </div>
+    <div class="tweaks__row">
+      <label>Token variant <b id="lbl-tk">ink</b></label>
+      <div class="seg" id="seg-token">
+        <button data-tk="ink">Ink</button>
+        <button data-tk="white">White</button>
+        <button data-tk="mark">Green</button>
+      </div>
+    </div>
+    <div class="tweaks__row">
+      <label>Header mark <b id="lbl-hdr">bare</b></label>
+      <div class="seg" id="seg-header">
+        <button data-hv="bare">Bare</button>
+        <button data-hv="coin-ink">Coin · ink</button>
+        <button data-hv="coin-white">Coin · white</button>
+      </div>
+    </div>
+    <div class="tweaks__row">
+      <label>Stroke width <b><span id="lbl-stroke">22</span> px</b></label>
+      <input type="range" id="rng-stroke" min="10" max="36" step="1" value="22" />
+    </div>
+    <div class="tweaks__row">
+      <label>Loop duration <b><span id="lbl-loop">4.2</span> s</b></label>
+      <input type="range" id="rng-loop" min="1500" max="8000" step="100" value="4200" />
+    </div>
+    <div class="tweaks__row">
+      <label>Scroll replay <b>every <span id="lbl-px">480</span> px</b></label>
+      <input type="range" id="rng-px" min="120" max="1600" step="40" value="480" />
+    </div>
+  </div>
+</aside>
+
+<!-- ═════════════ SCRIPT — mark factory, animation, scroll-loop, tweaks ═════════════ -->
+<script>
+(function () {
+  'use strict';
+
+  /* ─── MARK SVG FACTORY ───────────────────────────────────────────── */
+  // One source of truth for the SVG paths. Every mark instance is stamped
+  // from this template. The animation engine targets these elements by class.
+
+  // The bottom-arc stroke is the tunable knob; middle and top scale
+  // proportionally so the three arcs always feel like one family.
+  function strokeTriple(bottom) {
+    return {
+      bottom: bottom,
+      middle: Math.max(4, Math.round(bottom * 16 / 22)),
+      top:    Math.max(3, Math.round(bottom * 12 / 22))
+    };
+  }
+
+  // Coin (token) factory. Three palettes; mark is scaled to fit
+  // a centered area inside the 240-unit coin viewBox.
+  // NOTE: CSS variables only work inside `style="…"`, not in SVG
+  // presentation attributes — that's why we pipe colors via inline style.
+  // Body & ring are STABLE per variant — they don't track page-ground tweaks.
+  // Only the mark colour follows --mark so a brand-green tweak still flows.
+  function buildCoinSVG(variant, opts) {
+    opts = opts || {};
+    const palettes = {
+      ink:   { ring: 'var(--mark)', body: 'var(--ink)',  mark: 'var(--mark)' },
+      white: { ring: 'var(--mark)', body: '#ffffff',     mark: 'var(--mark)' },
+      mark:  { ring: '#ffffff',     body: 'var(--mark)', mark: '#ffffff'     }
+    };
+    const p = palettes[variant] || palettes.ink;
+    // Stroke + scale tuned to the rendered pixel size so the mark stays
+    // legible at favicon scales (16/24) without losing balance at 240+.
+    const baseStroke = opts.stroke != null ? opts.stroke : TWEAKS.strokeWidth;
+    const scale = opts.scale != null ? opts.scale : 0.66;
+    const s = strokeTriple(baseStroke);
+    // Mark bbox center sits at (120, 124). Lifting visual placement up by
+    // 6 units balances the mark optically (it's bottom-heavy: bottom arc
+    // is wide & dark, peak triangle is small).
+    const visualLift = opts.visualLift != null ? opts.visualLift : 6;
+    const tx = (120 - 120 * scale).toFixed(2);
+    const ty = (120 - 124 * scale - visualLift).toFixed(2);
+    // When animated:true the mark paths get the .mk-* classes so the global
+    // keyframes (writeAnimCSS) animate them inside the coin.
+    const animated = !!opts.animated;
+    const classNames = animated ? ' class="mk-anim"' : '';
+    const bottomCls = animated ? ' class="mk-bottom"' : '';
+    const middleCls = animated ? ' class="mk-middle"' : '';
+    const topCls    = animated ? ' class="mk-top"'    : '';
+    const triCls    = animated ? ' class="mk-tri"'    : '';
+    return `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="100%" height="100%" role="img" aria-label="Ascertainty token">
+  <circle cx="120" cy="120" r="119" style="fill: ${p.ring}"></circle>
+  <circle cx="120" cy="120" r="107" style="fill: ${p.body}"></circle>
+  <g${classNames}>
+    <g transform="translate(${tx} ${ty}) scale(${scale})" style="stroke: ${p.mark}; fill: none" stroke-linecap="butt">
+      <path${bottomCls} stroke-width="${s.bottom}" d="M 28 218 A 92 44 0 0 1 212 218"></path>
+      <path${middleCls} stroke-width="${s.middle}" d="M 60 154 A 60 32 0 0 1 180 154"></path>
+      <path${topCls}    stroke-width="${s.top}"    d="M 85 104 A 35 18 0 0 1 155 104"></path>
+      <path${triCls} style="fill: ${p.mark}; stroke: none" d="M 120 30 L 140 66 L 100 66 Z"></path>
+    </g>
+  </g>
+</svg>`;
+  }
+
+  function buildMarkSVG(opts) {
+    opts = opts || {};
+    const w = opts.stroke != null ? opts.stroke : TWEAKS.strokeWidth;
+    const s = strokeTriple(w);
+    const uid = 'm' + Math.random().toString(36).slice(2, 8);
+    return `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="100%" height="100%" role="img" aria-label="Ascertainty mark">
+  <g class="mk-anim mk-anim--${uid}" data-uid="${uid}">
+    <g fill="none" stroke="currentColor" stroke-linecap="butt">
+      <path class="mk-bottom" stroke-width="${s.bottom}" d="M 28 218 A 92 44 0 0 1 212 218"></path>
+      <path class="mk-middle" stroke-width="${s.middle}" d="M 60 154 A 60 32 0 0 1 180 154"></path>
+      <path class="mk-top"    stroke-width="${s.top}"    d="M 85 104 A 35 18 0 0 1 155 104"></path>
+    </g>
+    <path class="mk-tri" d="M 120 30 L 140 66 L 100 66 Z" fill="currentColor"></path>
+  </g>
+</svg>`;
+  }
+
+  // Inject animation CSS (lives in the host page so we can globally restart).
+  const animStyle = document.createElement('style');
+  animStyle.id = 'mk-anim-style';
+  document.head.appendChild(animStyle);
+
+  function writeAnimCSS(loopMs) {
+    const d = loopMs;
+    const buildEnd = 1100 / d * 100;   // 1.1 s of build → percent of loop
+    const triStart = 820 / d * 100;
+    const triEnd   = 1200 / d * 100;
+    const restEnd  = 100;
+    animStyle.textContent = `
+      .mk-anim .mk-bottom,
+      .mk-anim .mk-middle,
+      .mk-anim .mk-top,
+      .mk-anim .mk-tri     { opacity: 0; transform-box: fill-box; transform-origin: 50% 100%; }
+      .mk-anim .mk-bottom  { animation: mk-rise ${d}ms cubic-bezier(.16,.84,.3,1) infinite both; animation-delay: 0ms; }
+      .mk-anim .mk-middle  { animation: mk-rise ${d}ms cubic-bezier(.16,.84,.3,1) infinite both; animation-delay: 280ms; }
+      .mk-anim .mk-top     { animation: mk-rise ${d}ms cubic-bezier(.16,.84,.3,1) infinite both; animation-delay: 560ms; }
+      .mk-anim .mk-tri     { animation: mk-tri  ${d}ms cubic-bezier(.16,.84,.3,1) infinite both; animation-delay: 820ms; }
+
+      @keyframes mk-rise {
+        0%   { opacity: 0; transform: translateY(8px) scaleY(.06); }
+        12%  { opacity: 1; }
+        28%  { transform: translateY(0) scaleY(1); }
+        85%  { opacity: 1; transform: translateY(0) scaleY(1); }
+        100% { opacity: 1; transform: translateY(0) scaleY(1); }
+      }
+      @keyframes mk-tri {
+        0%   { opacity: 0; transform: translateY(8px) scale(.18); }
+        14%  { opacity: 1; }
+        30%  { transform: translateY(0) scale(1); }
+        85%  { opacity: 1; transform: translateY(0) scale(1); }
+        100% { opacity: 1; transform: translateY(0) scale(1); }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .mk-anim .mk-bottom,
+        .mk-anim .mk-middle,
+        .mk-anim .mk-top,
+        .mk-anim .mk-tri  { opacity: 1 !important; transform: none !important; animation: none !important; }
+      }
+    `;
+  }
+
+  /* ─── BUILD A STATIC FRAME AT t (for storyboard) ─────────────────── */
+  // We build a snapshot of the animation at a specific time by computing
+  // visibility + transforms ourselves and stamping them inline (no animation).
+
+  function easeOutCubic(t) {
+    t = Math.max(0, Math.min(1, t));
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function frameProgress(t, delaySec, durSec) {
+    // returns {opacity, scale} for a layer at absolute time t.
+    const startBuild = delaySec;
+    const endBuild   = delaySec + 0.28 * (durSec / 4.2); // build phase scales with loop
+    if (t < startBuild) return { opacity: 0, scale: 0.06, translateY: 8 };
+    if (t > endBuild)   return { opacity: 1, scale: 1, translateY: 0 };
+    const p = easeOutCubic((t - startBuild) / (endBuild - startBuild));
+    return {
+      opacity: Math.min(1, p * 2),
+      scale: 0.06 + (1 - 0.06) * p,
+      translateY: 8 * (1 - p)
+    };
+  }
+
+  function buildSnapshotSVG(t /* seconds */) {
+    const bottom = frameProgress(t, 0,    1.1);
+    const middle = frameProgress(t, 0.28, 1.1);
+    const top    = frameProgress(t, 0.56, 1.1);
+    const tri    = frameProgress(t, 0.82, 1.1);
+
+    function tx(p) {
+      return `transform: translateY(${p.translateY.toFixed(2)}px) scaleY(${p.scale.toFixed(3)}); opacity: ${p.opacity.toFixed(2)}; transform-box: fill-box; transform-origin: 50% 100%;`;
+    }
+    function txTri(p) {
+      return `transform: translateY(${p.translateY.toFixed(2)}px) scale(${p.scale.toFixed(3)}); opacity: ${p.opacity.toFixed(2)}; transform-box: fill-box; transform-origin: 50% 100%;`;
+    }
+
+    const s = strokeTriple(TWEAKS.strokeWidth);
+    return `
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="100%" height="100%">
+  <g fill="none" stroke="currentColor" stroke-linecap="butt">
+    <path stroke-width="${s.bottom}" style="${tx(bottom)}" d="M 28 218 A 92 44 0 0 1 212 218"></path>
+    <path stroke-width="${s.middle}" style="${tx(middle)}" d="M 60 154 A 60 32 0 0 1 180 154"></path>
+    <path stroke-width="${s.top}"    style="${tx(top)}"    d="M 85 104 A 35 18 0 0 1 155 104"></path>
+  </g>
+  <path style="${txTri(tri)}" d="M 120 30 L 140 66 L 100 66 Z" fill="currentColor"></path>
+</svg>`;
+  }
+
+  /* ─── STAMP MARKS INTO EVERY .mk SLOT ────────────────────────────── */
+  function stampAll() {
+    writeAnimCSS(TWEAKS.loopMs);
+    document.querySelectorAll('.mk').forEach(el => {
+      const s = el.dataset.size ? parseInt(el.dataset.size, 10) : null;
+      if (s) {
+        el.style.width  = s + 'px';
+        el.style.height = s + 'px';
+        el.style.display = 'inline-block';
+        el.style.color = 'var(--mark)';
+      }
+      const coinV  = el.dataset.coin;          // 'ink' | 'white' | 'mark' | undefined
+      const isAnim = el.dataset.animated === '1';
+
+      // size-aware stroke + scale (favicon-tier legibility for tiny renders)
+      let coinOpts = { animated: isAnim };
+      let bareStroke = TWEAKS.strokeWidth;
+      if (s && s < 24) {
+        coinOpts.stroke = Math.max(38, TWEAKS.strokeWidth + 10);
+        coinOpts.scale  = 0.78;
+        bareStroke      = Math.max(28, TWEAKS.strokeWidth + 6);
+      } else if (s && s < 48) {
+        coinOpts.stroke = Math.max(32, TWEAKS.strokeWidth + 4);
+        coinOpts.scale  = 0.72;
+        bareStroke      = Math.max(24, TWEAKS.strokeWidth + 2);
+      }
+
+      if (coinV) {
+        el.innerHTML = buildCoinSVG(coinV, coinOpts);
+      } else {
+        el.innerHTML = buildMarkSVG({ stroke: bareStroke });
+      }
+    });
+
+    // coin slots — .tk elements carry data-variant + data-size
+    document.querySelectorAll('.tk').forEach(el => {
+      const v = el.dataset.variant || TWEAKS.tokenVariant || 'ink';
+      const s = el.dataset.size ? parseInt(el.dataset.size, 10) : null;
+      if (s) {
+        el.style.width  = s + 'px';
+        el.style.height = s + 'px';
+        el.style.display = 'inline-block';
+      }
+      let coinOpts = {};
+      if (s && s < 24) {
+        coinOpts = { stroke: Math.max(38, TWEAKS.strokeWidth + 10), scale: 0.78 };
+      } else if (s && s < 48) {
+        coinOpts = { stroke: Math.max(32, TWEAKS.strokeWidth + 4), scale: 0.72 };
+      }
+      el.innerHTML = buildCoinSVG(v, coinOpts);
+    });
+
+    // header variant override — TWEAKS.headerVariant beats the markup default
+    const headerSlot = document.getElementById('mk-header');
+    if (headerSlot && TWEAKS.headerVariant) {
+      if (TWEAKS.headerVariant === 'bare') {
+        headerSlot.innerHTML = buildMarkSVG({ stroke: TWEAKS.strokeWidth });
+      } else {
+        const variant = TWEAKS.headerVariant.replace('coin-', '');
+        headerSlot.innerHTML = buildCoinSVG(variant, { animated: true });
+      }
+    }
+
+    // storyboard frames — render static snapshots, not the animation
+    document.querySelectorAll('.anim__frame .stage[data-t]').forEach(el => {
+      const t = parseFloat(el.dataset.t);
+      el.style.color = 'var(--mark)';
+      el.innerHTML = buildSnapshotSVG(t);
+    });
+  }
+
+  /* ─── HEAD/HERO/FOOTER MARKS RESTART ON SCROLL ──────────────────── */
+  // Track distance scrolled; every TWEAKS.scrollReplayPx, restart the
+  // animation on the page marks. Restart by toggling a class which
+  // re-flows the CSS animation.
+
+  const liveMarks = []; // populated after stampAll
+
+  function collectLiveMarks() {
+    liveMarks.length = 0;
+    ['#mk-header', '#mk-hero', '#mk-rail', '#mk-footer'].forEach(sel => {
+      const wrap = document.querySelector(sel);
+      if (!wrap) return;
+      const inner = wrap.querySelector('.mk-anim');
+      if (inner) liveMarks.push(inner);
+    });
+  }
+
+  function restartAnimations() {
+    liveMarks.forEach(g => {
+      // toggle .mk-anim off-and-on by replacing the className (forces reflow)
+      g.classList.remove('mk-anim');
+      // force reflow
+      // eslint-disable-next-line no-unused-expressions
+      g.offsetWidth;
+      g.classList.add('mk-anim');
+      // bump replay count
+    });
+    state.replays += 1;
+    updateMeter();
+  }
+
+  const state = {
+    lastScrollY: 0,
+    distanceSinceReplay: 0,
+    totalScrolled: 0,
+    replays: 0,
+    pendingReplay: false
+  };
+
+  function updateMeter() {
+    const elCount = document.getElementById('replay-count');
+    const elPx    = document.getElementById('scroll-px');
+    const elBar   = document.getElementById('scroll-bar');
+    const elNext  = document.getElementById('next-px');
+    const elRdo   = document.getElementById('replay-px-readout');
+    if (!elCount) return;
+    elCount.textContent = state.replays;
+    elPx.textContent    = Math.round(state.totalScrolled).toLocaleString() + ' px';
+    const pct = Math.min(1, state.distanceSinceReplay / TWEAKS.scrollReplayPx);
+    elBar.style.width   = (pct * 100).toFixed(1) + '%';
+    elNext.textContent  = Math.max(0, Math.round(TWEAKS.scrollReplayPx - state.distanceSinceReplay)) + ' px';
+    if (elRdo) elRdo.textContent = TWEAKS.scrollReplayPx;
+  }
+
+  let scrollTicking = false;
+  function onScroll() {
+    const y = window.scrollY;
+    const dy = Math.abs(y - state.lastScrollY);
+    state.lastScrollY = y;
+    state.totalScrolled += dy;
+    state.distanceSinceReplay += dy;
+    if (state.distanceSinceReplay >= TWEAKS.scrollReplayPx) {
+      state.distanceSinceReplay = 0;
+      restartAnimations();
+    } else {
+      updateMeter();
+    }
+  }
+  window.addEventListener('scroll', () => {
+    if (!scrollTicking) {
+      requestAnimationFrame(() => {
+        onScroll();
+        scrollTicking = false;
+      });
+      scrollTicking = true;
+    }
+  }, { passive: true });
+
+  /* ─── HERO REPLAY BUTTON ─────────────────────────────────────────── */
+  document.getElementById('replay-hero').addEventListener('click', restartAnimations);
+
+  /* ─── APPLY TWEAKS LIVE (color + stroke + ground + loop + scroll) ── */
+  function applyTweaks() {
+    document.documentElement.style.setProperty('--mark', TWEAKS.markColor);
+    document.documentElement.style.setProperty('--bone', TWEAKS.groundColor);
+    const colorEls = ['#mark-hex-readout','#color-readout-1','#lbl-color'];
+    colorEls.forEach(s => { const e = document.querySelector(s); if (e) e.textContent = TWEAKS.markColor; });
+    const strokeLbl = document.getElementById('lbl-stroke'); if (strokeLbl) strokeLbl.textContent = TWEAKS.strokeWidth;
+    const loopLbl   = document.getElementById('lbl-loop');   if (loopLbl) loopLbl.textContent = (TWEAKS.loopMs / 1000).toFixed(1);
+    const pxLbl     = document.getElementById('lbl-px');     if (pxLbl) pxLbl.textContent = TWEAKS.scrollReplayPx;
+    const tkLbl     = document.getElementById('lbl-tk');     if (tkLbl) tkLbl.textContent = TWEAKS.tokenVariant;
+    const hdrLbl    = document.getElementById('lbl-hdr');    if (hdrLbl) hdrLbl.textContent = TWEAKS.headerVariant;
+    updateMeter();
+
+    // active highlight on the recommended-variant card
+    document.querySelectorAll('[data-variant-card]').forEach(c => {
+      c.classList.toggle('active', c.dataset.variantCard === TWEAKS.tokenVariant);
+    });
+    // active state on the segment controls
+    document.querySelectorAll('#seg-token button').forEach(b => {
+      b.classList.toggle('active', b.dataset.tk === TWEAKS.tokenVariant);
+    });
+    document.querySelectorAll('#seg-header button').forEach(b => {
+      b.classList.toggle('active', b.dataset.hv === TWEAKS.headerVariant);
+    });
+
+    // restamp marks (picks up new stroke + new color via CSS var)
+    stampAll();
+    collectLiveMarks();
+  }
+
+  /* ─── TWEAKS PANEL ───────────────────────────────────────────────── */
+  const tweaksEl = document.getElementById('tweaks');
+  const toggleBtn = document.getElementById('tweaks-toggle');
+  const closeBtn = document.getElementById('tweaks-close');
+
+  // Host edit-mode wiring
+  window.addEventListener('message', e => {
+    if (!e.data) return;
+    if (e.data.type === '__activate_edit_mode') {
+      tweaksEl.classList.add('active');
+      toggleBtn.classList.remove('active');
+    } else if (e.data.type === '__deactivate_edit_mode') {
+      tweaksEl.classList.remove('active');
+      toggleBtn.classList.remove('active');
+    }
+  });
+  window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+
+  closeBtn.addEventListener('click', () => {
+    tweaksEl.classList.remove('active');
+    toggleBtn.classList.add('active');
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  });
+  toggleBtn.addEventListener('click', () => {
+    tweaksEl.classList.add('active');
+    toggleBtn.classList.remove('active');
+  });
+
+  function persist(patch) {
+    Object.assign(TWEAKS, patch);
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits: patch }, '*');
+    applyTweaks();
+  }
+
+  // color swatches
+  function paintSwatches(host, key, current) {
+    host.querySelectorAll('.sw').forEach(sw => {
+      sw.classList.toggle('active', sw.dataset[key] === current);
+      sw.onclick = () => {
+        const v = sw.dataset[key];
+        if (key === 'color') persist({ markColor: v });
+        else                 persist({ groundColor: v });
+        paintSwatches(host, key, v);
+      };
+    });
+  }
+  paintSwatches(document.getElementById('sw-color'),  'color',  TWEAKS.markColor);
+  paintSwatches(document.getElementById('sw-ground'), 'ground', TWEAKS.groundColor);
+
+  // sliders
+  document.getElementById('rng-stroke').addEventListener('input', e => {
+    persist({ strokeWidth: parseInt(e.target.value, 10) });
+  });
+  document.getElementById('rng-loop').addEventListener('input', e => {
+    persist({ loopMs: parseInt(e.target.value, 10) });
+  });
+  document.getElementById('rng-px').addEventListener('input', e => {
+    persist({ scrollReplayPx: parseInt(e.target.value, 10) });
+  });
+
+  // segment controls — token + header variants
+  document.querySelectorAll('#seg-token button').forEach(b => {
+    b.addEventListener('click', () => persist({ tokenVariant: b.dataset.tk }));
+  });
+  document.querySelectorAll('#seg-header button').forEach(b => {
+    b.addEventListener('click', () => persist({ headerVariant: b.dataset.hv }));
+  });
+
+  // sync slider positions to current TWEAKS on load
+  document.getElementById('rng-stroke').value = TWEAKS.strokeWidth;
+  document.getElementById('rng-loop').value   = TWEAKS.loopMs;
+  document.getElementById('rng-px').value     = TWEAKS.scrollReplayPx;
+
+  /* ─── INIT ───────────────────────────────────────────────────────── */
+  applyTweaks();
+  state.lastScrollY = window.scrollY;
+  updateMeter();
+})();
+</script>
+
+</body>
+</html>

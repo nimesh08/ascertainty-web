@@ -2,31 +2,37 @@
 @import "tw-animate-css";
 
 /* =========================================================
-   Ascertainty palette — light, engineering-grade
+   Ascertainty palette — Forest (v0.3 brand kit, 2026-05-13)
+   Pure white surfaces, warm forest ink, sage/verdigris accents.
+   No cream — the legacy #ebe3cf wash has been fully retired.
    ========================================================= */
 :root {
-  /* surfaces (light) */
+  /* surfaces */
   --bg-0: #ffffff;
-  --bg: #ffffff;
-  --bg-1: #f7f7f8;
-  --bg-2: #f0f1f3;
-  --bg-3: #d7cfb8;
-  --line: rgba(15, 17, 21, 0.10);
-  --line-strong: rgba(15, 17, 21, 0.22);
-  --line-soft: rgba(15, 17, 21, 0.05);
-  --line-dim: rgba(15, 17, 21, 0.05);
+  --bg:   #ffffff;
+  --bg-1: #fafafa;
+  --bg-2: #f5f5f5;
+  --bg-3: #e8e8e8;
+  --line: rgba(22, 36, 33, 0.10);
+  --line-strong: rgba(22, 36, 33, 0.22);
+  --line-soft: rgba(22, 36, 33, 0.05);
+  --line-dim:  rgba(22, 36, 33, 0.05);
 
-  /* ink */
-  --fg: #0f1115;
-  --fg-muted: #525762;
-  --fg-faint: #8a8f99;
-  --fg-dim: #c3c7cf;
+  /* ink — "Ink" is the warm forest dark, NOT pitch black */
+  --fg:        #162421;
+  --fg-muted:  rgba(22, 36, 33, 0.62);
+  --fg-faint:  rgba(22, 36, 33, 0.38);
+  --fg-dim:    rgba(22, 36, 33, 0.18);
 
-  /* accent (verdigris green for light bg) */
-  --accent: oklch(0.46 0.13 158);
-  --accent-soft: oklch(0.46 0.13 158 / 0.14);
-  --accent-deep: oklch(0.32 0.11 158);
-  --accent-ink: #f3fbf3;
+  /* forest greens */
+  --pale-sage: #e8f1ec;
+  --lichen:    #b8d6c5;
+  --accent:    #5fa67f;   /* Verdigris — primary brand mark, headlines, interactive */
+  --pine:      #3a7058;   /* hover state for --accent */
+  --vault:     #1c3429;   /* deep forest, dark accents */
+  --accent-soft: rgba(95, 166, 127, 0.14);
+  --accent-deep: var(--pine);
+  --accent-ink:  #f3fbf3;
 
   /* legacy aliases — Helix → Ascertainty (so existing components retheme) */
   --green: var(--accent);
@@ -232,6 +238,44 @@
     .shell { padding: 0 18px; }
   }
   .hairline { background: var(--line); height: 1px; width: 100%; }
+
+  /* ─── Coin mark animation (Forest brand kit v0.3) ───────────────────────
+     Embedded keyframes for the four-layer mark inside CoinMark. The four
+     paths grow upward in sequence — bottom arc → middle → top → peak — over
+     a configurable loop. The .mk-anim class is toggled off/on by the
+     scroll-replay hook to restart the keyframes after each scroll threshold.
+     Respects prefers-reduced-motion (collapses to final state). */
+  @keyframes mk-grow {
+    0%   { transform: scaleY(0.05) translateY(8px); opacity: 0; }
+    18%  { opacity: 1; }
+    32%  { transform: scaleY(1) translateY(0); opacity: 1; }
+    100% { transform: scaleY(1) translateY(0); opacity: 1; }
+  }
+
+  .mk-anim .a-bottom,
+  .mk-anim .a-middle,
+  .mk-anim .a-top,
+  .mk-anim .a-tri {
+    transform-box: fill-box;
+    transform-origin: 50% 100%;
+    animation: mk-grow 4.2s cubic-bezier(.16, .84, .3, 1) both;
+  }
+  .mk-anim .a-bottom { animation-delay: 0ms; }
+  .mk-anim .a-middle { animation-delay: 280ms; }
+  .mk-anim .a-top    { animation-delay: 560ms; }
+  .mk-anim .a-tri    { animation-delay: 840ms; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .mk-anim .a-bottom,
+    .mk-anim .a-middle,
+    .mk-anim .a-top,
+    .mk-anim .a-tri {
+      animation: none;
+      transform: none;
+      opacity: 1;
+    }
+  }
+
   .bg-grid {
     background-image:
       linear-gradient(var(--line-dim) 1px, transparent 1px),
@@ -1181,7 +1225,7 @@
   }
   .a-footer__grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
     gap: 32px;
   }
   @media (max-width: 880px) {
@@ -1217,6 +1261,37 @@
     letter-spacing: 0.14em;
     text-transform: uppercase;
     color: var(--fg-faint);
+  }
+
+  /* Forest brand-kit: dark footer ground (light landing → dark settlement pattern). */
+  .a-footer--dark {
+    background: var(--fg);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    color: rgba(255, 255, 255, 0.92);
+  }
+  .a-footer--dark h5 {
+    color: rgba(255, 255, 255, 0.50);
+  }
+  .a-footer--dark li a {
+    color: rgba(255, 255, 255, 0.78);
+    transition: color 120ms;
+  }
+  .a-footer--dark li a:hover {
+    color: var(--accent);
+  }
+  .a-footer--dark .a-footer__mono {
+    color: rgba(255, 255, 255, 0.42);
+    border-top-color: rgba(255, 255, 255, 0.10);
+  }
+  .a-chip--dark {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.78);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 999px;
   }
 
   /* page head */

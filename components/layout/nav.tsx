@@ -17,7 +17,7 @@ import {
 } from "@/components/ui/sheet";
 import { useIsAdmin } from "@/lib/hooks/use-is-admin";
 import { WalletBalancesPill } from "@/components/layout/wallet-balances-pill";
-import { BrandMark } from "@/components/layout/brand-mark";
+import { CoinMark } from "@/components/layout/coin-mark";
 
 interface NavLink {
   label: string;
@@ -83,7 +83,7 @@ export function Nav() {
   return (
     <nav className="a-nav">
       <Link className="a-nav__brand" href="/">
-        <BrandMark size={36} />
+        <CoinMark size={32} variant="ink" animateOnScroll scrollThresholdPx={480} />
         <span>ASCERTAINTY</span>
       </Link>
 

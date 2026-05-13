@@ -2,7 +2,7 @@
   <title>Ascertainty</title>
   
   <circle cx="120" cy="120" r="119" fill="#5fa67f"></circle>
-  <circle cx="120" cy="120" r="107" fill="#162421"></circle>
+  <circle cx="120" cy="120" r="107" fill="#ffffff"></circle>
   <g transform="translate(41 32) scale(0.66)">
     <g fill="none" stroke="#5fa67f" stroke-linecap="butt">
       <path stroke-width="22" d="M 28 218 A 92 44 0 0 1 212 218"></path>

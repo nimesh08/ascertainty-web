@@ -1,0 +1,861 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Ascertainty — Brand Kit</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;1,6..72,300;1,6..72,400&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+<style>
+:root {
+  /* surface — pure white, no cream */
+  --page:        #ffffff;
+  --frost:       #f5f5f5;
+  --fog:         #cfcfcf;
+  --slate:       #727a7c;
+  --ink:         #162421;
+  --ink-soft:    rgba(22, 36, 33, 0.62);
+  --ink-mute:    rgba(22, 36, 33, 0.38);
+  --rule:        rgba(22, 36, 33, 0.10);
+  --rule-strong: rgba(22, 36, 33, 0.22);
+
+  /* forest greens */
+  --pale-sage:   #e8f1ec;
+  --lichen:      #b8d6c5;
+  --mark:        #5fa67f;
+  --pine:        #3a7058;
+  --vault:       #1c3429;
+  --mark-soft:   rgba(95, 166, 127, 0.14);
+
+  --serif: "Newsreader", "GT Sectra", Georgia, serif;
+  --mono:  "JetBrains Mono", ui-monospace, monospace;
+}
+
+* { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  background: var(--page);
+  color: var(--ink);
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+::selection { background: var(--mark); color: var(--page); }
+
+.shell { max-width: 1280px; margin: 0 auto; padding: 0 56px; }
+.num { font-variant-numeric: tabular-nums; }
+.label-mono {
+  font-family: var(--mono);
+  font-size: 10px; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--mark);
+}
+
+/* ─────────────── SITE HEADER ─────────────── */
+.site-head {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: rgba(255, 255, 255, 0.88);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--rule);
+}
+.site-head__inner {
+  max-width: 1380px;
+  margin: 0 auto;
+  padding: 18px 56px;
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.site-head__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--ink);
+  text-decoration: none;
+}
+.site-head__brand img { width: 32px; height: 32px; display: block; }
+.site-head__brand .wm {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 13px;
+  letter-spacing: 0.34em;
+  text-transform: uppercase;
+}
+.site-head__nav {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  margin-left: auto;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.site-head__nav a {
+  color: inherit;
+  text-decoration: none;
+  position: relative;
+}
+.site-head__nav a.active { color: var(--ink); }
+.site-head__nav a.active::after {
+  content: "";
+  position: absolute;
+  bottom: -22px; left: 0; right: 0;
+  height: 2px;
+  background: var(--mark);
+}
+.site-head__nav a:hover { color: var(--ink); }
+.site-head__login,
+.site-head__cta {
+  padding: 9px 16px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: all .15s;
+}
+.site-head__login {
+  background: var(--frost);
+  color: var(--ink);
+  border: 1px solid var(--rule);
+}
+.site-head__login:hover { background: var(--page); border-color: var(--ink); }
+.site-head__cta {
+  background: var(--mark);
+  color: var(--page);
+  border: 1px solid var(--mark);
+}
+.site-head__cta:hover { background: var(--pine); border-color: var(--pine); }
+
+/* ─────────────── HERO ─────────────── */
+.hero {
+  text-align: center;
+  padding: 120px 56px 88px;
+  position: relative;
+}
+.hero h1 {
+  font-family: var(--serif);
+  font-weight: 300;
+  font-size: clamp(72px, 10vw, 140px);
+  letter-spacing: -0.028em;
+  line-height: 1;
+  margin: 0 0 32px;
+}
+.hero p {
+  font-family: var(--mono);
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--mark);
+  letter-spacing: 0.02em;
+  max-width: 52ch;
+  margin: 0 auto;
+}
+.hero__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 48px;
+  padding: 14px 24px 14px 18px;
+  background: var(--ink);
+  color: var(--page);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all .15s;
+}
+.hero__cta:hover { background: var(--vault); transform: translateY(-1px); }
+.hero__cta svg { width: 14px; height: 14px; }
+
+/* ─────────────── SECTION ─────────────── */
+.section {
+  padding: 56px 0 80px;
+  border-top: 1px solid var(--rule);
+}
+.section + .section { border-top: 0; }
+.section__head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: 24px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--rule);
+}
+.section__title {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mark);
+  margin: 0;
+}
+.section__index {
+  font-family: var(--serif);
+  font-style: italic;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+  color: var(--ink-mute);
+}
+
+/* ─────────────── ASSET GRID ─────────────── */
+.assets {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 28px;
+}
+.assets + .scenes { margin-top: 36px; }
+.asset {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.asset__display {
+  aspect-ratio: 4 / 3;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  padding: 32px;
+}
+.asset__display--light { background: var(--page); }
+.asset__display--frost { background: var(--frost); }
+.asset__display--ink   { background: var(--ink); }
+.asset__display--mark  { background: var(--mark); }
+.asset__display img { display: block; max-height: 100%; max-width: 100%; }
+.asset__lockup {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.asset__lockup img { width: 56px; height: 56px; max-width: none; max-height: none; }
+.asset__lockup .wm {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 22px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.asset__display--ink .asset__lockup .wm { color: var(--page); }
+.asset__actions {
+  display: flex;
+  gap: 8px;
+}
+.asset__actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 62px;
+  padding: 7px 14px;
+  border: 1px solid var(--rule);
+  border-radius: 5px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mark);
+  text-decoration: none;
+  transition: all .15s;
+}
+.asset__actions a:hover {
+  background: var(--mark);
+  color: var(--page);
+  border-color: var(--mark);
+}
+
+/* ─────────────── SCENES (wide hero cards) ─────────────── */
+.scenes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 28px;
+}
+.scene {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.scene__stage {
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  position: relative;
+  border: 1px solid var(--rule);
+}
+.scene__stage--dark {
+  background:
+    radial-gradient(ellipse at 70% 30%, rgba(95, 166, 127, 0.18), transparent 50%),
+    radial-gradient(ellipse at 30% 80%, rgba(95, 166, 127, 0.12), transparent 50%),
+    var(--ink);
+}
+.scene__stage--light {
+  background:
+    radial-gradient(ellipse at 50% 60%, var(--pale-sage), transparent 70%),
+    var(--page);
+}
+.scene__stage img { width: 26%; display: block; filter: drop-shadow(0 18px 32px rgba(0,0,0,0.18)); }
+.scene__stage::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+}
+.scene__stage--light::before {
+  background-image:
+    linear-gradient(rgba(22, 36, 33, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(22, 36, 33, 0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+.scene__label {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--ink-soft);
+  letter-spacing: 0.02em;
+}
+.scene__label b {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 14px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+/* ─────────────── COLOR SWATCHES ─────────────── */
+.swatches {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+}
+.swatch {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.swatch__chip {
+  aspect-ratio: 5 / 4;
+  border-radius: 8px;
+  border: 1px solid var(--rule);
+}
+.swatch__role {
+  font-family: var(--mono);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-mute);
+  margin-top: 6px;
+}
+.swatch__name {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 22px;
+  letter-spacing: -0.018em;
+  color: var(--ink);
+  line-height: 1.05;
+}
+.swatch__hex {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+/* ─────────────── TYPOGRAPHY SECTION ─────────────── */
+.type {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+}
+.type-card {
+  padding: 36px;
+  border: 1px solid var(--rule);
+  border-radius: 10px;
+  background: var(--frost);
+  display: flex;
+  flex-direction: column;
+}
+.type-card .role {
+  font-family: var(--mono);
+  font-size: 9.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--mark);
+  margin-bottom: 12px;
+}
+.type-card .name {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 30px;
+  letter-spacing: -0.022em;
+  margin-bottom: 28px;
+}
+.type-card__sample {
+  flex: 1;
+  display: grid;
+  place-items: center;
+  padding: 24px 0;
+  border-top: 1px dashed var(--rule);
+  border-bottom: 1px dashed var(--rule);
+}
+.type-card__sample .display {
+  font-family: var(--serif);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 128px;
+  letter-spacing: -0.04em;
+  line-height: 0.9;
+  color: var(--ink);
+}
+.type-card__sample .mono {
+  font-family: var(--mono);
+  font-weight: 400;
+  font-size: 24px;
+  letter-spacing: 0.32em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+.type-card .meta {
+  margin-top: 22px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+.type-card .meta b { color: var(--ink); font-weight: 400; }
+
+/* ─────────────── FOOTER ─────────────── */
+.site-foot {
+  background: var(--ink);
+  color: var(--page);
+  padding: 96px 56px 56px;
+  margin-top: 80px;
+  position: relative;
+  overflow: hidden;
+}
+.site-foot::before {
+  content: "";
+  position: absolute;
+  bottom: -10%; left: 50%;
+  width: 80%; height: 60%;
+  transform: translateX(-50%);
+  background: radial-gradient(ellipse at center, rgba(95, 166, 127, 0.18), transparent 70%);
+  pointer-events: none;
+}
+.site-foot__inner {
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 1;
+}
+.site-foot__top {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr 1fr 1.2fr;
+  gap: 48px;
+  padding-bottom: 56px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+}
+.site-foot__brand {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+.site-foot__brand img { width: 48px; height: 48px; display: block; }
+.site-foot__brand .copyright {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.55);
+}
+.site-foot__col h5 {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin: 6px 0 22px;
+}
+.site-foot__col ul {
+  margin: 0; padding: 0; list-style: none;
+  display: flex; flex-direction: column; gap: 14px;
+}
+.site-foot__col a {
+  color: rgba(255, 255, 255, 0.85);
+  text-decoration: none;
+  font-family: var(--mono);
+  font-size: 13px;
+}
+.site-foot__col a:hover { color: var(--page); }
+.site-foot__col a.active { color: var(--mark); }
+.site-foot__socials {
+  display: flex; gap: 10px;
+  margin-top: 36px;
+}
+.site-foot__socials a {
+  width: 36px; height: 36px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.08);
+  display: grid; place-items: center;
+  color: rgba(255, 255, 255, 0.65);
+  transition: all .15s;
+}
+.site-foot__socials a:hover { background: var(--mark); color: var(--page); }
+.site-foot__socials svg { width: 16px; height: 16px; }
+.site-foot__ai {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 6px;
+  color: rgba(255, 255, 255, 0.85);
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+}
+
+@media (max-width: 1080px) {
+  .shell { padding: 0 24px; }
+  .site-head__inner { padding: 14px 24px; gap: 16px; }
+  .site-head__nav { gap: 16px; font-size: 10px; }
+  .assets { grid-template-columns: 1fr; }
+  .scenes { grid-template-columns: 1fr; }
+  .swatches { grid-template-columns: 1fr 1fr; gap: 16px; }
+  .type { grid-template-columns: 1fr; }
+  .site-foot__top { grid-template-columns: 1fr 1fr; gap: 32px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ═════════════ SITE HEADER ═════════════ -->
+<header class="site-head" data-screen-label="01 Site Header">
+  <div class="site-head__inner">
+    <a href="#" class="site-head__brand">
+      <img src="coin-ink.svg" alt="Ascertainty" />
+      <span class="wm">Ascertainty</span>
+    </a>
+    <nav class="site-head__nav">
+      <a href="#">Deposit</a>
+      <a href="#">Borrow</a>
+      <a href="#">Protocol</a>
+      <a href="#">Insights</a>
+      <a href="#" class="active">Brand</a>
+    </nav>
+    <a href="#" class="site-head__login">Borrower login</a>
+    <a href="#" class="site-head__cta">Open app →</a>
+  </div>
+</header>
+
+<!-- ═════════════ HERO ═════════════ -->
+<section class="hero" data-screen-label="02 Hero">
+  <h1>Brand Kit</h1>
+  <p>
+    Official logos, colors, and typography for Ascertainty.<br />
+    For press, partners, and integrations.
+  </p>
+  <a href="#" class="hero__cta">
+    <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <path d="M8 2 V12 M3 8 L8 13 L13 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+    </svg>
+    Download Full Kit
+  </a>
+</section>
+
+<div class="shell">
+
+  <!-- ═════════════ § 01 · LOGOS & LOCKUPS ═════════════ -->
+  <section class="section" data-screen-label="03 Logos &amp; Lockups">
+    <div class="section__head">
+      <h2 class="section__title">// Ascertainty logos &amp; lockups</h2>
+      <span class="section__index">§ 01</span>
+    </div>
+
+    <div class="assets">
+      <div class="asset">
+        <div class="asset__display asset__display--light">
+          <img src="coin-ink.svg" alt="Ascertainty coin · stand-alone" />
+        </div>
+        <div class="asset__actions">
+          <a href="coin-ink.svg" download>SVG</a>
+          <a href="#" aria-disabled="true">PNG</a>
+        </div>
+      </div>
+
+      <div class="asset">
+        <div class="asset__display asset__display--ink">
+          <div class="asset__lockup">
+            <img src="coin-white.svg" alt="" />
+            <span class="wm">Ascertainty</span>
+          </div>
+        </div>
+        <div class="asset__actions">
+          <a href="#" aria-disabled="true">SVG</a>
+          <a href="#" aria-disabled="true">PNG</a>
+        </div>
+      </div>
+
+      <div class="asset">
+        <div class="asset__display asset__display--light">
+          <div class="asset__lockup">
+            <img src="coin-ink.svg" alt="" />
+            <span class="wm">Ascertainty</span>
+          </div>
+        </div>
+        <div class="asset__actions">
+          <a href="#" aria-disabled="true">SVG</a>
+          <a href="#" aria-disabled="true">PNG</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════ § 02 · TOKEN ASSETS ═════════════ -->
+  <section class="section" data-screen-label="04 Token Assets">
+    <div class="section__head">
+      <h2 class="section__title">// Coin / token assets</h2>
+      <span class="section__index">§ 02</span>
+    </div>
+
+    <div class="assets">
+      <div class="asset">
+        <div class="asset__display asset__display--light">
+          <img src="mark-green.svg" alt="Ascertainty mark · bare glyph" />
+        </div>
+        <div class="asset__actions">
+          <a href="mark-green.svg" download>SVG</a>
+          <a href="#" aria-disabled="true">PNG</a>
+        </div>
+      </div>
+
+      <div class="asset">
+        <div class="asset__display asset__display--ink">
+          <img src="coin-white.svg" alt="Ascertainty coin · white-on-dark" />
+        </div>
+        <div class="asset__actions">
+          <a href="coin-white.svg" download>SVG</a>
+          <a href="#" aria-disabled="true">PNG</a>
+        </div>
+      </div>
+
+      <div class="asset">
+        <div class="asset__display asset__display--mark">
+          <img src="coin-mark.svg" alt="Ascertainty coin · saturated" />
+        </div>
+        <div class="asset__actions">
+          <a href="coin-mark.svg" download>SVG</a>
+          <a href="#" aria-disabled="true">PNG</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="scenes">
+      <div class="scene">
+        <div class="scene__stage scene__stage--dark">
+          <img src="coin-white.svg" alt="" />
+        </div>
+        <div class="scene__label"><b>Coin</b> — dark background</div>
+      </div>
+      <div class="scene">
+        <div class="scene__stage scene__stage--light">
+          <img src="coin-ink.svg" alt="" />
+        </div>
+        <div class="scene__label"><b>Coin</b> — light background</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════ § 03 · COLOR PALETTE · FOREST GREENS ═════════════ -->
+  <section class="section" data-screen-label="05 Forest Greens">
+    <div class="section__head">
+      <h2 class="section__title">// Color palette — Forest greens</h2>
+      <span class="section__index">§ 03</span>
+    </div>
+
+    <div class="swatches">
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #e8f1ec"></div>
+        <div class="swatch__role">// pale</div>
+        <div class="swatch__name">Pale Sage</div>
+        <div class="swatch__hex">#E8F1EC</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #b8d6c5"></div>
+        <div class="swatch__role">// light</div>
+        <div class="swatch__name">Lichen</div>
+        <div class="swatch__hex">#B8D6C5</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #5fa67f"></div>
+        <div class="swatch__role">// mark</div>
+        <div class="swatch__name">Verdigris</div>
+        <div class="swatch__hex">#5FA67F</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #3a7058"></div>
+        <div class="swatch__role">// hover</div>
+        <div class="swatch__name">Pine Heart</div>
+        <div class="swatch__hex">#3A7058</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #1c3429"></div>
+        <div class="swatch__role">// deep</div>
+        <div class="swatch__name">Vault</div>
+        <div class="swatch__hex">#1C3429</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════ § 04 · COLOR PALETTE · NEUTRAL TONES ═════════════ -->
+  <section class="section" data-screen-label="06 Neutral Tones">
+    <div class="section__head">
+      <h2 class="section__title">// Color palette — Neutral tones</h2>
+      <span class="section__index">§ 04</span>
+    </div>
+
+    <div class="swatches">
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #ffffff; border-color: var(--rule-strong)"></div>
+        <div class="swatch__role">// surface</div>
+        <div class="swatch__name">Page</div>
+        <div class="swatch__hex">#FFFFFF</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #f5f5f5"></div>
+        <div class="swatch__role">// muted</div>
+        <div class="swatch__name">Frost</div>
+        <div class="swatch__hex">#F5F5F5</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #cfcfcf"></div>
+        <div class="swatch__role">// rule</div>
+        <div class="swatch__name">Fog</div>
+        <div class="swatch__hex">#CFCFCF</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #727a7c"></div>
+        <div class="swatch__role">// caption</div>
+        <div class="swatch__name">Slate</div>
+        <div class="swatch__hex">#727A7C</div>
+      </div>
+      <div class="swatch">
+        <div class="swatch__chip" style="background: #162421"></div>
+        <div class="swatch__role">// type</div>
+        <div class="swatch__name">Ink</div>
+        <div class="swatch__hex">#162421</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═════════════ § 05 · TYPOGRAPHY ═════════════ -->
+  <section class="section" data-screen-label="07 Typography">
+    <div class="section__head">
+      <h2 class="section__title">// Typography</h2>
+      <span class="section__index">§ 05</span>
+    </div>
+
+    <div class="type">
+      <div class="type-card">
+        <div class="role">// display + editorial</div>
+        <div class="name">Newsreader</div>
+        <div class="type-card__sample">
+          <span class="display">Aa</span>
+        </div>
+        <div class="meta">
+          <b>Italic 300 · variable optical 6–72</b><br />
+          For hero headlines, editorial display, color-swatch names.<br />
+          Open-source via Google Fonts.
+        </div>
+      </div>
+
+      <div class="type-card">
+        <div class="role">// wordmark + system</div>
+        <div class="name">JetBrains Mono</div>
+        <div class="type-card__sample">
+          <span class="mono">ASCERTAINTY</span>
+        </div>
+        <div class="meta">
+          <b>Roman 400 · tracked +0.32em uppercase</b><br />
+          For nav, labels, code, the wordmark itself.<br />
+          Open-source via Google Fonts.
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div><!-- /.shell -->
+
+<!-- ═════════════ SITE FOOTER ═════════════ -->
+<footer class="site-foot" data-screen-label="08 Site Footer">
+  <div class="site-foot__inner">
+    <div class="site-foot__top">
+      <div class="site-foot__brand">
+        <img src="coin-white.svg" alt="" />
+        <p class="copyright">© 2026 Ascertainty Labs.<br />All rights reserved.</p>
+        <div class="site-foot__socials">
+          <a href="#" aria-label="X">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24h-6.66l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg>
+          </a>
+          <a href="#" aria-label="LinkedIn">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.063 2.063 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"></path></svg>
+          </a>
+          <a href="#" aria-label="Telegram">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M11.944 0A12 12 0 000 12a12 12 0 0012 12 12 12 0 0012-12A12 12 0 0012 0zm.176 5.402c.27 0 .55.05.832.158.842.31 1.158 1.16.85 1.957l-2.5 7.5c-.236.71-.92 1.137-1.65 1.04l-3.36-.61-.92 1.79c-.16.31-.55.39-.81.18l-.78-.6 2.59-2.55a.4.4 0 00-.05-.59L4.74 11.97c-.86-.55-.49-1.85.49-1.97l13.05-3.96c.13-.04.27-.06.4-.06.45 0 .85.27.96.69.04.16.05.32.03.49l-1.5 6.97c-.06.27-.27.45-.5.45-.16 0-.31-.08-.41-.21l-2.31-2.4-3.46 2.59z"></path></svg>
+          </a>
+          <a href="#" aria-label="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"></path></svg>
+          </a>
+        </div>
+      </div>
+
+      <div class="site-foot__col">
+        <h5>// ecosystem</h5>
+        <ul>
+          <li><a href="#">Dune Data</a></li>
+          <li><a href="#">Blog</a></li>
+          <li><a href="#" class="active">Brand Kit</a></li>
+          <li><a href="#">API</a></li>
+          <li><a href="#">Terms</a></li>
+        </ul>
+      </div>
+
+      <div class="site-foot__col">
+        <h5>// developers</h5>
+        <ul>
+          <li><a href="#">Docs</a></li>
+          <li><a href="#">Github</a></li>
+          <li><a href="#">Bounties</a></li>
+          <li><a href="#">API reference</a></li>
+          <li><a href="#">Audits</a></li>
+        </ul>
+      </div>
+
+      <div class="site-foot__col" style="display:flex;flex-direction:column;justify-content:flex-end;align-items:flex-start;">
+        <a class="site-foot__ai" href="#">
+          <svg viewBox="0 0 16 16" fill="currentColor" style="width:14px;height:14px;"><path d="M8 1L9.5 5.5L14 7L9.5 8.5L8 13L6.5 8.5L2 7L6.5 5.5Z"></path></svg>
+          <span>AI Summary</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
