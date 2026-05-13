@@ -47,6 +47,20 @@ export function fmtUsdc(raw: BN | string | number | bigint): string {
 }
 
 /**
+ * Compact USDC formatter for narrow KPI tiles.
+ * Under $10k: full 2-decimal precision ($1,234.56).
+ * $10k–$999k: 1 decimal + K ($118.1K).
+ * $1M+:      2 decimal + M ($1.23M).
+ */
+export function fmtUsdcCompact(raw: BN | string | number | bigint): string {
+  const v = Number(rawToUsdc(raw));
+  if (!Number.isFinite(v)) return "$0";
+  if (v >= 1_000_000) return `$${(v / 1_000_000).toFixed(2)}M`;
+  if (v >= 10_000) return `$${(v / 1_000).toFixed(1)}K`;
+  return `$${fmtNumber(v, 2)}`;
+}
+
+/**
  * USD formatter. App-wide convention: everything is USD, backed by USDC at
  * 6 decimals. Accepts either raw (smallest units) or human string/number.
  * - `raw`   : bigint | string | BN — interpreted as 6-decimal smallest units.

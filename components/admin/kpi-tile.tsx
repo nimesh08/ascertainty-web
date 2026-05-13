@@ -26,26 +26,26 @@ export function KpiTile({
   return (
     <Card
       className={cn(
-        "border-line/70 bg-bg-1/60 transition-colors hover:border-line",
+        "h-full border-line/70 bg-bg-1/60 transition-colors hover:border-line",
         className
       )}
     >
-      <CardContent className="relative space-y-1.5 p-4 sm:p-5">
+      <CardContent className="relative flex h-full min-w-0 flex-col gap-1.5 p-4 sm:p-5">
         <span
           aria-hidden
           className={cn(
-            "absolute inset-y-3 left-0 w-[2px] rounded-full",
+            "absolute inset-y-0 left-0 w-[2px] rounded-full",
             accentBg[accent]
           )}
         />
         <p className="pl-3 text-[11px] uppercase tracking-[0.18em] text-fg-muted">
           {label}
         </p>
-        <p className="mono-num pl-3 text-2xl font-semibold text-fg sm:text-3xl">
+        <p className="mono-num min-w-0 truncate pl-3 text-2xl font-semibold tracking-tight text-fg tabular-nums">
           {value}
         </p>
         {sub ? (
-          <p className="pl-3 text-xs text-fg-muted">{sub}</p>
+          <p className="pl-3 text-xs leading-snug text-fg-muted">{sub}</p>
         ) : null}
       </CardContent>
     </Card>

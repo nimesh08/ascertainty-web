@@ -6,7 +6,7 @@ import { KpiTile } from "@/components/admin/kpi-tile";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { fmtUsdc, shortSig, explorerTx } from "@/lib/utils/format";
+import { fmtUsdc, fmtUsdcCompact, shortSig, explorerTx } from "@/lib/utils/format";
 import { ExternalLink, Plus, Users, Layers, Send } from "lucide-react";
 
 export const dynamic = "force-dynamic";
@@ -116,20 +116,20 @@ export default async function AdminOverviewPage() {
         />
         <KpiTile
           label="Target raise"
-          value={fmtUsdc(stats.totalTarget)}
+          value={fmtUsdcCompact(stats.totalTarget)}
           sub="Sum on-chain target USDC"
           accent="green"
         />
         <KpiTile
           label="Distributed"
-          value={fmtUsdc(stats.totalDistributed)}
+          value={fmtUsdcCompact(stats.totalDistributed)}
           sub="Lifetime repayments"
           accent="cyan"
         />
         <KpiTile
           label="Live pools"
           value={stats.livePools.toString()}
-          sub="Funding / active / distributing"
+          sub="Funding · active · distributing"
           accent="violet"
         />
         <KpiTile
