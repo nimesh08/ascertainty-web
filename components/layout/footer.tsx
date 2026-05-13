@@ -43,21 +43,6 @@ export function Footer() {
                 Ascertainty
               </span>
             </Link>
-            <p
-              style={{
-                color: "rgba(255,255,255,0.55)",
-                fontSize: 12.5,
-                maxWidth: "44ch",
-                margin: "16px 0 0",
-              }}
-            >
-              On-chain MSME climate finance. Community capital → measurable energy upgrades,
-              settled on Solana.
-            </p>
-            <div style={{ display: "flex", gap: 8, marginTop: 18, flexWrap: "wrap" }}>
-              <span className="a-chip a-chip--dark">Solana · {CLUSTER}</span>
-              <span className="a-chip a-chip--dark">Devnet preview</span>
-            </div>
           </div>
           <div>
             <h5>Protocol</h5>
