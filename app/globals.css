@@ -313,39 +313,45 @@
   }
   .a-nav__links {
     display: flex;
-    align-items: stretch;
+    align-items: center;
     flex: 1;
     justify-content: center;
-    gap: 0;
+    gap: 4px;
     margin: 0 24px;
   }
+  /* Nav links as outlined pill buttons — matches the Connect Wallet CTA
+     pattern. Active page reads as a filled sage pill. */
   .a-nav__link {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    padding: 0 22px;
+    gap: 6px;
+    height: 34px;
+    padding: 0 16px;
+    border: 1px solid transparent;
+    border-radius: 999px;
     font-size: 10.5px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: rgba(255, 255, 255, 0.82);
-    transition: color .15s, background .15s;
+    color: rgba(255, 255, 255, 0.78);
+    background: transparent;
+    transition: color .15s, background .15s, border-color .15s;
     white-space: nowrap;
     position: relative;
   }
-  .a-nav__link::before {
-    content: "";
-    position: absolute;
-    left: 50%;
-    right: 50%;
-    bottom: -2px;
-    height: 2px;
-    background: var(--accent);
-    transition: left .2s, right .2s;
+  .a-nav__link:hover {
+    color: #ffffff;
+    border-color: rgba(255, 255, 255, 0.22);
   }
-  .a-nav__link:hover { color: #ffffff; }
-  .a-nav__link:hover::before { left: 18%; right: 18%; }
-  .a-nav__link[aria-current="true"] { color: #ffffff; }
-  .a-nav__link[aria-current="true"]::before { left: 12%; right: 12%; }
+  .a-nav__link[aria-current="true"] {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: var(--fg);
+  }
+  .a-nav__link[aria-current="true"]:hover {
+    background: color-mix(in oklab, var(--accent) 88%, #fff);
+    border-color: color-mix(in oklab, var(--accent) 88%, #fff);
+    color: var(--fg);
+  }
   .a-nav__link-idx {
     color: var(--fg-faint);
     font-size: 9.5px;
@@ -436,9 +442,9 @@
     align-items: center;
     gap: 12px;
     height: 46px;
-    padding: 0 22px;
+    padding: 0 24px;
     border: 1px solid var(--line-strong);
-    border-radius: 0;
+    border-radius: 999px;
     font-size: 11px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
@@ -681,64 +687,250 @@
     }
   }
 
-  /* §02.4 Bankable-collateral 4-step transformation grid.
-     Each row: [step number] [raw promise] [arrow] [bankable] [supporting body].
-     Stacks on phones via the .bc-row inner grid collapsing. */
-  .bc-grid {
-    display: grid;
-    gap: 0;
-    border-top: 1px solid var(--line);
+  /* §02 Bankable Collateral — USD.AI-style four-state explainer.
+     Large rounded illustration stage that cycles every 5.5s, four
+     clickable tabs underneath showing which property is highlighted. */
+  .bc-stage {
+    position: relative;
+    margin-top: 32px;
+    height: clamp(280px, 36vw, 440px);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    background: repeating-linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--accent) 3%, var(--bg-0)) 0px,
+      color-mix(in oklab, var(--accent) 3%, var(--bg-0)) 60px,
+      color-mix(in oklab, var(--accent) 7%, var(--bg-0)) 70px,
+      color-mix(in oklab, var(--accent) 1%, var(--bg-0)) 130px
+    );
+    overflow: hidden;
   }
-  .bc-row {
-    display: grid;
-    grid-template-columns: 56px minmax(0, 1fr) 40px minmax(0, 1fr) minmax(0, 1.4fr);
-    gap: 24px;
-    padding: 24px 0;
-    border-bottom: 1px solid var(--line);
-    align-items: start;
+  .bc-panel {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 36px 56px 86px; /* bottom space reserved for .bc-progress */
+    opacity: 0;
+    transform: scale(0.985);
+    transition: opacity 600ms ease, transform 800ms ease;
+    pointer-events: none;
   }
-  .bc-step {
-    font-family: var(--font-geist-mono);
-    font-size: 22px;
-    color: var(--fg-faint);
-    letter-spacing: -0.02em;
+  .bc-panel--active {
+    opacity: 1;
+    transform: scale(1);
   }
-  .bc-arrow {
-    color: var(--accent);
-    font-size: 20px;
-    line-height: 1;
-    padding-top: 18px;
+  .bc-panel__art {
+    flex: 1;
+    min-height: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .bc-art {
+    width: 100%;
+    height: 100%;
+    max-width: 540px;
+    max-height: 240px;
+  }
+  .bc-panel__inline {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
     text-align: center;
+    max-width: 60ch;
   }
-  .bc-text {
-    margin-top: 6px;
-    font-size: 16px;
-    letter-spacing: -0.01em;
-    line-height: 1.35;
+
+  /* Progress strip: chips light up cumulatively as panels advance. When
+     the fourth panel is active, the final "Bankable" chip lights too —
+     the eureka moment, all four properties unlocked. */
+  .bc-progress {
+    position: absolute;
+    left: 50%;
+    bottom: 18px;
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0 24px;
+    pointer-events: none;
   }
-  .bc-text--muted { color: var(--fg-muted); }
-  .bc-text--accent { color: var(--accent-deep); font-weight: 600; }
-  .bc-body {
-    font-size: 12.5px;
+  .bc-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--bg-0);
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    transition: color 350ms ease, border-color 350ms ease, background 350ms ease;
+  }
+  .bc-chip__dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--line-strong);
+    transition: background 350ms ease, box-shadow 350ms ease;
+  }
+  .bc-chip--lit {
+    color: var(--accent-deep);
+    border-color: var(--accent);
+    background: var(--accent-soft);
+  }
+  .bc-chip--lit .bc-chip__dot {
+    background: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 22%, transparent);
+  }
+  .bc-chip--final {
+    font-weight: 600;
+  }
+  .bc-chip--final.bc-chip--lit {
+    background: var(--accent);
+    color: var(--fg);
+    border-color: var(--accent);
+  }
+  .bc-chip--final.bc-chip--lit .bc-chip__dot {
+    background: var(--fg);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.35);
+  }
+  .bc-progress__op {
+    color: var(--fg-faint);
+    font-size: 13px;
+    font-weight: 600;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    margin: 0 -2px;
+  }
+  .bc-progress__op--equals {
+    color: var(--accent-deep);
+    margin: 0 4px 0 2px;
+  }
+  @media (max-width: 720px) {
+    .bc-progress { gap: 6px; padding: 0 14px; }
+    .bc-chip { padding: 4px 9px; font-size: 9px; }
+  }
+  .bc-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin-top: 0;
+    /* 2px gray base line across the whole tabs strip — the indicator
+       paints sage over this from left to right as the panel auto-cycles. */
+    border-top: 2px solid color-mix(in oklab, var(--line) 80%, transparent);
+  }
+  .bc-tab {
+    position: relative;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 20px 18px 22px;
+    text-align: left;
+    cursor: pointer;
     color: var(--fg-muted);
-    line-height: 1.55;
-    padding-top: 4px;
+    transition: color .15s;
+    font: inherit;
   }
-  @media (max-width: 880px) {
-    .bc-row {
-      grid-template-columns: 40px 1fr;
-      gap: 12px;
+  /* Animated indicator — fills left-to-right over 5.5s while the tab is
+     active; snaps to width 0 the instant the tab becomes inactive (no
+     reverse transition). Sits at top: -2px so it covers the .bc-tabs
+     gray base line cleanly. Synced to the auto-cycle interval in
+     BankableCollateral.tsx. */
+  .bc-tab::before {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: var(--accent);
+    pointer-events: none;
+    transition: width 0s;
+  }
+  .bc-tab--active::before {
+    width: 100%;
+    transition: width 5.5s linear;
+  }
+  .bc-tab + .bc-tab {
+    border-left: 1px solid var(--line);
+  }
+  .bc-tab:hover { color: var(--fg); }
+  .bc-tab--active {
+    color: var(--fg);
+  }
+  .bc-tab__label {
+    font-family: var(--font-display);
+    font-size: 17px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+  }
+  .bc-tab--active .bc-tab__label { color: var(--fg); }
+  .bc-tab__caption {
+    margin-top: 4px;
+    font-size: 12.5px;
+    line-height: 1.45;
+    color: var(--fg-muted);
+  }
+  @media (max-width: 720px) {
+    .bc-tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .bc-tab + .bc-tab:nth-child(odd) { border-left: 0; }
+    .bc-tab:nth-child(n+3) { border-top: 1px solid color-mix(in oklab, var(--line) 70%, transparent); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bc-tab--active::before {
+      transition: none;
     }
-    .bc-arrow,
-    .bc-row > .bc-left,
-    .bc-row > .bc-right,
-    .bc-row > .bc-body {
-      grid-column: 2;
-    }
-    .bc-arrow {
-      transform: rotate(90deg);
-      padding-top: 0;
-      width: max-content;
+  }
+
+  /* Subtle motion inside the art layers — only animates while the panel
+     is active (parent has .bc-panel--active). Reduced-motion respected. */
+  @keyframes bc-needle-sweep {
+    0%, 100% { transform: rotate(-32deg); transform-origin: 240px 120px; }
+    50%      { transform: rotate(32deg);  transform-origin: 240px 120px; }
+  }
+  @keyframes bc-wave-pulse {
+    0%, 100% { opacity: 0; transform: scale(0.86); transform-origin: 240px 120px; }
+    50%      { opacity: 0.6; transform: scale(1); transform-origin: 240px 120px; }
+  }
+  @keyframes bc-curve-draw {
+    0%   { stroke-dasharray: 400; stroke-dashoffset: 400; }
+    60%  { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 0; }
+  }
+  @keyframes bc-seal-pulse {
+    0%, 100% { transform: translate(330px, 168px) scale(1); }
+    50%      { transform: translate(330px, 168px) scale(1.08); }
+  }
+  .bc-panel--active .bc-needle {
+    animation: bc-needle-sweep 4s ease-in-out infinite;
+  }
+  .bc-panel--active .bc-wave {
+    animation: bc-wave-pulse 3.6s ease-in-out infinite;
+  }
+  .bc-panel--active .bc-curve {
+    animation: bc-curve-draw 4s ease-in-out infinite;
+  }
+  .bc-panel--active .bc-seal {
+    animation: bc-seal-pulse 3s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .bc-needle, .bc-wave, .bc-curve, .bc-seal,
+    .bc-panel--active .bc-needle,
+    .bc-panel--active .bc-wave,
+    .bc-panel--active .bc-curve,
+    .bc-panel--active .bc-seal {
+      animation: none !important;
     }
   }
 
@@ -878,14 +1070,18 @@
      URL bar / desktop bookmarks chrome state. */
   .a-hero--card {
     margin: 14px;
-    min-height: calc(100svh - 92px);
+    /* 100dvh = dynamic viewport height — adapts to window resize, browser
+       chrome show/hide, fullscreen toggles. Use min-height (not height)
+       so content can grow taller if it needs to; the card always FITS at
+       least the viewport, but never clips its own content. */
+    min-height: calc(100dvh - 92px);
     border: 1px solid var(--line);
     border-radius: 22px;
   }
   @media (max-width: 720px) {
     .a-hero--card {
       margin: 8px;
-      min-height: calc(100svh - 80px);
+      min-height: calc(100dvh - 80px);
       border-radius: 16px;
     }
   }
@@ -922,6 +1118,9 @@
     position: relative;
     z-index: 1;
     display: grid;
+    /* Restored to the previously deployed proportions: 1.05fr text, 1fr
+       meter. Bigger meter, more breathing room than the capped 580/460
+       version. */
     grid-template-columns: 1.05fr 1fr;
     gap: 48px;
     align-items: start;
@@ -1003,7 +1202,9 @@
     text-decoration: none;
     transition: border-color 150ms, color 150ms, background 150ms;
     background: var(--bg-1);
-    max-width: 100%;
+    white-space: nowrap;
+    width: max-content;
+    max-width: none;
   }
   .a-hero__badge:hover {
     border-color: var(--accent);
@@ -1346,12 +1547,398 @@
   }
   .a-audience-card__art {
     position: absolute;
-    right: -10px;
-    bottom: 70px;
-    width: 160px;
-    height: 100px;
-    opacity: 0.55;
+    right: 18px;
+    bottom: 118px;
+    width: 144px;
+    height: 90px;
+    opacity: 0.6;
     pointer-events: none;
+  }
+
+  /* §03 BENCHMARKS — sage callout box for the lender caveat, light-mac
+     terminal for the code snippet, side-by-side collapsible "fact cards"
+     for the methodology dives. Cuts the visible word count by ~60% while
+     keeping all the original content one click away. */
+  .a-callout {
+    display: flex;
+    gap: 16px;
+    margin-top: 24px;
+    padding: 18px 22px;
+    border-radius: 14px;
+    background: color-mix(in oklab, var(--accent-soft) 60%, var(--bg-0));
+    border: 1px solid color-mix(in oklab, var(--accent) 22%, transparent);
+    border-left: 3px solid var(--accent);
+  }
+  .a-callout__icon {
+    flex-shrink: 0;
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--fg);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-size: 13px;
+    font-weight: 600;
+    margin-top: 1px;
+  }
+  .a-callout__body {
+    font-size: 13px;
+    color: var(--fg);
+    line-height: 1.6;
+  }
+  .a-callout__title {
+    display: block;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    margin-bottom: 4px;
+  }
+
+  /* Side-by-side "fact cards" — collapsed by default. Rounded corners
+     match the rest of the card system. */
+  .a-bench-cards {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-top: 18px;
+  }
+  @media (max-width: 720px) {
+    .a-bench-cards { grid-template-columns: 1fr; }
+  }
+  .a-bench-card {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--bg-0);
+    overflow: hidden;
+    transition: border-color .15s;
+  }
+  .a-bench-card:hover { border-color: color-mix(in oklab, var(--accent) 40%, var(--line)); }
+  .a-bench-card > summary {
+    list-style: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px 20px;
+    font-family: var(--font-display);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--fg);
+  }
+  .a-bench-card > summary::-webkit-details-marker { display: none; }
+  .a-bench-card > summary::after {
+    content: "+";
+    margin-left: auto;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 16px;
+    color: var(--accent);
+    transition: transform .2s;
+  }
+  .a-bench-card[open] > summary::after { content: "−"; }
+  .a-bench-card[open] > summary { border-bottom: 1px solid var(--line); }
+  .a-bench-card__body {
+    padding: 18px 20px 22px;
+    font-size: 13px;
+    color: var(--fg-muted);
+    line-height: 1.6;
+  }
+  .a-bench-card__body h4 {
+    font-family: var(--font-display);
+    font-size: 13.5px;
+    font-weight: 500;
+    color: var(--fg);
+    margin: 14px 0 6px;
+    letter-spacing: -0.005em;
+  }
+  .a-bench-card__body h4:first-child { margin-top: 0; }
+  .a-bench-card__body ul {
+    margin: 4px 0 8px;
+    padding-left: 18px;
+  }
+  .a-bench-card__body li { margin-bottom: 2px; }
+  .a-bench-card__body p { margin: 8px 0; }
+  .a-bench-card__body b { color: var(--fg); font-weight: 500; }
+
+  /* Light Mac-terminal code block — cream bg, sage chrome, single language
+     pill, copy button. Tab strip kept honest (only languages we have an
+     example for). */
+  .a-term {
+    margin-top: 28px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--bg-0);
+    overflow: hidden;
+  }
+  .a-term__bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in oklab, var(--accent) 5%, var(--bg-0));
+  }
+  .a-term__dots {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .a-term__dots span {
+    width: 11px;
+    height: 11px;
+    border-radius: 999px;
+  }
+  /* Sage-tinted "traffic lights" — not the literal Mac red/yellow/green
+     because that'd fight the brand. Three shades of sage from light to
+     accent, evocative without being literal. */
+  .a-term__dots span:nth-child(1) {
+    background: color-mix(in oklab, var(--accent) 25%, var(--line));
+  }
+  .a-term__dots span:nth-child(2) {
+    background: color-mix(in oklab, var(--accent) 55%, var(--bg-0));
+  }
+  .a-term__dots span:nth-child(3) {
+    background: var(--accent);
+  }
+  .a-term__tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    background: var(--accent-soft);
+    border-color: color-mix(in oklab, var(--accent) 22%, transparent);
+  }
+  .a-term__tab-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px color-mix(in oklab, var(--accent) 18%, transparent);
+  }
+  .a-term__copy {
+    margin-left: auto;
+    appearance: none;
+    padding: 5px 14px;
+    border-radius: 999px;
+    border: 1px solid var(--line);
+    background: var(--bg-0);
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    cursor: pointer;
+    transition: color .15s, border-color .15s, background .15s;
+  }
+  .a-term__copy:hover {
+    color: var(--fg);
+    border-color: var(--accent);
+    background: color-mix(in oklab, var(--accent) 8%, var(--bg-0));
+  }
+  .a-term__code {
+    margin: 0;
+    padding: 22px 22px 24px;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    color: var(--fg);
+    overflow-x: auto;
+    white-space: pre;
+  }
+
+  /* Inline term with hover-explainer (§03 acronym popovers, etc.). The
+     trigger looks like ordinary text with a dotted sage underline; the
+     popover is rounded + sage-tinted to match the rest of the card system. */
+  .a-term-trigger {
+    cursor: help;
+    border-bottom: 1px dotted color-mix(in oklab, var(--accent) 55%, transparent);
+    color: inherit;
+    transition: color .15s, border-color .15s;
+  }
+  .a-term-trigger:hover {
+    color: var(--accent-deep);
+    border-bottom-color: var(--accent);
+  }
+  .a-term-popover {
+    font-family: var(--font-poppins), Inter, sans-serif;
+  }
+  .a-term-popover__title {
+    font-family: var(--font-display);
+    font-size: 13.5px;
+    font-weight: 600;
+    letter-spacing: -0.005em;
+    margin-bottom: 4px;
+    color: var(--fg);
+  }
+  .a-term-popover__def {
+    font-size: 12.5px;
+    line-height: 1.55;
+    color: var(--fg-muted);
+    margin: 0 0 10px;
+  }
+  .a-term-popover__link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    text-decoration: none;
+  }
+  .a-term-popover__link:hover { color: var(--accent); }
+
+  /* ────────────────────────────────────────────────────────────────
+     Dark themed section (used on §03 BENCHMARKS). Framed card pattern
+     like the hero, but in ink instead of cream. Adds rhythm to the
+     landing — cream §02 → dark §03 → cream §04. Scoped overrides for
+     every child component used inside the dark band. */
+  .a-section--dark {
+    margin: 14px;
+    padding: 56px 0 64px;
+    background: var(--fg);
+    color: rgba(255, 255, 255, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 22px;
+    overflow: hidden;
+  }
+  @media (max-width: 720px) {
+    .a-section--dark {
+      margin: 8px;
+      border-radius: 16px;
+      padding: 40px 0 48px;
+    }
+  }
+
+  /* Section head: title + intro light */
+  .a-section--dark .a-section__title { color: rgba(255, 255, 255, 0.96); }
+  .a-section--dark .a-section__title em { color: rgba(255, 255, 255, 0.62); }
+  .a-section--dark .a-section__head p { color: rgba(255, 255, 255, 0.70); }
+
+  /* Term trigger (acronym hover) — explicit light text on dark + sage
+     underline. Was inheriting before; in some contexts that resolved to
+     a dim color that read as invisible against the ink bg. */
+  .a-section--dark .a-term-trigger {
+    color: rgba(255, 255, 255, 0.94);
+    border-bottom-color: color-mix(in oklab, var(--accent) 70%, transparent);
+  }
+  .a-section--dark .a-term-trigger:hover {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  /* Benchmark table on dark */
+  .a-section--dark .a-tbl {
+    color: rgba(255, 255, 255, 0.86);
+  }
+  .a-section--dark .a-tbl th {
+    color: rgba(255, 255, 255, 0.55);
+    border-bottom-color: rgba(255, 255, 255, 0.14);
+  }
+  .a-section--dark .a-tbl td {
+    border-bottom-color: rgba(255, 255, 255, 0.06);
+  }
+  .a-section--dark .a-tbl tr:hover td {
+    background: rgba(255, 255, 255, 0.03);
+  }
+  /* Highlighted "this product" row keeps a sage-tinted bg */
+  .a-section--dark .a-tbl tr[style*="rgba(16,185,129,0.06)"] {
+    background: rgba(95, 166, 127, 0.12) !important;
+  }
+  /* Verdict pills retune for dark bg */
+  .a-section--dark .bench-verdict {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.16);
+  }
+  .a-section--dark .bench-verdict--bad {
+    background: rgba(220, 100, 90, 0.18);
+    border-color: rgba(220, 100, 90, 0.40);
+    color: rgba(255, 190, 180, 0.95);
+  }
+  .a-section--dark .bench-verdict--ok {
+    background: rgba(230, 175, 90, 0.18);
+    border-color: rgba(230, 175, 90, 0.40);
+    color: rgba(255, 215, 150, 0.95);
+  }
+  .a-section--dark .bench-verdict--good {
+    background: rgba(95, 166, 127, 0.22);
+    border-color: rgba(95, 166, 127, 0.55);
+    color: rgba(168, 220, 188, 0.98);
+  }
+
+  /* Caveat callout on dark — sage tint over ink, not over cream */
+  .a-section--dark .a-callout {
+    background: rgba(95, 166, 127, 0.10);
+    border-color: rgba(95, 166, 127, 0.35);
+    border-left-color: var(--accent);
+  }
+  .a-section--dark .a-callout__icon {
+    background: var(--accent);
+    color: var(--fg);
+  }
+  .a-section--dark .a-callout__body { color: rgba(255, 255, 255, 0.88); }
+  .a-section--dark .a-callout__title { color: rgba(168, 220, 188, 0.95); }
+
+  /* Methodology fact cards on dark */
+  .a-section--dark .a-bench-card {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.10);
+  }
+  .a-section--dark .a-bench-card:hover {
+    border-color: rgba(95, 166, 127, 0.50);
+  }
+  .a-section--dark .a-bench-card > summary {
+    color: rgba(255, 255, 255, 0.95);
+  }
+  .a-section--dark .a-bench-card[open] > summary {
+    border-bottom-color: rgba(255, 255, 255, 0.10);
+  }
+  .a-section--dark .a-bench-card__body { color: rgba(255, 255, 255, 0.70); }
+  .a-section--dark .a-bench-card__body h4 { color: rgba(255, 255, 255, 0.95); }
+  .a-section--dark .a-bench-card__body b { color: rgba(255, 255, 255, 0.95); }
+
+  /* Light Mac-terminal on dark — invert chrome so it reads as
+     a "developer terminal" sitting inside the section, not flat with it */
+  .a-section--dark .a-term {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.10);
+  }
+  .a-section--dark .a-term__bar {
+    background: rgba(255, 255, 255, 0.06);
+    border-bottom-color: rgba(255, 255, 255, 0.10);
+  }
+  .a-section--dark .a-term__code {
+    color: rgba(255, 255, 255, 0.86);
+  }
+  .a-section--dark .a-term__copy {
+    background: rgba(255, 255, 255, 0.04);
+    border-color: rgba(255, 255, 255, 0.16);
+    color: rgba(255, 255, 255, 0.70);
+  }
+  .a-section--dark .a-term__copy:hover {
+    color: rgba(255, 255, 255, 0.98);
+    border-color: var(--accent);
+    background: rgba(95, 166, 127, 0.16);
+  }
+
+  /* Trailing helper line + "coming soon" pill */
+  .a-section--dark .bench-grid > p {
+    color: rgba(255, 255, 255, 0.55);
+  }
+  .a-section--dark .bench-grid > p span[style*="color: var(--accent)"] {
+    color: var(--accent) !important;
   }
   .a-audience-card__footer {
     margin-top: auto;
@@ -1401,82 +1988,63 @@
   }
   /* Illustration animations — sage line-art that breathes slowly. Respects
      prefers-reduced-motion: falls back to static. */
-  @keyframes aud-curve-draw {
-    0%   { stroke-dashoffset: 220; }
-    55%  { stroke-dashoffset: 0; }
-    100% { stroke-dashoffset: 0; }
+  /* §01 audience-card concrete-object illustrations. Each card gets a
+     distinct iconography so the section doesn't repeat the §02 bankable-
+     collateral motifs (vertical bars / meter / document / bell curve). */
+
+  /* LENDER — vault holding share-of-savings tokens; sage USDC coins drop
+     in from above on staggered loops. */
+  @keyframes aud-coin-fall {
+    0%, 8%    { transform: translateY(-22px); opacity: 0; }
+    24%, 70%  { transform: translateY(0);     opacity: 1; }
+    86%, 100% { transform: translateY(0);     opacity: 0; }
   }
-  @keyframes aud-meter-sweep {
-    0%, 100% { transform: rotate(-32deg); }
-    50%      { transform: rotate(32deg); }
-  }
-  @keyframes aud-hex-pulse {
-    0%, 100% { opacity: 0.35; }
-    50%      { opacity: 0.85; }
-  }
-  .aud-art--lenders .curve {
-    stroke-dasharray: 220;
-    animation: aud-curve-draw 7s ease-in-out infinite;
-  }
-  /* Logo overlay on the lenders card — the brand mark builds bottom-stroke
-     to top-stroke, with the triangle peak landing on (80,18) at the same
-     instant the curve's pen reaches its apex. Curve draws 0→55% with
-     ease-in-out, midpoint ≈ 27.5% → triangle appears at 28%. */
-  @keyframes aud-logo-arc1 {
-    0%   { stroke-dashoffset: 1; }
-    8%   { stroke-dashoffset: 0; }
-    100% { stroke-dashoffset: 0; }
-  }
-  @keyframes aud-logo-arc2 {
-    0%, 8%   { stroke-dashoffset: 1; }
-    16%      { stroke-dashoffset: 0; }
-    100%     { stroke-dashoffset: 0; }
-  }
-  @keyframes aud-logo-arc3 {
-    0%, 16%  { stroke-dashoffset: 1; }
-    24%      { stroke-dashoffset: 0; }
-    100%     { stroke-dashoffset: 0; }
-  }
-  @keyframes aud-logo-peak {
-    0%, 24%  { opacity: 0; transform: translateY(4px); }
-    28%      { opacity: 1; transform: translateY(0); }
-    100%     { opacity: 1; transform: translateY(0); }
-  }
-  .aud-art--lenders .logo-arc {
-    stroke-dasharray: 1;
-    stroke-dashoffset: 1;
-    animation-duration: 7s;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-  }
-  .aud-art--lenders .logo-arc-1 { animation-name: aud-logo-arc1; }
-  .aud-art--lenders .logo-arc-2 { animation-name: aud-logo-arc2; }
-  .aud-art--lenders .logo-arc-3 { animation-name: aud-logo-arc3; }
-  .aud-art--lenders .logo-peak {
+  .aud-art--lenders .coin {
+    transform-origin: center;
     opacity: 0;
-    transform-origin: 80px 22px;
-    animation: aud-logo-peak 7s ease-in-out infinite;
+    animation: aud-coin-fall 6s ease-in-out infinite;
   }
+  .aud-art--lenders .coin-1 { animation-delay: 0s; }
+  .aud-art--lenders .coin-2 { animation-delay: 1.2s; }
+  .aud-art--lenders .coin-3 { animation-delay: 2.4s; }
+
+  /* BORROWER — factory schematic with energy-savings arrows pulsing
+     outward to the right. Lower kWh, lower bill. */
+  @keyframes aud-flow {
+    0%, 100% { opacity: 0.2; transform: translateX(-3px); }
+    50%      { opacity: 0.95; transform: translateX(0); }
+  }
+  .aud-art--borrowers .flow {
+    transform-origin: left center;
+    animation: aud-flow 3.4s ease-in-out infinite;
+  }
+  .aud-art--borrowers .flow-1 { animation-delay: 0s; }
+  .aud-art--borrowers .flow-2 { animation-delay: 0.4s; }
+  .aud-art--borrowers .flow-3 { animation-delay: 0.8s; }
+
+  /* BUILDER — chain of audit blocks, each labeled with a short hash;
+     blocks light in sequence so the audit trail visibly propagates. */
+  @keyframes aud-block-pulse {
+    0%, 100% { opacity: 0.35; }
+    50%      { opacity: 1; }
+  }
+  .aud-art--approach .block {
+    opacity: 0.35;
+    animation: aud-block-pulse 4.2s ease-in-out infinite;
+  }
+  .aud-art--approach .block-1 { animation-delay: 0s; }
+  .aud-art--approach .block-2 { animation-delay: 0.35s; }
+  .aud-art--approach .block-3 { animation-delay: 0.7s; }
+  .aud-art--approach .block-4 { animation-delay: 1.05s; }
+
   @media (prefers-reduced-motion: reduce) {
-    .aud-art--lenders .logo-arc,
-    .aud-art--lenders .logo-peak {
+    .aud-art--lenders .coin,
+    .aud-art--borrowers .flow,
+    .aud-art--approach .block {
       animation: none !important;
       opacity: 1 !important;
-      stroke-dashoffset: 0 !important;
       transform: none !important;
     }
-  }
-  .aud-art--borrowers .needle {
-    transform-origin: 50px 50px;
-    animation: aud-meter-sweep 6s ease-in-out infinite;
-  }
-  .aud-art--approach .hex:nth-child(1) { animation: aud-hex-pulse 4.5s ease-in-out infinite; }
-  .aud-art--approach .hex:nth-child(2) { animation: aud-hex-pulse 4.5s ease-in-out infinite 0.7s; }
-  .aud-art--approach .hex:nth-child(3) { animation: aud-hex-pulse 4.5s ease-in-out infinite 1.4s; }
-  @media (prefers-reduced-motion: reduce) {
-    .aud-art--lenders .curve,
-    .aud-art--borrowers .needle,
-    .aud-art--approach .hex { animation: none !important; }
   }
 
   /* primitives grid */

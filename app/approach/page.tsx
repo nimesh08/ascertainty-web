@@ -121,7 +121,7 @@ export default function ProtocolPage() {
   return (
     <>
       {/* HERO */}
-      <section className="a-hero">
+      <section className="a-hero a-hero--card">
         <div className="a-hero__bg" />
         <div
           className="shell"

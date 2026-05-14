@@ -105,7 +105,7 @@ export function Nav() {
 
           if (link.children && link.children.length > 0) {
             return (
-              <DropdownMenu key={link.href}>
+              <DropdownMenu key={link.href} modal={false}>
                 <DropdownMenuTrigger asChild>
                   <button
                     className="a-nav__link a-nav__link--trigger"

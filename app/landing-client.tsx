@@ -10,6 +10,9 @@ import {
 } from "@/components/ui/accordion";
 
 import { MeterAnimation } from "@/components/landing/meter-animation";
+import { BankableCollateral } from "@/components/landing/bankable-collateral";
+import { CodeTerminal } from "@/components/landing/code-terminal";
+import { Term } from "@/components/landing/term";
 import { SectionHead } from "@/components/landing/ascertainty/section-head";
 
 export interface LandingStats {
@@ -104,13 +107,14 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
         </div>
       </section>
 
-      {/* AUDIENCE TRIPTYCH */}
-      <section id="01-who-its-for" className="a-section">
+      {/* AUDIENCE TRIPTYCH — dark themed; cream audience cards float on
+          an ink band, contrasting with cream §02 below. */}
+      <section id="01-who-its-for" className="a-section a-section--dark">
         <SectionHead
           idx="01"
           kicker="WHO IT'S FOR"
           title="One meter. Three views."
-          intro="Every party reads from the same vault state and can verify every distribution down to the meter."
+          intro="Lenders find yield. Borrowers find capital. Builders find every primitive auditable."
         />
         <div className="shell" style={{ paddingBottom: 0 }}>
           <div className="a-audience-grid">
@@ -124,58 +128,32 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                 Non-recourse loans sized to the P5 floor of a calibrated 90%
                 PI. DSCR @ P5 ≥ 1.30× hard covenant. Monthly USDC.
               </p>
+              {/* Vault holding share-of-savings tokens; USDC coins drop
+                  in from above on staggered loops. */}
               <svg
                 className="a-audience-card__art aud-art--lenders"
                 viewBox="0 0 160 100"
                 fill="none"
                 aria-hidden
               >
-                <line x1="6" y1="82" x2="154" y2="82" stroke="#5fa67f" strokeWidth="0.75" opacity="0.35" />
-                <line x1="6" y1="56" x2="154" y2="56" stroke="#5fa67f" strokeWidth="0.75" opacity="0.5" />
-                <line x1="6" y1="30" x2="154" y2="30" stroke="#5fa67f" strokeWidth="0.75" opacity="0.35" />
-                <path
-                  className="curve"
-                  d="M6 92 C 40 92, 60 18, 80 18 S 120 92, 154 92"
-                  stroke="#5fa67f"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                  fill="none"
-                />
-                {/* Brand-mark overlay: 3 nested arcs ascending to the triangle
-                    peak. Proportions + stroke ratios match the real CoinMark
-                    (22 / 16 / 12 px @ inner-scale 0.66, scaled by 0.239 here
-                    so the bottom arc spans 44 units). Triangle peak lands on
-                    (80,18) — the curve apex — simultaneously with the curve's
-                    pen reaching that point. */}
-                <path
-                  className="logo-arc logo-arc-1"
-                  pathLength="1"
-                  d="M 58 62 A 22 10.5 0 0 1 102 62"
-                  stroke="#5fa67f"
-                  strokeWidth="5.3"
-                  fill="none"
-                />
-                <path
-                  className="logo-arc logo-arc-2"
-                  pathLength="1"
-                  d="M 65.7 47.6 A 14.3 7.7 0 0 1 94.3 47.6"
-                  stroke="#5fa67f"
-                  strokeWidth="3.8"
-                  fill="none"
-                />
-                <path
-                  className="logo-arc logo-arc-3"
-                  pathLength="1"
-                  d="M 71.6 35.7 A 8.4 4.3 0 0 1 88.4 35.7"
-                  stroke="#5fa67f"
-                  strokeWidth="2.9"
-                  fill="none"
-                />
-                <path
-                  className="logo-peak"
-                  d="M 80 18 L 84.8 26.6 L 75.2 26.6 Z"
-                  fill="#5fa67f"
-                />
+                {/* USDC coins falling from above */}
+                <circle className="coin coin-1" cx="80" cy="14" r="4" fill="#5fa67f" />
+                <circle className="coin coin-2" cx="62" cy="10" r="3" fill="#5fa67f" />
+                <circle className="coin coin-3" cx="98" cy="10" r="3" fill="#5fa67f" />
+
+                {/* Vault body */}
+                <rect x="40" y="30" width="80" height="58" rx="4" stroke="#5fa67f" strokeWidth="1.5" fill="none" />
+                {/* Inner panel */}
+                <rect x="46" y="36" width="68" height="46" rx="2" stroke="#5fa67f" strokeWidth="0.6" opacity="0.4" fill="none" />
+                {/* Coin slot at the top edge */}
+                <rect x="72" y="29" width="16" height="2" rx="1" fill="#5fa67f" />
+                {/* Dial */}
+                <circle cx="80" cy="60" r="13" stroke="#5fa67f" strokeWidth="1.25" fill="none" />
+                <circle cx="80" cy="60" r="3" fill="#5fa67f" />
+                <line x1="80" y1="60" x2="80" y2="50" stroke="#5fa67f" strokeWidth="1.5" strokeLinecap="round" />
+                {/* Vault feet */}
+                <line x1="48" y1="88" x2="48" y2="92" stroke="#5fa67f" strokeWidth="1.5" />
+                <line x1="112" y1="88" x2="112" y2="92" stroke="#5fa67f" strokeWidth="1.5" />
               </svg>
               <div className="a-audience-card__footer">
                 <div className="a-audience-card__kpis">
@@ -204,38 +182,67 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                 4–6 weeks to close. Non-recourse to your business.
                 ₹20L–₹100Cr facility sizes for vetted Indian MSMEs.
               </p>
+              {/* Factory schematic + sage energy-savings arrows pulsing
+                  outward. Lower kWh, lower bill. */}
               <svg
                 className="a-audience-card__art aud-art--borrowers"
-                viewBox="0 0 100 100"
+                viewBox="0 0 160 100"
                 fill="none"
                 aria-hidden
               >
-                <circle cx="50" cy="50" r="38" stroke="#5fa67f" strokeWidth="0.75" opacity="0.5" />
-                <circle cx="50" cy="50" r="30" stroke="#5fa67f" strokeWidth="0.5" opacity="0.3" />
-                {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
-                  <line
-                    key={deg}
-                    x1="50"
-                    y1="14"
-                    x2="50"
-                    y2="20"
-                    stroke="#5fa67f"
-                    strokeWidth="0.75"
-                    opacity="0.6"
-                    transform={`rotate(${deg} 50 50)`}
-                  />
-                ))}
-                <line
-                  className="needle"
-                  x1="50"
-                  y1="50"
-                  x2="50"
-                  y2="22"
+                {/* Factory silhouette (saw-tooth roof style) */}
+                <path
+                  d="M 16 84 L 16 56 L 28 50 L 28 60 L 40 50 L 40 60 L 52 50 L 52 60 L 64 50 L 64 84 Z"
                   stroke="#5fa67f"
                   strokeWidth="1.5"
-                  strokeLinecap="round"
+                  fill="none"
+                  strokeLinejoin="round"
                 />
-                <circle cx="50" cy="50" r="3" fill="#5fa67f" />
+                {/* Adjoining building block */}
+                <path
+                  d="M 64 84 L 64 64 L 96 64 L 96 84 Z"
+                  stroke="#5fa67f"
+                  strokeWidth="1.5"
+                  fill="none"
+                  strokeLinejoin="round"
+                />
+                {/* Chimney */}
+                <line x1="72" y1="64" x2="72" y2="44" stroke="#5fa67f" strokeWidth="2" />
+                <rect x="69" y="40" width="6" height="4" fill="#5fa67f" />
+                {/* Windows */}
+                <rect x="22" y="68" width="5" height="6" stroke="#5fa67f" strokeWidth="0.5" opacity="0.5" />
+                <rect x="34" y="68" width="5" height="6" stroke="#5fa67f" strokeWidth="0.5" opacity="0.5" />
+                <rect x="46" y="68" width="5" height="6" stroke="#5fa67f" strokeWidth="0.5" opacity="0.5" />
+                <rect x="74" y="70" width="6" height="8" stroke="#5fa67f" strokeWidth="0.5" opacity="0.5" />
+
+                {/* Energy savings arrows flowing right — three of decreasing
+                    thickness, suggesting ↓ kWh output */}
+                <g className="flow flow-1">
+                  <line x1="102" y1="56" x2="138" y2="56" stroke="#5fa67f" strokeWidth="1.75" strokeLinecap="round" />
+                  <path d="M 134 52 L 138 56 L 134 60" stroke="#5fa67f" strokeWidth="1.75" strokeLinecap="round" fill="none" />
+                </g>
+                <g className="flow flow-2">
+                  <line x1="102" y1="68" x2="132" y2="68" stroke="#5fa67f" strokeWidth="1.25" strokeLinecap="round" />
+                  <path d="M 129 65 L 132 68 L 129 71" stroke="#5fa67f" strokeWidth="1.25" strokeLinecap="round" fill="none" />
+                </g>
+                <g className="flow flow-3">
+                  <line x1="102" y1="80" x2="126" y2="80" stroke="#5fa67f" strokeWidth="1" strokeLinecap="round" />
+                  <path d="M 123 77 L 126 80 L 123 83" stroke="#5fa67f" strokeWidth="1" strokeLinecap="round" fill="none" />
+                </g>
+
+                {/* ↓ kWh label */}
+                <text
+                  x="144"
+                  y="44"
+                  textAnchor="end"
+                  fill="#5fa67f"
+                  fontSize="7"
+                  fontFamily="var(--font-geist-mono, monospace)"
+                  letterSpacing="0.12em"
+                  opacity="0.85"
+                >
+                  ↓ kWh
+                </text>
               </svg>
               <div className="a-audience-card__footer">
                 <div className="a-audience-card__kpis">
@@ -252,9 +259,9 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
               </div>
             </Link>
 
-            {/* 03 — APPROACH */}
+            {/* 03 — BUILDERS (links to /approach) */}
             <Link href="/approach" className="a-audience-card">
-              <span className="a-kicker-pill">03 · Approach</span>
+              <span className="a-kicker-pill">03 · Builders</span>
               <h3 className="a-audience-card__title">
                 Every primitive auditable. Every prediction reproducible.
               </h3>
@@ -262,35 +269,80 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                 Six primitives, one ledger. Vault custody on RWA rails;
                 calibrated underwriting + IoT M&amp;V + audit-hash commits.
               </p>
+              {/* Audit toolkit: magnifying glass + wrench over a chain of
+                  primitives. Reads "builders inspect + maintain every
+                  block in the audit trail." */}
               <svg
                 className="a-audience-card__art aud-art--approach"
                 viewBox="0 0 160 100"
                 fill="none"
                 aria-hidden
               >
-                <polygon
-                  className="hex"
-                  points="40,16 60,28 60,52 40,64 20,52 20,28"
-                  stroke="#5fa67f"
-                  strokeWidth="1"
-                  fill="none"
-                />
-                <polygon
-                  className="hex"
-                  points="80,40 100,52 100,76 80,88 60,76 60,52"
-                  stroke="#5fa67f"
-                  strokeWidth="1"
-                  fill="none"
-                />
-                <polygon
-                  className="hex"
-                  points="120,16 140,28 140,52 120,64 100,52 100,28"
-                  stroke="#5fa67f"
-                  strokeWidth="1"
-                  fill="none"
-                />
-                <line x1="40" y1="40" x2="80" y2="64" stroke="#5fa67f" strokeWidth="0.5" opacity="0.4" />
-                <line x1="120" y1="40" x2="80" y2="64" stroke="#5fa67f" strokeWidth="0.5" opacity="0.4" />
+                {/* Magnifying glass — upper-left, line-art */}
+                <g className="audit-loupe">
+                  <circle cx="50" cy="32" r="14" stroke="#5fa67f" strokeWidth="2" fill="none" />
+                  <circle cx="50" cy="32" r="9" stroke="#5fa67f" strokeWidth="0.5" opacity="0.35" fill="none" />
+                  <line
+                    x1="60"
+                    y1="42"
+                    x2="72"
+                    y2="54"
+                    stroke="#5fa67f"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                  />
+                </g>
+
+                {/* Wrench — upper-right, slanted ~30° */}
+                <g
+                  className="audit-wrench"
+                  transform="translate(116 32) rotate(35)"
+                >
+                  {/* Handle */}
+                  <rect x="-2" y="-3" width="4" height="24" rx="2" fill="#5fa67f" />
+                  {/* Open-end jaw at the top */}
+                  <path
+                    d="M -6 -4 L -6 -12 L -2 -12 L -2 -8 L 2 -8 L 2 -12 L 6 -12 L 6 -4 Z"
+                    stroke="#5fa67f"
+                    strokeWidth="1"
+                    fill="#5fa67f"
+                  />
+                </g>
+
+                {/* Chain of audit blocks at the bottom */}
+                <line x1="34" y1="78" x2="42" y2="78" stroke="#5fa67f" strokeWidth="1" opacity="0.5" />
+                <line x1="68" y1="78" x2="76" y2="78" stroke="#5fa67f" strokeWidth="1" opacity="0.5" />
+                <line x1="102" y1="78" x2="110" y2="78" stroke="#5fa67f" strokeWidth="1" opacity="0.5" />
+                {[
+                  { key: "block-1", x: 8, hash: "0xa3" },
+                  { key: "block-2", x: 42, hash: "0x7f" },
+                  { key: "block-3", x: 76, hash: "0xc2" },
+                  { key: "block-4", x: 110, hash: "0xe9" },
+                ].map((b) => (
+                  <g key={b.key} className={`block ${b.key}`}>
+                    <rect
+                      x={b.x}
+                      y="68"
+                      width="26"
+                      height="20"
+                      rx="3"
+                      stroke="#5fa67f"
+                      strokeWidth="1.25"
+                      fill="none"
+                    />
+                    <text
+                      x={b.x + 13}
+                      y="81"
+                      textAnchor="middle"
+                      fill="#5fa67f"
+                      fontSize="6.5"
+                      fontFamily="var(--font-geist-mono, monospace)"
+                      letterSpacing="0.04em"
+                    >
+                      {b.hash}
+                    </text>
+                  </g>
+                ))}
               </svg>
               <div className="a-audience-card__footer">
                 <div className="a-audience-card__kpis">
@@ -310,73 +362,55 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
         </div>
       </section>
 
-      {/* BANKABLE COLLATERAL — the transformation that makes the loan possible.
-          Answers the "what's the collateral?" question every credit reviewer asks
-          first. Sets up §02.5 WORKED EXAMPLE which then shows the math in action. */}
-      <section id="02-bankable-collateral" className="a-section">
-        <SectionHead
-          idx="02"
-          kicker="BANKABLE COLLATERAL"
-          title="A raw promise turns into a financial instrument."
-          intro="Energy savings are not collateral by default — they're a promise. Four steps turn them into something a lender can underwrite."
-        />
-        <div className="shell" style={{ paddingTop: 32, paddingBottom: 80 }}>
-          <div className="bc-grid">
-            {[
-              {
-                step: "00",
-                left: "“We’ll save kWh”",
-                right: "Calibrated forecast with bounds",
-                body: "TabPFN in-context model produces a P5 / P50 / P95 distribution per ECM. 90% conformal prediction interval calibrated on held-out audits.",
-              },
-              {
-                step: "01",
-                left: "“Trust us, the auditor signed off”",
-                right: "IoT meters + on-chain audit hash",
-                body: "Day-30 reconciliation by a KISEM-affiliated auditor today. Continuous IoT M&V via IPMVP Option B on the roadmap. Every prediction’s sha256 commits to a Solana Memo so the audit trail is tamper-evident.",
-              },
-              {
-                step: "02",
-                left: "“Pay us from savings”",
-                right: "Legal assignment of utility delta to vault",
-                body: "Loan documents assign the measured-vs-baseline kWh delta to the SPV. Borrower’s other business lines are untouched (non-recourse).",
-              },
-              {
-                step: "03",
-                left: "(Not bankable)",
-                right: "Bankable",
-                body: "Loan sized to the P5 floor under a DSCR @ P5 ≥ 1.30× covenant. Borrower stays solvent even in the bottom-5% savings scenario.",
-              },
-            ].map((r) => (
-              <div key={r.step} className="bc-row">
-                <div className="bc-step">{r.step}</div>
-                <div className="bc-left">
-                  <span className="label">Raw promise</span>
-                  <div className="bc-text bc-text--muted">{r.left}</div>
-                </div>
-                <div className="bc-arrow" aria-hidden>
-                  &rarr;
-                </div>
-                <div className="bc-right">
-                  <span className="label" style={{ color: "var(--accent-deep)" }}>
-                    Bankable collateral
-                  </span>
-                  <div className="bc-text bc-text--accent">{r.right}</div>
-                </div>
-                <div className="bc-body">{r.body}</div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      {/* BANKABLE COLLATERAL — USD.AI-style four-state animated explainer.
+          Cycles every 5.5s through valuable / verifiable / enforceable /
+          predictable. Component owns its own state + illustrations. */}
+      <BankableCollateral />
 
-      {/* BENCHMARKS — verifiable accuracy claims */}
-      <section id="03-benchmarks" className="a-section">
+      {/* BENCHMARKS — verifiable accuracy claims. Dark themed: ink ground
+          matches the footer + nav, sage accents pop on dark. Sits between
+          cream §02 (above) and cream §04 (below) so the dark band adds
+          rhythm to the landing. */}
+      <section id="03-benchmarks" className="a-section a-section--dark">
         <SectionHead
           idx="03"
           kicker="BENCHMARKS"
-          title="Calibrated, not just confident."
-          intro="Our underwriting model produces a calibrated 90% confidence interval — meaning the P5 lower bound is honest, not an LLM hallucination. Numbers below come from leave-one-out cross-validation on the 72-ECM KISEM corpus after pretraining on 14,000 real US-DOE IAC industrial audits. The TabPFN in-context model achieves R² 0.56 with a distribution-free 90% PI; reproduction script below."
+          title="Tested on 72 held-out audits."
+          intro={
+            <>
+              <Term
+                title="Leave-one-out cross-validation"
+                def="Train on every audit except one, predict that one, repeat for all 72. The whole table below is computed this way — no row is using data it was trained on."
+              >
+                LOO
+              </Term>
+              {" "}
+              <Term
+                title="R² · coefficient of determination"
+                def="How much of the variance in realised savings the model explains. +1 = perfect, 0 = no better than guessing the mean, negative = worse than the mean."
+                href="https://en.wikipedia.org/wiki/Coefficient_of_determination"
+              >
+                R²
+              </Term>
+              {" "}of +0.56 on 72{" "}
+              <Term
+                title="KISEM"
+                def="Kotak IIT-Madras Save Energy Mission. Our primary Indian audit partnership — ~600 BEE-accredited MSME audits per year."
+                href="https://kisem.org/"
+              >
+                KISEM
+              </Term>
+              {" "}industrial audits, after pretraining on 14k US-DOE{" "}
+              <Term
+                title="Industrial Assessment Center (IAC)"
+                def="US Department of Energy program. 14,482 implemented industrial energy audits with client-reported realised savings, 1981–2024. Public dataset."
+                href="https://iac.university/"
+              >
+                IAC
+              </Term>
+              {" "}rows. The 90% prediction interval is distribution-free.
+            </>
+          }
         />
         <div className="shell" style={{ paddingBottom: 56 }}>
           <div className="bench-grid" style={{ marginTop: 32 }}>
@@ -384,9 +418,29 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
               <thead>
                 <tr>
                   <th>Method</th>
-                  <th>R² (LOO)</th>
-                  <th>MAPE-median</th>
-                  <th>90% CI coverage</th>
+                  <th>
+                    <Term
+                      title="R² · coefficient of determination"
+                      def="How much of the variance the model explains. +1 = perfect, 0 = guessing the mean, negative = worse than the mean."
+                      href="https://en.wikipedia.org/wiki/Coefficient_of_determination"
+                    >R²</Term>{" "}(
+                    <Term
+                      title="Leave-one-out cross-validation"
+                      def="Train on every audit except one, predict that one, repeat for all 72. Computed this way for every row in the table."
+                    >LOO</Term>)
+                  </th>
+                  <th>
+                    <Term
+                      title="MAPE-median"
+                      def="Median Absolute Percentage Error — typical % error per prediction. Median (not mean) so the metric isn't skewed by outliers."
+                    >MAPE-median</Term>
+                  </th>
+                  <th>90%{" "}
+                    <Term
+                      title="Confidence Interval coverage"
+                      def="Of all predictions where the model claimed '90% confident', the fraction that actually contained the realised value. ~90% = calibrated. <90% = overconfident. >90% = bands too wide."
+                    >CI</Term>{" "}coverage
+                  </th>
                   <th>Verdict</th>
                   <th>Notes</th>
                 </tr>
@@ -401,7 +455,13 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>What unaided underwriters do today</td>
                 </tr>
                 <tr>
-                  <td>BEE physics formula (industry default)</td>
+                  <td>
+                    <Term
+                      title="BEE — Bureau of Energy Efficiency (India)"
+                      def="Standardised physics formulas published by India's Bureau of Energy Efficiency, used by accredited energy auditors. Works best on well-instrumented categories like compressed-air leakage."
+                      href="https://beeindia.gov.in/"
+                    >BEE</Term>{" "}physics formula (industry default)
+                  </td>
                   <td>0.50</td>
                   <td>37.5%</td>
                   <td>—</td>
@@ -409,194 +469,176 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>Leakage-known compressed-air only</td>
                 </tr>
                 <tr>
-                  <td>Ascertainty PINN (physics-head)</td>
-                  <td>−0.07</td>
-                  <td>42.3%</td>
-                  <td>88% (native σ-scaling)</td>
-                  <td><span className="bench-verdict bench-verdict--bad">Worse than guessing</span></td>
-                  <td>Physics-informed neural net, KISEM-only</td>
-                </tr>
-                <tr>
-                  <td>Ascertainty CatBoost</td>
+                  <td>Ascertainty{" "}
+                    <Term
+                      title="CatBoost"
+                      def="Gradient-boosted decision trees by Yandex. Strong on small tabular datasets. Our deployed production model before the TabPFN benchmark replaced the headline."
+                      href="https://catboost.ai/"
+                    >CatBoost</Term>
+                  </td>
                   <td>+0.28</td>
                   <td>44.7%</td>
-                  <td>±67,679 kWh (split-conformal)</td>
+                  <td>±67,679 kWh (
+                    <Term
+                      title="Split-conformal prediction"
+                      def="A distribution-free way to compute prediction intervals with a mathematical coverage guarantee under exchangeability. The strongest claim in tabular ML uncertainty quantification."
+                      href="https://mapie.readthedocs.io/"
+                    >split-conformal</Term>)
+                  </td>
                   <td><span className="bench-verdict bench-verdict--ok">Decent</span></td>
                   <td>IAC pretrain + KISEM finetune, deployed</td>
                 </tr>
                 <tr style={{ background: "rgba(16,185,129,0.06)" }}>
-                  <td><b>Ascertainty TabPFN (this product)</b></td>
+                  <td><b>Ascertainty{" "}
+                    <Term
+                      title="TabPFN"
+                      def="Tabular Prior-data Fitted Network. A pretrained transformer that performs in-context tabular regression — meaning it can predict on a new dataset without per-dataset training. Hollmann et al., Nature 2025."
+                      href="https://priorlabs.ai/"
+                    >TabPFN</Term>{" "}(this product)</b>
+                  </td>
                   <td><b>+0.56</b></td>
                   <td><b>41.6%</b></td>
-                  <td><b>±69,254 kWh (split-conformal)</b></td>
-                  <td><b><span className="bench-verdict bench-verdict--good">Good — within SOTA band</span></b></td>
+                  <td><b>±69,254 kWh (
+                    <Term
+                      title="Split-conformal prediction"
+                      def="A distribution-free way to compute prediction intervals with a mathematical coverage guarantee under exchangeability."
+                      href="https://mapie.readthedocs.io/"
+                    >split-conformal</Term>)</b>
+                  </td>
+                  <td><b><span className="bench-verdict bench-verdict--good">Good — within{" "}
+                    <Term
+                      title="SOTA — State-of-the-Art"
+                      def="In industrial energy-savings prediction, recent papers (ORNL 2025 IAC analyses) report R² 0.5–0.7. We sit inside that band on ~50× less data."
+                    >SOTA</Term>{" "}band</span></b></td>
                   <td><b>TabPFN in-context on IAC + KISEM. Hollmann et al., <i>Nature</i> 2025.</b></td>
                 </tr>
               </tbody>
             </table>
 
-            <details className="bench-explainer">
-              <summary>
-                <span className="bench-explainer__chevron">▸</span>
-                <span>What do R², MAPE-median, and 90% CI coverage mean?</span>
-              </summary>
-              <div className="bench-explainer__body">
-                <div className="bench-explainer__metric">
-                  <h4>R² · &quot;How much of the variation does the model explain?&quot;</h4>
-                  <ul>
-                    <li><b>+1.0</b> = perfect prediction every time</li>
-                    <li><b>0.0</b> = no better than always guessing the average</li>
-                    <li><b>Negative</b> = worse than guessing the average — the model is actively misleading</li>
-                  </ul>
-                  <div className="bench-explainer__scale">
-                    <span className="bench-verdict bench-verdict--bad">&lt; 0</span>
-                    <span className="bench-verdict bench-verdict--ok">0 – 0.3</span>
-                    <span className="bench-verdict bench-verdict--good">0.3 – 0.7 (SOTA band)</span>
-                    <span className="bench-verdict bench-verdict--great">&gt; 0.7 (paper-grade)</span>
-                  </div>
-                  <p className="bench-explainer__context">
-                    Industrial energy savings prediction papers (ORNL 2025 IAC analyses) report
-                    R²=0.5–0.7. Residential-building papers with 10k+ rows reach 0.87 (Pampuri et al.,
-                    Riga). Our TabPFN sits inside the industrial SOTA band with ~50× less
-                    training data, thanks to the foundation-model pretraining.
-                  </p>
-                </div>
-
-                <div className="bench-explainer__metric">
-                  <h4>MAPE-median · &quot;For a typical prediction, how far off is it (%)?&quot;</h4>
-                  <ul>
-                    <li><b>0%</b> = perfect</li>
-                    <li><b>10–20%</b> = excellent (rare on small data)</li>
-                    <li><b>20–40%</b> = good for lender debt-sizing with a P5 floor</li>
-                    <li><b>&gt;60%</b> = bad — don&apos;t underwrite from it alone</li>
-                  </ul>
-                  <p className="bench-explainer__context">
-                    Example: with our 41.6% MAPE-median, a 100,000 kWh prediction has a typical actual
-                    falling in the 60–140k range. That&apos;s why we never underwrite to the point estimate —
-                    we underwrite to the P5 lower bound (the conformal-calibrated floor).
-                  </p>
-                </div>
-
-                <div className="bench-explainer__metric">
-                  <h4>90% CI coverage · &quot;Is the uncertainty band honest?&quot;</h4>
-                  <ul>
-                    <li>Model claims: &quot;the real number is between X and Y with 90% confidence&quot;</li>
-                    <li>If reality lands inside [X, Y] <b>~90% of the time</b> → calibrated ✓</li>
-                    <li>If &lt;90% → overconfident (dangerous for lenders)</li>
-                    <li>If &gt;90% → bands too wide (safe but leaves money on the table)</li>
-                  </ul>
-                  <p className="bench-explainer__context">
-                    Split-conformal prediction (MAPIE 1.4) gives a <b>statistical guarantee</b> of
-                    coverage — not an estimate, a mathematical proof under the exchangeability
-                    assumption. That&apos;s the strongest claim in tabular ML right now, and the reason
-                    lenders can size debt against our P5 floor.
-                  </p>
-                </div>
-
-                <div className="bench-explainer__metric">
-                  <h4>Why R² matters more than MAPE for underwriting</h4>
-                  <p>
-                    A model can have low MAPE on individual predictions but high R² because it picks up
-                    the <em>direction</em> of variation across deals — &quot;this one will save much
-                    more than the average, that one less.&quot; That&apos;s exactly what a lender needs
-                    when sizing a portfolio. MAPE-median on a single deal is secondary; the calibrated
-                    P5 floor is what governs the loan amount.
-                  </p>
-                </div>
+            {/* Caveat — promoted from inline prose to a sage callout right
+                under the table where it has maximum context. */}
+            <div className="a-callout" role="note">
+              <span className="a-callout__icon" aria-hidden>!</span>
+              <div className="a-callout__body">
+                <span className="a-callout__title">Caveat for lenders</span>
+                <Term
+                  title="Industrial Assessment Center (IAC)"
+                  def="US Department of Energy program. 14k+ implemented industrial energy audits, 1981–2024."
+                  href="https://iac.university/"
+                >IAC</Term>&apos;s &quot;realized savings&quot; is
+                client-reported at 6–9 month phone follow-up, not metered{" "}
+                <Term
+                  title="M&V — Measurement & Verification"
+                  def="The discipline of measuring whether claimed energy savings actually showed up at the meter post-retrofit, vs. a pre-defined baseline."
+                >M&amp;V</Term>. Our own metered M&amp;V loop closes the gap
+                post-deployment via{" "}
+                <Term
+                  title="IPMVP Option B"
+                  def="International Performance Measurement & Verification Protocol, Option B. Retrofit savings measured directly at the equipment-level meter against a baseline period."
+                  href="https://evo-world.org/en/products-services-mainmenu-en/protocols/ipmvp"
+                >IPMVP Option B</Term>{" "}telemetry.
               </div>
-            </details>
-            <p style={{ marginTop: 16, fontSize: 12, color: "var(--fg-muted)" }}>
-              Backbone = TabPFN (Hollmann et al., <i>Nature</i> 2025) — a pretrained
-              transformer that performs in-context tabular regression. Pretrained on ~130M
-              synthetic priors, conditioned at inference on the US Department of Energy
-              Industrial Assessment Center database (14,000 implemented recommendations with
-              client-reported realized savings, 1981–2024) plus our Indian KISEM 72-ECM cohort.
-              Split-conformal prediction (MAPIE 1.4) gives a distribution-free 90% PI of
-              ±69,254 kWh/yr, derived from leave-one-out residuals on the KISEM hold-outs.
-              <br /><br />
-              <b>Caveat — important for lenders:</b> IAC's "realized savings" is client-reported
-              at 6–9 month phone follow-up, not metered M&V. Our own metered M&V loop closes the
-              gap post-deployment via IPMVP Option B telemetry.
-            </p>
+            </div>
 
-            <details className="bench-explainer">
-              <summary>
-                <span className="bench-explainer__chevron">▸</span>
-                <span>Why TabPFN is the benchmark headline, not the serving model — yet</span>
-              </summary>
-              <div className="bench-explainer__body">
-                <div className="bench-explainer__metric">
-                  <h4>Two models, two roles, on purpose</h4>
+            {/* Two collapsible methodology cards, side-by-side. Click to expand. */}
+            <div className="a-bench-cards">
+              <details className="a-bench-card">
+                <summary>What R², MAPE, and 90% CI mean</summary>
+                <div className="a-bench-card__body">
+                  <h4>R² — how much variation the model explains</h4>
+                  <ul>
+                    <li><b>+1.0</b> perfect · <b>0.0</b> guessing the mean · <b>negative</b> actively misleading</li>
+                    <li>Industrial energy-savings papers report 0.5–0.7. Our TabPFN sits inside that band with ~50× less data.</li>
+                  </ul>
+                  <h4>MAPE-median — typical % error per prediction</h4>
+                  <ul>
+                    <li>10–20% excellent · 20–40% good for lender debt-sizing with a P5 floor · &gt;60% don&apos;t underwrite</li>
+                    <li>At 41.6%, a 100k-kWh prediction lands in 60–140k typically. Why we underwrite to P5, not P50.</li>
+                  </ul>
+                  <h4>90% CI coverage — is the band honest?</h4>
+                  <ul>
+                    <li>Split-conformal (MAPIE 1.4) gives a <b>distribution-free statistical guarantee</b> of coverage.</li>
+                    <li>Not an estimate — a mathematical proof under exchangeability. The reason lenders size debt against P5.</li>
+                  </ul>
+                </div>
+              </details>
+
+              <details className="a-bench-card">
+                <summary>Why TabPFN is the headline, not the serving model</summary>
+                <div className="a-bench-card__body">
+                  <h4>Two models, two roles</h4>
                   <ul>
                     <li>
-                      <b>TabPFN — headline benchmark.</b> R²=+0.56 LOO on a 6-feature
-                      corpus (baseline_kwh, sector, equipment_type, arc_group, source,
-                      log_baseline). That&apos;s the headline number above. It proves that
-                      a foundation-model approach generalises out-of-distribution from a
+                      <b>TabPFN — benchmark.</b> R²=+0.56 LOO on a 6-feature
+                      corpus. Proves a foundation-model generalises out of a
                       tiny Indian audit set when conditioned on 14k IAC rows.
                     </li>
                     <li>
-                      <b>PINN unified — what serves live underwriting.</b> Trained on
-                      the same 72-ECM KISEM corpus but ingests all 21 fields the auditor
-                      actually collects (leakage_pct, rated_kw, hours/days, motor count,
-                      plant context). On a small ECM where TabPFN would output a P5 near
-                      zero from the 6-feature blur, the PINN delivers a usable lender-grade
-                      band because it sees the richer audit signal.
+                      <b>PINN unified — what serves live underwriting.</b>{" "}
+                      Ingests all 21 audit fields (leakage_pct, rated_kw,
+                      motor count, plant context). On small ECMs it delivers
+                      a lender-grade band where 6-feature TabPFN would floor
+                      at zero.
                     </li>
                   </ul>
-                  <p className="bench-explainer__context">
-                    <b style={{ color: "var(--fg)" }}>Next iteration:</b> retrain TabPFN
-                    on the full 21-feature audit schema, validate per-sample bands no
-                    longer floor at zero for small ECMs, then flip the serving default.
-                    The headline number is preserved; the moat (the audit signal that only
-                    Ascertainty collects) becomes part of the model both at benchmark and
-                    at serve time.
+                  <h4>Next iteration</h4>
+                  <p>
+                    Retrain TabPFN on the 21-feature audit schema, validate
+                    bands no longer floor at zero, then flip the serving
+                    default. The headline number is preserved; the
+                    audit-signal moat becomes part of the model at both
+                    benchmark and serve time.
                   </p>
-                  <p className="bench-explainer__context">
-                    <b style={{ color: "var(--fg)" }}>What this means today:</b> every
-                    project page on this site says &quot;Underwritten by PINN
-                    unified&quot; because that&apos;s the model actually sizing the loan.
-                    The TabPFN R²=+0.56 claim above is honest — it&apos;s the LOO score on
-                    the corpus it was trained on, not a claim about live serving.
+                  <p>
+                    <b>Today:</b> every project page reads &quot;Underwritten
+                    by PINN unified&quot; — that&apos;s the model sizing the
+                    loan. The TabPFN R²=+0.56 above is the LOO score on the
+                    corpus it was trained on, not a live-serving claim.
                   </p>
                 </div>
-              </div>
-            </details>
+              </details>
+            </div>
 
-            <div className="bench-snippet" style={{ marginTop: 28 }}>
-              <pre className="a-code">
-                <code>{`# Reproduce the Ascertainty PINN prediction for the Veejay
+            {/* Light Mac-terminal — single curl tab, copy button, sage chrome.
+                JSON delivered via heredoc (-d @- <<'JSON') so the snippet
+                pastes cleanly into zsh without the multi-line-single-quote
+                parse error the original version produced. */}
+            <CodeTerminal
+              language="curl"
+              code={`# Reproduce the Ascertainty TabPFN prediction for the Veejay
 # compressed-air leakage example (LOO held-out, real audit):
 
-curl -s https://inference.ascertainty.com/v1/predict \\
+curl -s -X POST https://inference.ascertainty.com/v1/predict \\
   -H 'content-type: application/json' \\
-  -d '{
-    "equipment_type": "compressed_air",
-    "ecm_category": "compressed_air_leakage",
-    "industry_sector": "textiles",
-    "baseline_kwh_per_year": 322623,
-    "compressor_rated_kw": 45,
-    "leakage_pct": 42
-  }' | jq
+  -d @- <<'JSON' | jq
+{
+  "equipment_type": "compressed_air",
+  "ecm_category": "compressed_air_leakage",
+  "industry_sector": "textiles",
+  "baseline_kwh_per_year": 322623,
+  "compressor_rated_kw": 45,
+  "leakage_pct": 42
+}
+JSON
 
+# Expected response (P5 floor is what's used for debt sizing):
 # {
 #   "predicted_savings_kwh": 119913,
-#   "savings_lower_p5_kwh":   29161,   <- P5 floor used for debt sizing
+#   "savings_lower_p5_kwh":   29161,
 #   "savings_upper_p95_kwh": 210665,
 #   "sigma_scale_applied":     2.82,
-#   "model_used":  "exira_pinn_compressed_air_v1",
+#   "model_used":  "ascertainty_pinn_compressed_air_v1",
 #   "confidence_grade": "C"
-# }`}</code>
-              </pre>
-              <p style={{ marginTop: 12, fontSize: 12, color: "var(--fg-muted)" }}>
-                Don&apos;t take our word for it — try the endpoint yourself. A Colab notebook
-                that runs the same LOO-CV reproduction is{" "}
-                <span style={{ color: "var(--accent)", borderBottom: "1px dashed var(--accent)" }}>
-                  coming soon
-                </span>{" "}
-                (releases with the IAC pretraining update).
-              </p>
-            </div>
+# }`}
+            />
+            <p style={{ marginTop: 14, fontSize: 12, color: "var(--fg-muted)" }}>
+              Don&apos;t take our word for it — hit the endpoint yourself. A
+              Colab notebook running the same LOO-CV reproduction is{" "}
+              <span style={{ color: "var(--accent)", borderBottom: "1px dashed var(--accent)" }}>
+                coming soon
+              </span>
+              .
+            </p>
           </div>
         </div>
       </section>

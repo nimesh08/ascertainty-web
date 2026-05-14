@@ -7,7 +7,7 @@ export function SectionHead({
   /** Retained for call-site compat; no longer rendered (per design pivot). */
   kicker?: string;
   title: React.ReactNode;
-  intro?: string;
+  intro?: React.ReactNode;
 }) {
   return (
     <div className="shell">
