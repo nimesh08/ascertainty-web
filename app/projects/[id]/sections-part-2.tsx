@@ -68,7 +68,7 @@ export function UnderwritingBriefSection({
             grade={grade ?? undefined}
             electricityRateInrKwh={rate}
             variant="full"
-            label="Predicted annual savings (TabPFN v2, 90% conformal PI)"
+            label="Predicted annual savings (TabPFN, 90% conformal PI)"
           />
         ) : null}
 
@@ -103,14 +103,14 @@ export function UnderwritingBriefSection({
         <div className="rounded-xl border border-line/60 bg-bg-2/40 p-4 text-sm text-fg/80">
           <p className="leading-relaxed">
             <span className="font-medium text-fg">
-              {underwriting.modelUsed ?? "PINN v0.1 unified"}
+              {underwriting.modelUsed ?? "PINN unified"}
             </span>{" "}
             sized this facility under the DSCR-at-P5 ≥ 1.30× covenant. The serving model ingests
             all 21 fields from the audit schema (leakage, rated kW, hours/days, plant context).
             <span className="text-fg-muted">
               {" "}
-              TabPFN v2 is the benchmark headline (R²=+0.56 LOO on a 6-feature corpus) and will
-              become the serving default in v0.4 once retrained on the audit schema —{" "}
+              TabPFN is the benchmark headline (R²=+0.56 LOO on a 6-feature corpus) and will
+              become the serving default once retrained on the full audit schema —{" "}
               <Link href="/#03-benchmarks" className="underline underline-offset-2 hover:text-accent">
                 see benchmarks
               </Link>.

@@ -54,7 +54,7 @@ export function PageHeader({
             ))}
           </nav>
         ) : null}
-        {kicker ? <span className="label">§ {kicker}</span> : null}
+        {kicker ? <span className="a-kicker-pill">{kicker}</span> : null}
         <h1>{title}</h1>
         {description ? (
           <p

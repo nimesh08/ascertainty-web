@@ -4,10 +4,16 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useMemo, useState } from "react";
 import { usePrivy } from "@privy-io/react-auth";
-import { Menu } from "lucide-react";
+import { ChevronDown, Menu } from "lucide-react";
 
 import { cn } from "@/lib/utils/cn";
 import { Button } from "@/components/ui/button";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
   Sheet,
   SheetContent,
@@ -23,14 +29,22 @@ interface NavLink {
   label: string;
   href: string;
   admin?: boolean;
+  children?: Array<{ label: string; href: string }>;
 }
 
 const NAV_LINKS: NavLink[] = [
+  { label: "Lenders", href: "/lenders" },
+  { label: "Borrowers", href: "/borrowers" },
+  { label: "Approach", href: "/approach" },
   { label: "Projects", href: "/projects" },
-  { label: "Pools", href: "/pools" },
-  { label: "Portfolio", href: "/portfolio" },
-  { label: "How it works", href: "/#05-mechanics" },
-  { label: "Docs", href: "/docs/underwriting-policy" },
+  {
+    label: "Docs",
+    href: "/docs/underwriting-policy",
+    children: [
+      { label: "Underwriting policy", href: "/docs/underwriting-policy" },
+      { label: "FAQ", href: "/docs/faq" },
+    ],
+  },
   { label: "Admin", href: "/admin", admin: true },
 ];
 
@@ -46,7 +60,7 @@ function ConnectButton() {
   if (!authenticated) {
     return (
       <button className="a-connect-btn" onClick={() => login()}>
-        Connect →
+        Connect wallet →
       </button>
     );
   }
@@ -86,7 +100,36 @@ export function Nav() {
         {visibleLinks.map((link) => {
           const active =
             pathname === link.href ||
-            (link.href !== "/" && !link.href.startsWith("/#") && pathname.startsWith(link.href));
+            (link.href !== "/" && !link.href.startsWith("/#") && pathname.startsWith(link.href)) ||
+            (link.children?.some((c) => pathname.startsWith(c.href)) ?? false);
+
+          if (link.children && link.children.length > 0) {
+            return (
+              <DropdownMenu key={link.href}>
+                <DropdownMenuTrigger asChild>
+                  <button
+                    className="a-nav__link a-nav__link--trigger"
+                    aria-current={active ? "true" : undefined}
+                  >
+                    <span>{link.label}</span>
+                    <ChevronDown
+                      className="size-3 opacity-60"
+                      aria-hidden
+                      style={{ marginLeft: 4 }}
+                    />
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" sideOffset={8}>
+                  {link.children.map((child) => (
+                    <DropdownMenuItem key={child.href} asChild>
+                      <Link href={child.href}>{child.label}</Link>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            );
+          }
+
           return (
             <Link
               key={link.href}
@@ -123,11 +166,30 @@ export function Nav() {
               <SheetTitle>Navigation</SheetTitle>
             </SheetHeader>
             <nav className="flex flex-col gap-1 px-4 pb-8">
-              {visibleLinks.map((link) => {
+              {visibleLinks.flatMap((link) => {
+                if (link.children && link.children.length > 0) {
+                  return link.children.map((child) => {
+                    const active =
+                      pathname === child.href || pathname.startsWith(child.href);
+                    return (
+                      <Link
+                        key={child.href}
+                        href={child.href}
+                        onClick={() => setOpen(false)}
+                        className={cn(
+                          "px-3 py-2 text-sm uppercase tracking-[0.18em]",
+                          active ? "text-fg" : "text-fg-muted hover:text-fg"
+                        )}
+                      >
+                        {child.label}
+                      </Link>
+                    );
+                  });
+                }
                 const active =
                   pathname === link.href ||
                   (link.href !== "/" && pathname.startsWith(link.href));
-                return (
+                return [
                   <Link
                     key={link.href}
                     href={link.href}
@@ -138,8 +200,8 @@ export function Nav() {
                     )}
                   >
                     {link.label}
-                  </Link>
-                );
+                  </Link>,
+                ];
               })}
               <div className="mt-4 border-t border-line/60 pt-4 sm:hidden">
                 <ConnectButton />

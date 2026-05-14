@@ -443,7 +443,7 @@ async function main() {
             ${dealId}, ${seed.ecmId}, ${seed.equipmentType}, ${seed.sector}, ${seed.description},
             ${sql.json({ baseline_kwh: seed.baselineKwhPerYear, sector: seed.sector, equipment_type: seed.equipmentType, region: "IN-BEE" })},
             ${sql.json({ savings_kwh: seed.predictedSavingsKwh, p5_lower_kwh: seed.p5Kwh, p95_upper_kwh: seed.p95Kwh, sigma_kwh: seed.sigmaKwh, model: "TabPFN v2", region: "IN-BEE" })},
-            'PINN unified v0.1 (21-feature audit, IN-BEE)',
+            'PINN unified (21-feature audit, IN-BEE)',
             ${1.0},
             ${seed.predictedSavingsKwh}, ${seed.p5Kwh}, ${seed.p95Kwh}, ${seed.sigmaKwh},
             ${seed.confidenceGrade},
@@ -503,7 +503,7 @@ async function main() {
             'lucas-tvs-devnet', '1', 'heat_pump', 'automotive', 'Heat-pump retrofit on plant utility loop at Lucas TVS Devnet site.',
             ${sql.json({ baseline_kwh: baseKwh, sector: "automotive", equipment_type: "heat_pump", region: "IN-BEE" })},
             ${sql.json({ savings_kwh: predicted, p5_lower_kwh: p5, p95_upper_kwh: p95, sigma_kwh: sigma, model: "TabPFN v2", region: "IN-BEE" })},
-            'PINN unified v0.1 (21-feature audit, IN-BEE)',
+            'PINN unified (21-feature audit, IN-BEE)',
             ${1.0},
             ${predicted}, ${p5}, ${p95}, ${sigma},
             ${grade},
@@ -523,16 +523,17 @@ async function main() {
       console.log(`  Lucas TVS Devnet not found in projects table — skipping backfill`);
     }
 
-    // 4. Force-update any stale "TabPFN v2 …" attributions from a prior seed run
-    // to the v0.3 Path A serving model. Cosmetic — the schema is unchanged.
+    // 4. Force-update any stale model_used strings from earlier seed runs.
+    // Catches the original "TabPFN v2 ..." and the version-suffixed
+    // "PINN unified v0.1 ..." attributions. Cosmetic — schema is unchanged.
     const updated = await sql<{ id: string }[]>`
       UPDATE public.underwriting_results
-      SET model_used = 'PINN unified v0.1 (21-feature audit, IN-BEE)'
-      WHERE model_used LIKE 'TabPFN%'
+      SET model_used = 'PINN unified (21-feature audit, IN-BEE)'
+      WHERE model_used LIKE 'TabPFN%' OR model_used LIKE 'PINN unified v%'
       RETURNING id
     `;
     if (updated.length > 0) {
-      console.log(`\n=== Force-update model_used: PINN v0.1 (was TabPFN) ===`);
+      console.log(`\n=== Force-update model_used: PINN unified (no version) ===`);
       console.log(`  Updated ${updated.length} underwriting_results rows`);
     }
 

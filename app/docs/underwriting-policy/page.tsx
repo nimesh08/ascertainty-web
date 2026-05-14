@@ -1,6 +1,5 @@
 import * as fs from "node:fs";
 import * as path from "node:path";
-import Link from "next/link";
 
 import { Container } from "@/components/layout/container";
 import { renderPolicyMarkdown } from "@/lib/utils/policy-md";
@@ -8,9 +7,9 @@ import { renderPolicyMarkdown } from "@/lib/utils/policy-md";
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "Underwriting Policy · Exira",
+  title: "Underwriting Policy · Ascertainty",
   description:
-    "Exira's binding underwriting standard for tokenized retrofit-savings vaults. Published for LP, borrower, and partner transparency.",
+    "Ascertainty's binding underwriting standard for tokenized retrofit-savings vaults. Published for LP, borrower, and partner transparency.",
 };
 
 function loadPolicyMarkdown(): string {
@@ -24,17 +23,6 @@ export default function UnderwritingPolicyPage() {
 
   return (
     <Container className="py-10 sm:py-14">
-      <div className="mb-6 flex items-center justify-between text-sm">
-        <Link href="/" className="text-fg-muted hover:text-accent">
-          ← Back to Exira
-        </Link>
-        <a
-          href="/docs/UNDERWRITING_POLICY.md"
-          className="text-fg-muted hover:text-accent"
-        >
-          Raw markdown ↗
-        </a>
-      </div>
       <article
         className="prose-policy max-w-3xl text-fg"
         dangerouslySetInnerHTML={{ __html: html }}

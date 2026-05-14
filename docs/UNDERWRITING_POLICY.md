@@ -1,15 +1,15 @@
-# Exira Underwriting Policy
+# Ascertainty Underwriting Policy
 
 **Version:** 1.0 (Draft)
 **Effective:** 2026-05-12
-**Owner:** Exira Risk Committee
+**Owner:** Ascertainty Risk Committee
 **Status:** Public — published for LP and borrower transparency
 
 ---
 
 ## 1. Purpose
 
-This document defines the criteria, thresholds, and processes Exira applies when originating, underwriting, and approving loans for inclusion in any Exira-managed vault. It is published as the single source of truth for what Exira will and will not finance, and at what risk parameters.
+This document defines the criteria, thresholds, and processes Ascertainty applies when originating, underwriting, and approving loans for inclusion in any Ascertainty-managed vault. It is published as the single source of truth for what Ascertainty will and will not finance, and at what risk parameters.
 
 The policy serves three audiences:
 
@@ -17,7 +17,7 @@ The policy serves three audiences:
 - **Borrowers** — to understand the eligibility criteria and documentation requirements before applying.
 - **Partners (auditors, NBFCs, regulators)** — to align operations against a known standard.
 
-This policy is binding. No loan may be added to an Exira vault unless it clears every requirement below or is granted a documented exception by the Risk Committee.
+This policy is binding. No loan may be added to an Ascertainty vault unless it clears every requirement below or is granted a documented exception by the Risk Committee.
 
 ---
 
@@ -25,7 +25,7 @@ This policy is binding. No loan may be added to an Exira vault unless it clears 
 
 This policy applies to:
 
-- All debt instruments originated by Exira or originated by a partner and tokenized into an Exira-managed vault.
+- All debt instruments originated by Ascertainty or originated by a partner and tokenized into an Ascertainty-managed vault.
 - All vault structures (single-borrower, multi-borrower pooled, tranched).
 - All currencies (USDC settlement layer; INR or other local-currency disbursement via licensed NBFC partner).
 
@@ -38,16 +38,16 @@ This policy does not cover equity, mezzanine warrants, or carbon-credit-only ins
 | Term | Definition |
 |---|---|
 | **DSCR** | Debt Service Coverage Ratio. Annual cash flow available to service debt divided by annual debt service (principal + interest). |
-| **DSCR at P5** | DSCR computed using the 5th-percentile lower bound of the Exira PINN's energy-savings prediction. The conservative case. |
+| **DSCR at P5** | DSCR computed using the 5th-percentile lower bound of the Ascertainty PINN's energy-savings prediction. The conservative case. |
 | **EBITDA** | Earnings Before Interest, Tax, Depreciation, Amortization. The borrower's operating cash flow before financial deductions. |
 | **EBITDA Coverage** | Borrower's trailing-twelve-month EBITDA divided by annual debt service. The fallback case if retrofit savings fail entirely. |
 | **PD / EAD / LGD** | Probability of Default / Exposure at Default / Loss Given Default. Standard credit-risk decomposition. |
 | **Tenor** | Loan duration from disbursement to scheduled maturity. |
-| **P5 / P50 / P95** | 5th, 50th, 95th percentile predictions from the Exira PINN's calibrated savings distribution. |
+| **P5 / P50 / P95** | 5th, 50th, 95th percentile predictions from the Ascertainty PINN's calibrated savings distribution. |
 | **M&V** | Measurement and Verification. Post-install instrumentation that records realized energy consumption to validate predicted savings. Aligned with IPMVP (International Performance Measurement and Verification Protocol). |
-| **KISEM** | Kotak IIT-Madras Save Energy Mission. Exira's primary audit partner; also accepts loans audited by any BEE-accredited Energy Auditor. |
+| **KISEM** | Kotak IIT-Madras Save Energy Mission. Ascertainty's primary audit partner; also accepts loans audited by any BEE-accredited Energy Auditor. |
 | **NBFC** | Non-Banking Financial Company. RBI-regulated Indian lender that handles INR disbursement and collection. |
-| **Vault** | A tokenized loan portfolio issued under Exira-managed structures (initially Centrifuge V3 whitelabel or Huma Institutional rails). |
+| **Vault** | A tokenized loan portfolio issued under Ascertainty-managed structures (initially Centrifuge V3 whitelabel or Huma Institutional rails). |
 
 ---
 
@@ -70,9 +70,9 @@ A borrower is eligible if and only if all of the following are true:
 
 The retrofit project (energy conservation measure, "ECM") must:
 
-- Be classified within Exira's covered equipment categories: compressed air systems, motors, lighting, HVAC, refrigeration, variable frequency drives (VFDs), heat recovery, boilers/furnaces, fans, pumps, chillers, humidification, AWES.
+- Be classified within Ascertainty's covered equipment categories: compressed air systems, motors, lighting, HVAC, refrigeration, variable frequency drives (VFDs), heat recovery, boilers/furnaces, fans, pumps, chillers, humidification, AWES.
 - Have measurable baseline energy consumption documented in a KISEM or BEE-licensed auditor's investment-grade audit (IGA) report, dated within 12 months of loan application.
-- Have an Exira PINN prediction generated under the v0.1 routing recipe:
+- Have an Ascertainty PINN prediction generated under the v0.1 routing recipe:
   - If `equipment_type == "compressed_air"` and leakage percentage is measured: route to `exira_pinn_compressed_air_v1.pt` (σ-scale 2.82).
   - Else: route to `exira_pinn_unified_v1.pt` (per-category σ-scale, default 1.36).
 - Have prediction quality grade A or B (defined in §5.4). Grade C predictions ineligible.
@@ -118,7 +118,7 @@ All three must be cleared simultaneously. Failure on any single metric disqualif
 
 ### 5.4 Prediction quality grading
 
-The Exira PINN's prediction quality is graded per loan based on calibrated uncertainty:
+The Ascertainty PINN's prediction quality is graded per loan based on calibrated uncertainty:
 
 | Grade | Coefficient of Variation (σ / μ) | Eligibility |
 |---|---|---|
@@ -142,7 +142,7 @@ Grade is computed at vault inclusion using the routed model's σ output, scaled 
 
 Borrower coupon rate must clear:
 
-- Cost of capital floor (USDC LP yield + cross-currency hedge cost + NBFC servicing fee + Exira platform fee + risk premium).
+- Cost of capital floor (USDC LP yield + cross-currency hedge cost + NBFC servicing fee + Ascertainty platform fee + risk premium).
 - Minimum 200 bps spread over Indian MCLR-equivalent benchmark for comparable secured MSME debt.
 
 Indicative all-in borrower rate range for v0: **13.5% – 16.5% per annum (INR)**.
@@ -160,9 +160,9 @@ Every loan file must contain, at vault inclusion:
 5. **Equipment quotation** — vendor invoice or PO for ECM equipment.
 6. **Collateral package** — equipment hypothecation deed, promoter personal guarantee, any additional security.
 7. **NBFC sanction letter** — if disbursement intermediated through NBFC partner.
-8. **Insurance** — equipment all-risks insurance policy, Exira/NBFC named loss payee.
+8. **Insurance** — equipment all-risks insurance policy, Ascertainty/NBFC named loss payee.
 9. **M&V plan** — sensor specification, installation timeline, data ingestion endpoint.
-10. **Soft commitment letter** — issued by Exira to borrower under §7.
+10. **Soft commitment letter** — issued by Ascertainty to borrower under §7.
 
 ---
 
@@ -170,9 +170,9 @@ Every loan file must contain, at vault inclusion:
 
 ```
 Day 0    Audit kickoff (KISEM auditor begins on-site work)
-Day 1–2  Auditor enters baseline data via Exira portal
+Day 1–2  Auditor enters baseline data via Ascertainty portal
 Day 3    Compressor / motor performance tests; auditor enters specs
-Day 5    Exira PINN generates first preview prediction band
+Day 5    Ascertainty PINN generates first preview prediction band
          Lender preview UI shows live DSCR-at-P5
 Day 5–10 Lender reviews preview; issues SOFT COMMITMENT LETTER
          (subject to final audit, KYC, and documentation)
@@ -196,7 +196,7 @@ The soft commitment letter (Day 5–10) is the workflow innovation: it paralleli
 
 ## 8. Exclusions
 
-Exira will not finance:
+Ascertainty will not finance:
 
 - Coal, oil, or gas-fired equipment retrofits unless the retrofit eliminates fossil-fuel use entirely.
 - Borrowers in tobacco, weapons, gambling, or sectors flagged on the IFC Exclusion List.
@@ -249,12 +249,12 @@ Every financed retrofit must have post-install instrumentation:
 
 - Energy meter on the retrofitted equipment circuit, minimum Class 1 accuracy.
 - Cellular or Wi-Fi data uplink, minimum hourly transmission frequency.
-- Approved hardware vendors: Schneider Electric, Trinity Energy Systems, Zenatix, Smart Joules, ABB. Other vendors subject to Exira technical approval.
+- Approved hardware vendors: Schneider Electric, Trinity Energy Systems, Zenatix, Smart Joules, ABB. Other vendors subject to Ascertainty technical approval.
 - Sampling rate: 1-minute for compressed air; 15-minute for all other categories.
 
 ### 10.2 Data ingestion
 
-- Sensor data flows to Exira ingestion endpoint.
+- Sensor data flows to Ascertainty ingestion endpoint.
 - Hashes of monthly aggregated readings committed on-chain for tamper-evidence.
 - LP dashboard exposes time-series view per loan (anonymized borrower ID).
 
@@ -267,7 +267,7 @@ All measurement and verification follows IPMVP Option B (retrofit isolation with
 If realized savings deviate materially from PINN P5 prediction (defined as 12-month rolling realized falling below P5 for 2+ consecutive quarters):
 
 - Loan flagged for enhanced monitoring.
-- Exira investigates: equipment failure, operator behavior change, baseline misclassification.
+- Ascertainty investigates: equipment failure, operator behavior change, baseline misclassification.
 - Per-category σ-scales recalibrated quarterly based on realized vs predicted variance across the portfolio.
 
 ---
@@ -285,7 +285,7 @@ For loans where the underlying ECM qualifies under Verra VCS (AMS-II.D or succes
 
 ## 12. LP Disclosure and Transparency
 
-Every Exira vault publishes, per individual loan:
+Every Ascertainty vault publishes, per individual loan:
 
 | Field | Visibility |
 |---|---|
@@ -309,16 +309,7 @@ Every Exira vault publishes, per individual loan:
 
 ## 13. Governance and Policy Updates
 
-### 13.1 Risk Committee
-
-The Risk Committee comprises:
-
-- Chief Risk Officer (or fractional risk advisor in v0; full-time hire by v1)
-- Chief Technology Officer (Yuxin)
-- Chief Operating Officer (Nimesh)
-- One independent member with credit-fund experience (target: by Phase 2)
-
-### 13.2 Policy review
+### 13.1 Policy review
 
 This policy is reviewed:
 
@@ -326,7 +317,7 @@ This policy is reviewed:
 - Whenever a new equipment category, geography, or vault structure is introduced.
 - Whenever realized portfolio loss rate exceeds underwriting assumptions by >50%.
 
-### 13.3 Exception process
+### 13.2 Exception process
 
 Exceptions to thresholds in §5 may be granted only by unanimous Risk Committee vote, must be documented in the loan file with explicit rationale, and are reported to LPs in the next quarterly disclosure. Exceptions may not exceed 10% of any vault's NAV in aggregate.
 
@@ -336,18 +327,7 @@ Exceptions to thresholds in §5 may be granted only by unanimous Risk Committee 
 
 - Past performance does not guarantee future results.
 - PINN predictions carry calibrated but non-zero uncertainty. The P5 lower bound is a statistical estimate, not a guarantee.
-- Exira is not a regulated investment adviser. This document is published for transparency, not as investment advice.
+- Ascertainty is not a regulated investment adviser. This document is published for transparency, not as investment advice.
 - v0 vaults are restricted to accredited investors and qualified institutional buyers as defined under Singapore SFA and applicable jurisdictions.
-- For regulatory and disclosure status, see [www.exira.io](https://exira.io/) and the relevant vault subscription documents.
+- For regulatory and disclosure status, see [ascertainty.com](https://ascertainty.com/) and the relevant vault subscription documents.
 
----
-
-## 15. Version History
-
-| Version | Date | Author | Changes |
-|---|---|---|---|
-| 1.0 (Draft) | 2026-05-12 | Exira Risk Committee | Initial draft. Codifies v0 underwriting rubric established during 2026-05 strategy work. |
-
----
-
-*This document is the binding underwriting standard for Exira-managed vaults. Subscribers, borrowers, and partners should refer to this document — not to marketing materials — as the authoritative source for what Exira will and will not finance.*

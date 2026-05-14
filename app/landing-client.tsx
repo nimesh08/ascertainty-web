@@ -9,153 +9,52 @@ import {
   AccordionTrigger,
 } from "@/components/ui/accordion";
 
-import { CountUp } from "@/components/landing/count-up";
 import { MeterAnimation } from "@/components/landing/meter-animation";
-import { Glyph } from "@/components/landing/ascertainty/glyph";
 import { SectionHead } from "@/components/landing/ascertainty/section-head";
-import { Sparkline } from "@/components/landing/ascertainty/sparkline";
-import { TerminalLog } from "@/components/landing/ascertainty/terminal-log";
-import { TimelineBandLoop } from "@/components/landing/ascertainty/timeline-band-loop";
 
 export interface LandingStats {
-  totalFundedRaw: string;
-  totalDistributedRaw: string;
-  activeProjects: number;
-  projectCount: number;
-  poolCount: number;
   /** Best APY (%) across live projects. Null when none set. */
   bestApyPct?: number | null;
-  /** UUID of the HVAC Hotel seed deal — used by the §02.5 worked-example
-   *  CTA to deep-link into the live project page with matching numbers. */
-  featuredProjectId?: string | null;
 }
 
-const PRIMITIVES = [
-  {
-    title: "Share-of-savings tokens",
-    body: "Each project mints an SPL token backed by measurable energy savings. Distributions accrue per-token; claims are pro-rata.",
-    chips: ["SPL Token", "PDA vault", "Pro-rata"],
-    icon: "vault" as const,
-  },
-  {
-    title: "MRV-verified",
-    body: "Baselines and verifications are attested by licensed auditors and committed on-chain. Every kWh saved is a signed line of state.",
-    chips: ["BEE", "TÜV SÜD", "On-chain"],
-    icon: "meter" as const,
-  },
-  {
-    title: "PINN underwriting",
-    body: "Physics-informed neural networks model thermal load + cashflow.",
-    chips: ["PINN v3", "Neural ODE", "PyTorch"],
-    icon: "brain" as const,
-  },
-  {
-    title: "Composable pools",
-    body: "Diversify across a basket of underlying MSME projects with one token. Sweep returns into pool vaults automatically.",
-    chips: ["Senior · Junior", "Sweep", "exiraUSDC"],
-    icon: "id" as const,
-  },
-  {
-    title: "IoT telemetry feed",
-    body: "On-site energy meters stream kWh deltas every 30s. Covenants reconcile cashflow against meter, automatically.",
-    chips: ["1,240 meters", "30s stream", "Edge cache"],
-    icon: "wave" as const,
-  },
-  {
-    title: "USDC settlement",
-    body: "Devnet today, mainnet next. Distributions settle in Circle USDC. Composable into Aave, Morpho, Pendle.",
-    chips: ["USDC", "Solana", "Composable"],
-    icon: "rail" as const,
-  },
-];
-
-const STEPS: Array<{
-  actor: string;
-  title: string;
-  body: string;
-  spec: Array<[string, string]>;
-}> = [
-  {
-    actor: "// LENDER",
-    title: "Deposit USDC into a project or pool.",
-    body: "Wallet signs a deposit. Funds queue into the next epoch. Share-of-savings token mints on settlement.",
-    spec: [
-      ["Chain", "Solana"],
-      ["Settle", "≤ 4s"],
-      ["Token", "exiraUSDC"],
-    ],
-  },
-  {
-    actor: "// PROTOCOL",
-    title: "Vault routes to underwritten MSMEs.",
-    body: "A physics-verified savings model sizes per-deal exposure with a calibrated 90% PI. Vault PDA disperses to borrower wallets through pre-authorised destinations.",
-    spec: [
-      ["Model", "PINN v0.1"],
-      ["Hop", "0"],
-      ["Gas", "$0.0001"],
-    ],
-  },
-  {
-    actor: "// MSME",
-    title: "Equipment ships. Audit baseline captures.",
-    body: "Vendor receives stablecoin direct. Asset commissions on-site. Auditor publishes MRV baseline. Meters come online.",
-    spec: [
-      ["Asset", "VFD / chiller"],
-      ["Tenor", "1–7yr"],
-      ["MRV", "Signed"],
-    ],
-  },
-  {
-    actor: "// IOT",
-    title: "Telemetry streams kWh deltas every 30s.",
-    body: "Edge gateway pushes signed readings. Indexer reconciles against forecast. Covenants flag deviations to risk dashboard.",
-    spec: [
-      ["Stream", "30s"],
-      ["Signed", "Yes"],
-      ["Window", "Live"],
-    ],
-  },
-  {
-    actor: "// MSME",
-    title: "Cashflow repays in USDC.",
-    body: "Monthly payment in USDC, drawn from saved energy cost. Distributions accrue pro-rata to share holders. Junior absorbs first.",
-    spec: [
-      ["Cadence", "Monthly"],
-      ["Currency", "USDC"],
-      ["First-loss", "Junior"],
-    ],
-  },
-  {
-    actor: "// LENDER",
-    title: "Claim or compose.",
-    body: "Burn shares for principal + accrued, or hold and compose into Aave/Morpho/Pendle for additional leverage.",
-    spec: [
-      ["Window", "Anytime"],
-      ["Notice", "T+0"],
-      ["Compose", "Aave/Morpho"],
-    ],
-  },
-];
-
 export function LandingClient({ stats }: { stats: LandingStats }) {
-  const totalFundedUsdc = Number(stats.totalFundedRaw) / 1_000_000;
-  const totalDistributed = Number(stats.totalDistributedRaw) / 1_000_000;
   const bestApy = stats.bestApyPct ?? 0;
 
   return (
     <>
-      {/* HERO */}
-      <section className="a-hero">
-        <div className="a-hero__bg"></div>
+      {/* HERO — framed-card pattern à la USD.AI: viewport-fitting tile with
+          gutters + rounded corners so the section adapts cleanly to any
+          browser chrome (bookmarks bar, full-screen, mobile address bar). */}
+      <section className="a-hero a-hero--card">
+        <div className="a-hero__bg" aria-hidden />
         <div className="shell a-hero__inner">
           <div>
+            <Link href="/docs/underwriting-policy" className="a-hero__badge">
+              <span className="a-hero__badge-dot" aria-hidden />
+              <strong>Physics-informed underwriting</strong>
+              <span className="a-hero__badge-sep" aria-hidden>·</span>
+              <span className="a-hero__badge-sub">
+                Calibrated uncertainty bounds disclosed per project
+              </span>
+              <span className="a-hero__badge-arrow" aria-hidden>→</span>
+            </Link>
             <h1 className="a-hero__heading">
               Capital that <span className="accent">meters</span> itself.
             </h1>
             <p className="a-hero__sub">
-              Ascertainty routes USDC into verified energy-efficiency projects for Asian
-              MSMEs, mints a share-of-savings token, and distributes on-chain
-              repayments — non-custodial, transparent, composable.
+              Non-recourse loans for industrial efficiency retrofits, underwritten by{" "}
+              <strong className="a-hero__sub-em">physics-informed AI</strong> and
+              verified by{" "}
+              <span className="serif" style={{ color: "var(--accent)" }}>
+                IoT meters
+              </span>
+              . Capital from{" "}
+              <strong className="a-hero__sub-em">institutional LPs worldwide</strong>{" "}
+              flows on-chain to{" "}
+              <strong className="a-hero__sub-em">industrial SMEs</strong> across India
+              and Southeast Asia, repaid from{" "}
+              <strong className="a-hero__sub-em">the energy savings</strong> the upgrade
+              generates.
             </p>
             <div className="a-hero__ctas">
               <Link className="a-btn a-btn--primary" href="/projects">
@@ -164,45 +63,36 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
               <Link className="a-btn a-btn--ghost" href="/portfolio">
                 My portfolio
               </Link>
-              <Link
-                href="/docs/underwriting-policy"
-                style={{
-                  alignSelf: "center",
-                  fontSize: 12,
-                  color: "var(--fg-muted)",
-                  textDecoration: "underline",
-                  textUnderlineOffset: 2,
-                }}
-              >
-                Read the underwriting policy ↗
-              </Link>
             </div>
             <div className="a-hero__meta">
               <div>
-                <span className="label">Total funded</span>
-                <div className="val num">
-                  $<CountUp value={totalFundedUsdc} decimals={2} />
+                <span className="label">Pilot region</span>
+                <div className="val">India</div>
+                <div className="a-hero__meta-foot">
+                  Indonesia + SEA in v1
                 </div>
               </div>
               <div>
-                <span className="label">Active projects</span>
-                <div className="val num">
-                  <CountUp value={stats.activeProjects} decimals={0} />{" "}
-                  <span style={{ color: "var(--fg-muted)", fontSize: 11 }}>
-                    / {stats.projectCount}
-                  </span>
+                <span className="label">Min ticket</span>
+                <div className="val num">$25K</div>
+                <div className="a-hero__meta-foot">
+                  Senior tranche
                 </div>
               </div>
               <div>
-                <span className="label">Best APY</span>
+                <span className="label">Target net APY</span>
                 <div className="val num">
-                  <CountUp value={bestApy} decimals={1} suffix="%" />
+                  {bestApy > 0 ? `${bestApy}%` : "10–14%"}
+                </div>
+                <div className="a-hero__meta-foot">
+                  Realized varies
                 </div>
               </div>
               <div>
-                <span className="label">Distributed</span>
-                <div className="val num">
-                  $<CountUp value={totalDistributed} decimals={2} />
+                <span className="label">Tenor</span>
+                <div className="val num">1–7 yr</div>
+                <div className="a-hero__meta-foot">
+                  Sculpted amortization
                 </div>
               </div>
             </div>
@@ -219,301 +109,264 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
         <SectionHead
           idx="01"
           kicker="WHO IT'S FOR"
-          title="One protocol. Three vantage points."
-          intro="Ascertainty is non-custodial infrastructure — every party reads from the same vault state, signs through the same identity rails, and can verify every distribution down to the meter."
+          title="One meter. Three views."
+          intro="Every party reads from the same vault state and can verify every distribution down to the meter."
         />
         <div className="shell" style={{ paddingBottom: 0 }}>
-          <div className="a-audience" style={{ marginTop: 32 }}>
-            <Link href="/projects" className="a-audience__col">
-              <span className="label label--accent">// 01 — MSME BORROWERS</span>
-              <h3>Capital that understands a 2-year payback.</h3>
-              <p>
-                Get $50K–$20M against verifiable energy, cooling or compute savings.
-                Stablecoin settles in seconds, not months. Integrated with KISEM,
-                ACMA, VITAS, KADIN intermediaries.
+          <div className="a-audience-grid">
+            {/* 01 — LENDERS */}
+            <Link href="/lenders" className="a-audience-card">
+              <span className="a-kicker-pill">01 · Lenders · LPs</span>
+              <h3 className="a-audience-card__title">
+                Earn 10–14% yield on industrial efficiency credit.
+              </h3>
+              <p className="a-audience-card__desc">
+                Non-recourse loans sized to the P5 floor of a calibrated 90%
+                PI. DSCR @ P5 ≥ 1.30× hard covenant. Monthly USDC.
               </p>
-              <div className="kpi-strip">
-                <div>
-                  <span className="label">Ticket</span>
-                  <div className="num">$0.05–20M</div>
+              <svg
+                className="a-audience-card__art aud-art--lenders"
+                viewBox="0 0 160 100"
+                fill="none"
+                aria-hidden
+              >
+                <line x1="6" y1="82" x2="154" y2="82" stroke="#5fa67f" strokeWidth="0.75" opacity="0.35" />
+                <line x1="6" y1="56" x2="154" y2="56" stroke="#5fa67f" strokeWidth="0.75" opacity="0.5" />
+                <line x1="6" y1="30" x2="154" y2="30" stroke="#5fa67f" strokeWidth="0.75" opacity="0.35" />
+                <path
+                  className="curve"
+                  d="M6 92 C 40 92, 60 18, 80 18 S 120 92, 154 92"
+                  stroke="#5fa67f"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+                {/* Brand-mark overlay: 3 nested arcs ascending to the triangle
+                    peak. Proportions + stroke ratios match the real CoinMark
+                    (22 / 16 / 12 px @ inner-scale 0.66, scaled by 0.239 here
+                    so the bottom arc spans 44 units). Triangle peak lands on
+                    (80,18) — the curve apex — simultaneously with the curve's
+                    pen reaching that point. */}
+                <path
+                  className="logo-arc logo-arc-1"
+                  pathLength="1"
+                  d="M 58 62 A 22 10.5 0 0 1 102 62"
+                  stroke="#5fa67f"
+                  strokeWidth="5.3"
+                  fill="none"
+                />
+                <path
+                  className="logo-arc logo-arc-2"
+                  pathLength="1"
+                  d="M 65.7 47.6 A 14.3 7.7 0 0 1 94.3 47.6"
+                  stroke="#5fa67f"
+                  strokeWidth="3.8"
+                  fill="none"
+                />
+                <path
+                  className="logo-arc logo-arc-3"
+                  pathLength="1"
+                  d="M 71.6 35.7 A 8.4 4.3 0 0 1 88.4 35.7"
+                  stroke="#5fa67f"
+                  strokeWidth="2.9"
+                  fill="none"
+                />
+                <path
+                  className="logo-peak"
+                  d="M 80 18 L 84.8 26.6 L 75.2 26.6 Z"
+                  fill="#5fa67f"
+                />
+              </svg>
+              <div className="a-audience-card__footer">
+                <div className="a-audience-card__kpis">
+                  <div>
+                    <span className="label">Target APY</span>
+                    <span className="num">
+                      {bestApy > 0 ? `${bestApy}%` : "10–14%"}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="label">Min ticket</span>
+                    <span className="num">$25K</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="label">Settle</span>
-                  <div className="num">≤ 4s</div>
-                </div>
+                <span className="a-audience-card__more">For lenders</span>
               </div>
-              <span className="more">Apply for facility</span>
             </Link>
-            <Link href="/pools" className="a-audience__col">
-              <span className="label label--accent">// 02 — LENDERS / LPs</span>
-              <h3>Underwrite emerging-Asia infrastructure from a hot wallet.</h3>
-              <p>
-                Deposit USDC into senior or junior tranches of vetted pools. Receive
-                exiraUSDC — a yield-bearing share token composable into Aave, Morpho,
-                Pendle.
+
+            {/* 02 — BORROWERS */}
+            <Link href="/borrowers" className="a-audience-card">
+              <span className="a-kicker-pill">02 · MSME borrowers</span>
+              <h3 className="a-audience-card__title">
+                Upgrade your factory. Repay from the savings.
+              </h3>
+              <p className="a-audience-card__desc">
+                4–6 weeks to close. Non-recourse to your business.
+                ₹20L–₹100Cr facility sizes for vetted Indian MSMEs.
               </p>
-              <div className="kpi-strip">
-                <div>
-                  <span className="label">Best APY</span>
-                  <div className="num">{bestApy}%</div>
+              <svg
+                className="a-audience-card__art aud-art--borrowers"
+                viewBox="0 0 100 100"
+                fill="none"
+                aria-hidden
+              >
+                <circle cx="50" cy="50" r="38" stroke="#5fa67f" strokeWidth="0.75" opacity="0.5" />
+                <circle cx="50" cy="50" r="30" stroke="#5fa67f" strokeWidth="0.5" opacity="0.3" />
+                {[0, 45, 90, 135, 180, 225, 270, 315].map((deg) => (
+                  <line
+                    key={deg}
+                    x1="50"
+                    y1="14"
+                    x2="50"
+                    y2="20"
+                    stroke="#5fa67f"
+                    strokeWidth="0.75"
+                    opacity="0.6"
+                    transform={`rotate(${deg} 50 50)`}
+                  />
+                ))}
+                <line
+                  className="needle"
+                  x1="50"
+                  y1="50"
+                  x2="50"
+                  y2="22"
+                  stroke="#5fa67f"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                />
+                <circle cx="50" cy="50" r="3" fill="#5fa67f" />
+              </svg>
+              <div className="a-audience-card__footer">
+                <div className="a-audience-card__kpis">
+                  <div>
+                    <span className="label">Time to close</span>
+                    <span className="num">4–6 wk</span>
+                  </div>
+                  <div>
+                    <span className="label">Recourse</span>
+                    <span className="num">None</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="label">Pools</span>
-                  <div className="num">{stats.poolCount}</div>
-                </div>
+                <span className="a-audience-card__more">For borrowers</span>
               </div>
-              <span className="more">Open pools</span>
             </Link>
-            <a href="#" className="a-audience__col">
-              <span className="label label--accent">// 03 — INVESTORS / VC</span>
-              <h3>The RWA primitive Asia&apos;s industrial transition needs.</h3>
-              <p>
-                $35.9B on-chain RWA today, projected $16T by 2030 (BCG). SEA-MSME
-                native originator — Singapore-domiciled, MAS-aligned, with 11 LOIs
-                and a Lucas TVS pilot in flight.
+
+            {/* 03 — APPROACH */}
+            <Link href="/approach" className="a-audience-card">
+              <span className="a-kicker-pill">03 · Approach</span>
+              <h3 className="a-audience-card__title">
+                Every primitive auditable. Every prediction reproducible.
+              </h3>
+              <p className="a-audience-card__desc">
+                Six primitives, one ledger. Vault custody on RWA rails;
+                calibrated underwriting + IoT M&amp;V + audit-hash commits.
               </p>
-              <div className="kpi-strip">
-                <div>
-                  <span className="label">LOIs</span>
-                  <div className="num">11</div>
+              <svg
+                className="a-audience-card__art aud-art--approach"
+                viewBox="0 0 160 100"
+                fill="none"
+                aria-hidden
+              >
+                <polygon
+                  className="hex"
+                  points="40,16 60,28 60,52 40,64 20,52 20,28"
+                  stroke="#5fa67f"
+                  strokeWidth="1"
+                  fill="none"
+                />
+                <polygon
+                  className="hex"
+                  points="80,40 100,52 100,76 80,88 60,76 60,52"
+                  stroke="#5fa67f"
+                  strokeWidth="1"
+                  fill="none"
+                />
+                <polygon
+                  className="hex"
+                  points="120,16 140,28 140,52 120,64 100,52 100,28"
+                  stroke="#5fa67f"
+                  strokeWidth="1"
+                  fill="none"
+                />
+                <line x1="40" y1="40" x2="80" y2="64" stroke="#5fa67f" strokeWidth="0.5" opacity="0.4" />
+                <line x1="120" y1="40" x2="80" y2="64" stroke="#5fa67f" strokeWidth="0.5" opacity="0.4" />
+              </svg>
+              <div className="a-audience-card__footer">
+                <div className="a-audience-card__kpis">
+                  <div>
+                    <span className="label">Model R²</span>
+                    <span className="num">+0.56</span>
+                  </div>
+                  <div>
+                    <span className="label">90% PI</span>
+                    <span className="num">±69k kWh</span>
+                  </div>
                 </div>
-                <div>
-                  <span className="label">Pipeline</span>
-                  <div className="num">$240M</div>
-                </div>
+                <span className="a-audience-card__more">How it works</span>
               </div>
-              <span className="more">View data room</span>
-            </a>
+            </Link>
           </div>
         </div>
       </section>
 
-      {/* PRIMITIVES */}
-      <section id="02-the-system" className="a-section">
+      {/* BANKABLE COLLATERAL — the transformation that makes the loan possible.
+          Answers the "what's the collateral?" question every credit reviewer asks
+          first. Sets up §02.5 WORKED EXAMPLE which then shows the math in action. */}
+      <section id="02-bankable-collateral" className="a-section">
         <SectionHead
           idx="02"
-          kicker="THE SYSTEM"
-          title="Six primitives. One auditable vault."
-          intro="Every primitive is a Solana program account. Every action is a signed instruction. There is no off-chain ledger, no oracle middleman, and no human in the settlement loop."
+          kicker="BANKABLE COLLATERAL"
+          title="A raw promise turns into a financial instrument."
+          intro="Energy savings are not collateral by default — they're a promise. Four steps turn them into something a lender can underwrite."
         />
-        <div className="shell" style={{ marginTop: 32 }}>
-          <div className="a-primitives">
-            {PRIMITIVES.map((p, i) => (
-              <div className="a-prim" key={i}>
-                <div className="a-prim__icon">
-                  <Glyph name={p.icon} />
+        <div className="shell" style={{ paddingTop: 32, paddingBottom: 80 }}>
+          <div className="bc-grid">
+            {[
+              {
+                step: "00",
+                left: "“We’ll save kWh”",
+                right: "Calibrated forecast with bounds",
+                body: "TabPFN in-context model produces a P5 / P50 / P95 distribution per ECM. 90% conformal prediction interval calibrated on held-out audits.",
+              },
+              {
+                step: "01",
+                left: "“Trust us, the auditor signed off”",
+                right: "IoT meters + on-chain audit hash",
+                body: "Day-30 reconciliation by a KISEM-affiliated auditor today. Continuous IoT M&V via IPMVP Option B on the roadmap. Every prediction’s sha256 commits to a Solana Memo so the audit trail is tamper-evident.",
+              },
+              {
+                step: "02",
+                left: "“Pay us from savings”",
+                right: "Legal assignment of utility delta to vault",
+                body: "Loan documents assign the measured-vs-baseline kWh delta to the SPV. Borrower’s other business lines are untouched (non-recourse).",
+              },
+              {
+                step: "03",
+                left: "(Not bankable)",
+                right: "Bankable",
+                body: "Loan sized to the P5 floor under a DSCR @ P5 ≥ 1.30× covenant. Borrower stays solvent even in the bottom-5% savings scenario.",
+              },
+            ].map((r) => (
+              <div key={r.step} className="bc-row">
+                <div className="bc-step">{r.step}</div>
+                <div className="bc-left">
+                  <span className="label">Raw promise</span>
+                  <div className="bc-text bc-text--muted">{r.left}</div>
                 </div>
-                <span className="a-prim__num">P / {String(i + 1).padStart(2, "0")}</span>
-                <h3 className="a-prim__title">{p.title}</h3>
-                <p className="a-prim__body">{p.body}</p>
-                <div className="a-prim__chips">
-                  {p.chips.map((c, j) => (
-                    <span key={j} className="a-chip">
-                      {c}
-                    </span>
-                  ))}
+                <div className="bc-arrow" aria-hidden>
+                  &rarr;
                 </div>
+                <div className="bc-right">
+                  <span className="label" style={{ color: "var(--accent-deep)" }}>
+                    Bankable collateral
+                  </span>
+                  <div className="bc-text bc-text--accent">{r.right}</div>
+                </div>
+                <div className="bc-body">{r.body}</div>
               </div>
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* WORKED EXAMPLE — one live deal, end to end. Bridges the abstract
-          §02 primitives to the §03 model benchmarks with real numbers from
-          the HVAC Hotel seed. */}
-      <section id="02.5-worked-example" className="a-section">
-        <SectionHead
-          idx="02.5"
-          kicker="WORKED EXAMPLE"
-          title="One deal, end to end."
-          intro="Numbers from a live seed deal on this site. Click through to the same project page to verify."
-        />
-        <div className="shell" style={{ paddingTop: 32, paddingBottom: 80 }}>
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "minmax(0, 1.4fr) minmax(0, 1fr)",
-              gap: 28,
-              alignItems: "start",
-            }}
-            className="we-grid"
-          >
-            {/* LEFT — narrative */}
-            <div style={{ borderTop: "1px solid var(--line)" }}>
-              {[
-                {
-                  step: "01",
-                  actor: "Site",
-                  title: "Bangalore 4-star hotel · 142 rooms",
-                  body: "Baseline electricity draw 482,000 kWh/yr at ₹8.5/kWh.",
-                },
-                {
-                  step: "02",
-                  actor: "Retrofit",
-                  title: "Chiller plant + IoT setpoint controls",
-                  body: "Magnetic-bearing chillers replace existing units; occupancy-aware setpoint optimization across 142 rooms shifts cooling to off-peak.",
-                },
-                {
-                  step: "03",
-                  actor: "Forecast",
-                  title: "Calibrated savings prediction with 90% conformal PI",
-                  body: "P5 floor 76,800 kWh/yr · P50 124,500 kWh/yr · P95 upper 172,000 kWh/yr. Grade B (senior + junior tranche split).",
-                },
-                {
-                  step: "04",
-                  actor: "Underwriting",
-                  title: "Loan sized to the P5 floor, not the P50 point",
-                  body: "DSCR at P5 = 1.38× (≥ 1.30× covenant). DSCR at P50 = 1.85×. Recommended facility $25,000 over 36 months. Junior absorbs first-loss per §5.5.",
-                },
-              ].map((r) => (
-                <div
-                  key={r.step}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "56px 1fr",
-                    gap: 20,
-                    padding: "22px 0",
-                    borderBottom: "1px solid var(--line)",
-                    alignItems: "start",
-                  }}
-                >
-                  <div
-                    className="num"
-                    style={{
-                      fontSize: 22,
-                      color: "var(--fg-faint)",
-                      letterSpacing: "-0.02em",
-                    }}
-                  >
-                    {r.step}
-                  </div>
-                  <div>
-                    <div
-                      className="label"
-                      style={{ marginBottom: 6, color: "var(--fg-faint)" }}
-                    >
-                      {r.actor}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 17,
-                        letterSpacing: "-0.01em",
-                        color: "var(--fg)",
-                        marginBottom: 6,
-                      }}
-                    >
-                      {r.title}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: 13,
-                        color: "var(--fg-muted)",
-                        lineHeight: 1.55,
-                      }}
-                    >
-                      {r.body}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* RIGHT — math table */}
-            <div
-              style={{
-                border: "1px solid var(--line)",
-                background: "var(--bg-1)",
-                padding: 22,
-              }}
-            >
-              <div
-                style={{
-                  fontSize: 10.5,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  color: "var(--fg-muted)",
-                  marginBottom: 16,
-                }}
-              >
-                The math
-              </div>
-              {[
-                ["Baseline draw", "482,000 kWh/yr"],
-                ["Electricity rate", "₹8.5/kWh"],
-                ["Predicted savings (P50)", "124,500 kWh/yr"],
-                ["Annual savings @ P50", "₹1,058,250"],
-                ["Annual savings @ P5", "₹652,800"],
-                ["Carbon §11 accrual", "102.1 tCO₂/yr"],
-                ["DSCR @ P5", "1.38×"],
-                ["DSCR @ P50", "1.85×"],
-                ["Recommended facility", "$25,000 · 36 mo"],
-                ["Implied payback @ P5", "≈ 24 mo"],
-                ["Senior tranche LTV", "60%"],
-              ].map(([k, v], i, arr) => (
-                <div
-                  key={k}
-                  style={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "baseline",
-                    gap: 12,
-                    padding: "8px 0",
-                    borderBottom:
-                      i === arr.length - 1 ? "none" : "1px dashed var(--line)",
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: 11,
-                      letterSpacing: "0.06em",
-                      textTransform: "uppercase",
-                      color: "var(--fg-muted)",
-                    }}
-                  >
-                    {k}
-                  </span>
-                  <span
-                    className="mono-num"
-                    style={{ fontSize: 13, color: "var(--fg)" }}
-                  >
-                    {v}
-                  </span>
-                </div>
-              ))}
-
-              <Link
-                href={
-                  stats.featuredProjectId
-                    ? `/projects/${stats.featuredProjectId}`
-                    : "/projects"
-                }
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 6,
-                  marginTop: 18,
-                  fontSize: 12.5,
-                  color: "var(--accent)",
-                  textDecoration: "none",
-                }}
-              >
-                See the live deal <span aria-hidden>→</span>
-              </Link>
-            </div>
-          </div>
-          <p
-            style={{
-              marginTop: 22,
-              fontSize: 12,
-              color: "var(--fg-faint)",
-              maxWidth: "70ch",
-            }}
-          >
-            Carbon §11 figures use 0.82 kgCO₂/kWh (India grid factor). Loan
-            sizing follows UNDERWRITING_POLICY §5 — DSCR @ P5 ≥ 1.30× is the
-            hard covenant. Senior/junior split per the confidence grade.
-          </p>
         </div>
       </section>
 
@@ -523,7 +376,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
           idx="03"
           kicker="BENCHMARKS"
           title="Calibrated, not just confident."
-          intro="Our underwriting model produces a calibrated 90% confidence interval — meaning the P5 lower bound is honest, not an LLM hallucination. Numbers below come from leave-one-out cross-validation on the 72-ECM KISEM corpus after pretraining on 14,000 real US-DOE IAC industrial audits. v0.3 (TabPFN v2 in-context) achieves R² 0.56 with a distribution-free 90% PI; reproduction script below."
+          intro="Our underwriting model produces a calibrated 90% confidence interval — meaning the P5 lower bound is honest, not an LLM hallucination. Numbers below come from leave-one-out cross-validation on the 72-ECM KISEM corpus after pretraining on 14,000 real US-DOE IAC industrial audits. The TabPFN in-context model achieves R² 0.56 with a distribution-free 90% PI; reproduction script below."
         />
         <div className="shell" style={{ paddingBottom: 56 }}>
           <div className="bench-grid" style={{ marginTop: 32 }}>
@@ -556,7 +409,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>Leakage-known compressed-air only</td>
                 </tr>
                 <tr>
-                  <td>Ascertainty PINN v0.1 (physics-head)</td>
+                  <td>Ascertainty PINN (physics-head)</td>
                   <td>−0.07</td>
                   <td>42.3%</td>
                   <td>88% (native σ-scaling)</td>
@@ -564,7 +417,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>Physics-informed neural net, KISEM-only</td>
                 </tr>
                 <tr>
-                  <td>Ascertainty CatBoost v0.2</td>
+                  <td>Ascertainty CatBoost</td>
                   <td>+0.28</td>
                   <td>44.7%</td>
                   <td>±67,679 kWh (split-conformal)</td>
@@ -572,12 +425,12 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <td>IAC pretrain + KISEM finetune, deployed</td>
                 </tr>
                 <tr style={{ background: "rgba(16,185,129,0.06)" }}>
-                  <td><b>Ascertainty TabPFN v0.3 (this product)</b></td>
+                  <td><b>Ascertainty TabPFN (this product)</b></td>
                   <td><b>+0.56</b></td>
                   <td><b>41.6%</b></td>
                   <td><b>±69,254 kWh (split-conformal)</b></td>
                   <td><b><span className="bench-verdict bench-verdict--good">Good — within SOTA band</span></b></td>
-                  <td><b>TabPFN v2 in-context on IAC + KISEM. Hollmann et al., <i>Nature</i> 2025.</b></td>
+                  <td><b>TabPFN in-context on IAC + KISEM. Hollmann et al., <i>Nature</i> 2025.</b></td>
                 </tr>
               </tbody>
             </table>
@@ -604,7 +457,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <p className="bench-explainer__context">
                     Industrial energy savings prediction papers (ORNL 2025 IAC analyses) report
                     R²=0.5–0.7. Residential-building papers with 10k+ rows reach 0.87 (Pampuri et al.,
-                    Riga). Our TabPFN v0.3 sits inside the industrial SOTA band with ~50× less
+                    Riga). Our TabPFN sits inside the industrial SOTA band with ~50× less
                     training data, thanks to the foundation-model pretraining.
                   </p>
                 </div>
@@ -653,7 +506,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
               </div>
             </details>
             <p style={{ marginTop: 16, fontSize: 12, color: "var(--fg-muted)" }}>
-              v0.3 backbone = TabPFN v2 (Hollmann et al., <i>Nature</i> 2025) — a pretrained
+              Backbone = TabPFN (Hollmann et al., <i>Nature</i> 2025) — a pretrained
               transformer that performs in-context tabular regression. Pretrained on ~130M
               synthetic priors, conditioned at inference on the US Department of Energy
               Industrial Assessment Center database (14,000 implemented recommendations with
@@ -676,14 +529,14 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                   <h4>Two models, two roles, on purpose</h4>
                   <ul>
                     <li>
-                      <b>TabPFN v2 — headline benchmark.</b> R²=+0.56 LOO on a 6-feature
+                      <b>TabPFN — headline benchmark.</b> R²=+0.56 LOO on a 6-feature
                       corpus (baseline_kwh, sector, equipment_type, arc_group, source,
                       log_baseline). That&apos;s the headline number above. It proves that
                       a foundation-model approach generalises out-of-distribution from a
                       tiny Indian audit set when conditioned on 14k IAC rows.
                     </li>
                     <li>
-                      <b>PINN unified v0.1 — what serves live underwriting.</b> Trained on
+                      <b>PINN unified — what serves live underwriting.</b> Trained on
                       the same 72-ECM KISEM corpus but ingests all 21 fields the auditor
                       actually collects (leakage_pct, rated_kw, hours/days, motor count,
                       plant context). On a small ECM where TabPFN would output a P5 near
@@ -692,18 +545,19 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                     </li>
                   </ul>
                   <p className="bench-explainer__context">
-                    <b style={{ color: "var(--fg)" }}>v0.4 plan:</b> retrain TabPFN on the
-                    full 21-feature audit schema, validate per-sample bands no longer floor
-                    at zero for small ECMs, then flip the serving default. The headline
-                    number is preserved; the moat (the audit signal that only Ascertainty
-                    collects) becomes part of the model both at benchmark and at serve time.
+                    <b style={{ color: "var(--fg)" }}>Next iteration:</b> retrain TabPFN
+                    on the full 21-feature audit schema, validate per-sample bands no
+                    longer floor at zero for small ECMs, then flip the serving default.
+                    The headline number is preserved; the moat (the audit signal that only
+                    Ascertainty collects) becomes part of the model both at benchmark and
+                    at serve time.
                   </p>
                   <p className="bench-explainer__context">
                     <b style={{ color: "var(--fg)" }}>What this means today:</b> every
-                    project page on this site says &quot;Underwritten by PINN unified
-                    v0.1&quot; because that&apos;s the model actually sizing the loan. The
-                    TabPFN R²=+0.56 claim above is honest — it&apos;s the LOO score on the
-                    corpus it was trained on, not a claim about live serving.
+                    project page on this site says &quot;Underwritten by PINN
+                    unified&quot; because that&apos;s the model actually sizing the loan.
+                    The TabPFN R²=+0.56 claim above is honest — it&apos;s the LOO score on
+                    the corpus it was trained on, not a claim about live serving.
                   </p>
                 </div>
               </div>
@@ -747,638 +601,71 @@ curl -s https://inference.ascertainty.com/v1/predict \\
         </div>
       </section>
 
-      {/* LIVE PROOF */}
-      <section id="04-live-proof" className="a-section">
+      {/* COMPETITION — why no one else does this. 3-column comparison vs Banks
+          and ESCOs. Sets up the moat slides below by showing the empty quadrant. */}
+      <section id="04-competition" className="a-section">
         <SectionHead
           idx="04"
-          kicker="LIVE PROOF"
-          title="The protocol breathes on-chain."
-          intro="Below is a live feed from the Solana devnet indexer — the same stream our risk dashboard subscribes to. Mainnet flips the same firehose to real USDC."
+          kicker="COMPETITION"
+          title="Three industries try to serve this market. None can."
+          intro="Banks won’t lend without salvage. ESCOs only serve $5M+ enterprises. The SME industrial-retrofit gap is structural, not accidental."
         />
-        <div className="shell" style={{ paddingBottom: 56 }}>
-          <div
+        <div className="shell" style={{ paddingTop: 32, paddingBottom: 80 }}>
+          <div className="cmp-tbl-wrap">
+            <table className="cmp-tbl">
+              <thead>
+                <tr>
+                  <th></th>
+                  <th>Banks</th>
+                  <th>ESCOs <span className="cmp-tbl__sub">(Johnson Controls, Trane, Honeywell)</span></th>
+                  <th className="cmp-tbl__us">Ascertainty</th>
+                </tr>
+              </thead>
+              <tbody>
+                {[
+                  ["Min ticket", "$1M+", "$5–10M+", "$25K"],
+                  ["Borrower credit required", "Strong balance sheet", "Investment-grade", "None (non-recourse)"],
+                  ["Time to close", "6+ months", "12–24 months", "4–6 weeks"],
+                  ["Underwriting transparency", "Internal model", "Black box", "Calibrated PINN + on-chain audit hash"],
+                  ["Loan structure", "Full recourse", "ESPC corporate guarantee", "Non-recourse"],
+                  ["SME-accessible", "✗", "✗", "✓"],
+                  ["Geography", "OECD", "US + select EU", "India · SEA · expanding"],
+                ].map((row, i) => (
+                  <tr key={i}>
+                    <td className="cmp-tbl__row-label">{row[0]}</td>
+                    <td>{row[1]}</td>
+                    <td>{row[2]}</td>
+                    <td className="cmp-tbl__us">{row[3]}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <p
             style={{
-              display: "grid",
-              gridTemplateColumns: "1.1fr 1fr",
-              gap: 24,
-              marginTop: 32,
-            }}
-            className="proof-grid"
-          >
-            <TerminalLog />
-            <div className="a-surface" style={{ padding: 18 }}>
-              <div
-                style={{
-                  display: "flex",
-                  justifyContent: "space-between",
-                  alignItems: "center",
-                  marginBottom: 14,
-                }}
-              >
-                <span className="label">Top pools · TVL</span>
-                <span className="label" style={{ color: "var(--fg)" }}>
-                  USDC
-                </span>
-              </div>
-              {[
-                {
-                  name: "IN · Energy Efficiency Sr.",
-                  tag: "SPL · USDC · SOLANA",
-                  spark: [12, 14, 13, 17, 18, 19, 22, 24, 27, 29, 32, 36],
-                  tvl: "$24.18M",
-                  apy: "9.42%",
-                },
-                {
-                  name: "ID · Cold Storage Sr.",
-                  tag: "SPL · USDC · SOLANA",
-                  spark: [8, 9, 11, 10, 14, 16, 17, 19, 22, 24, 27, 30],
-                  tvl: "$18.92M",
-                  apy: "10.12%",
-                },
-                {
-                  name: "VN · Garment + Solar Jr.",
-                  tag: "SPL · USDC · SOLANA",
-                  spark: [4, 5, 7, 6, 9, 11, 12, 14, 16, 19, 21, 24],
-                  tvl: "$11.40M",
-                  apy: "16.20%",
-                },
-                {
-                  name: "IN · Cooling Retrofit Sr.",
-                  tag: "SPL · USDC · SOLANA",
-                  spark: [10, 11, 12, 14, 16, 18, 19, 21, 24, 26, 28, 31],
-                  tvl: "$9.04M",
-                  apy: "10.80%",
-                },
-              ].map((v, i) => (
-                <div
-                  key={i}
-                  style={{
-                    display: "grid",
-                    gridTemplateColumns: "1fr auto auto auto",
-                    gap: 14,
-                    alignItems: "center",
-                    padding: "12px 0",
-                    borderTop: i ? "1px dashed var(--line)" : "none",
-                  }}
-                >
-                  <div>
-                    <div style={{ color: "var(--fg)", fontSize: 13 }}>{v.name}</div>
-                    <div
-                      style={{
-                        color: "var(--fg-muted)",
-                        fontSize: 10.5,
-                        letterSpacing: "0.14em",
-                        textTransform: "uppercase",
-                        marginTop: 2,
-                      }}
-                    >
-                      {v.tag}
-                    </div>
-                  </div>
-                  <Sparkline values={v.spark} />
-                  <div className="num" style={{ color: "var(--fg)", fontSize: 13 }}>
-                    {v.tvl}
-                  </div>
-                  <div className="num" style={{ color: "var(--accent)", fontSize: 13 }}>
-                    {v.apy}
-                  </div>
-                </div>
-              ))}
-              <Link
-                href="/pools"
-                className="a-btn a-btn--ghost"
-                style={{ width: "100%", marginTop: 14, justifyContent: "center" }}
-              >
-                View all pools <span className="arrow">→</span>
-              </Link>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* MECHANICS */}
-      <section id="05-mechanics" className="a-section">
-        <SectionHead
-          idx="05"
-          kicker="MECHANICS"
-          title="From deposit to repayment in one continuous ledger."
-          intro="No re-keying. No reconciliation. The borrower's meter is the lender's invoice."
-        />
-        <div className="shell" style={{ paddingBottom: 80 }}>
-          {/* PARALLEL FINANCING — the visceral compression story */}
-          <div style={{ marginTop: 36, marginBottom: 56 }}>
-            <div
-              style={{
-                fontSize: 12,
-                color: "var(--fg-muted)",
-                marginBottom: 18,
-                fontFamily: "var(--font-geist-mono)",
-                letterSpacing: "0.12em",
-                textTransform: "uppercase",
-              }}
-            >
-              Audit and underwriting collapse into one motion
-            </div>
-            <div
-              className="pf-grid"
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: 24,
-              }}
-            >
-              {/* LEGACY (serial) */}
-              <div
-                style={{
-                  border: "1px solid var(--line)",
-                  background: "var(--bg-1)",
-                  padding: 22,
-                }}
-              >
-                <div
-                  className="label"
-                  style={{ color: "var(--fg-faint)", marginBottom: 14 }}
-                >
-                  Legacy · serial process
-                </div>
-                <div style={{ display: "grid", gap: 10 }}>
-                  {[
-                    ["Month 0–2", "Hire energy auditor → audit report"],
-                    ["Month 2–5", "Bank or ESCO re-underwrites the report from scratch"],
-                    ["Month 5–8", "Loan committee review + approval"],
-                    ["Month 8–12+", "PO, install, commission"],
-                  ].map(([when, what]) => (
-                    <div
-                      key={when}
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "92px 1fr",
-                        gap: 12,
-                        alignItems: "baseline",
-                      }}
-                    >
-                      <div
-                        className="mono-num"
-                        style={{
-                          fontSize: 11,
-                          color: "var(--fg-faint)",
-                          letterSpacing: "0.06em",
-                        }}
-                      >
-                        {when}
-                      </div>
-                      <div
-                        style={{
-                          height: 22,
-                          background: "var(--fg-dim)",
-                          padding: "3px 10px",
-                          fontSize: 12,
-                          color: "var(--fg)",
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        {what}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div
-                  style={{
-                    marginTop: 16,
-                    paddingTop: 12,
-                    borderTop: "1px solid var(--line)",
-                    fontSize: 13,
-                    color: "var(--fg-muted)",
-                  }}
-                >
-                  End-to-end:{" "}
-                  <span className="mono-num" style={{ color: "var(--fg)" }}>
-                    9–18 months
-                  </span>
-                  . Most MSMEs drop out before signing.
-                </div>
-              </div>
-
-              {/* ASCERTAINTY (parallel) */}
-              <div
-                style={{
-                  border: "1px solid var(--accent)",
-                  background: "var(--accent-soft)",
-                  padding: 22,
-                }}
-              >
-                <div
-                  className="label"
-                  style={{ color: "var(--accent-deep)", marginBottom: 14 }}
-                >
-                  Ascertainty · parallel process
-                </div>
-                <div style={{ display: "grid", gap: 10 }}>
-                  {[
-                    ["Week 0–2", "Site audit + meter ingest → calibrated forecast = the underwriting"],
-                    ["Week 2–3", "Term sheet auto-generated from the conformal band"],
-                    ["Week 3–4", "Funds escrowed; PO issued to approved installer"],
-                    ["Week 4+", "Install, commission, IoT M&V live from day one"],
-                  ].map(([when, what]) => (
-                    <div
-                      key={when}
-                      style={{
-                        display: "grid",
-                        gridTemplateColumns: "92px 1fr",
-                        gap: 12,
-                        alignItems: "baseline",
-                      }}
-                    >
-                      <div
-                        className="mono-num"
-                        style={{
-                          fontSize: 11,
-                          color: "var(--accent-deep)",
-                          letterSpacing: "0.06em",
-                        }}
-                      >
-                        {when}
-                      </div>
-                      <div
-                        style={{
-                          height: 22,
-                          background: "var(--accent)",
-                          padding: "3px 10px",
-                          fontSize: 12,
-                          color: "var(--accent-ink)",
-                          display: "flex",
-                          alignItems: "center",
-                        }}
-                      >
-                        {what}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div
-                  style={{
-                    marginTop: 16,
-                    paddingTop: 12,
-                    borderTop: "1px solid var(--accent)",
-                    fontSize: 13,
-                    color: "var(--accent-deep)",
-                  }}
-                >
-                  End-to-end:{" "}
-                  <span className="mono-num" style={{ color: "var(--accent-deep)" }}>
-                    4–6 weeks
-                  </span>
-                  . One workflow, one output, one signature.
-                </div>
-              </div>
-            </div>
-            <p
-              style={{
-                marginTop: 18,
-                fontSize: 13,
-                color: "var(--fg-muted)",
-                maxWidth: "70ch",
-                lineHeight: 1.55,
-              }}
-            >
-              An audit and a loan underwriting ask the same question:{" "}
-              <em>how much will this site save?</em> Legacy lenders re-ask it
-              from scratch with their own analysts — wasted motion, serial
-              dependency. The calibrated savings forecast is loan-ready on
-              first output, so audit and finance happen as one motion.
-            </p>
-          </div>
-
-          <div style={{ marginTop: 36, marginBottom: 56 }}>
-            <div style={{ fontSize: 12, color: "var(--fg-muted)", marginBottom: 12, fontFamily: "var(--font-geist-mono)", letterSpacing: "0.12em", textTransform: "uppercase" }}>
-              Watch the underwriting tighten in real time
-            </div>
-            <TimelineBandLoop />
-          </div>
-          <div style={{ marginTop: 36, borderTop: "1px solid var(--line)" }}>
-            {STEPS.map((s, i) => (
-              <div
-                key={i}
-                className="step-row"
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "120px 1fr 1.4fr 200px",
-                  gap: 32,
-                  padding: "28px 0",
-                  borderBottom: "1px solid var(--line)",
-                  alignItems: "start",
-                }}
-              >
-                <div
-                  className="num"
-                  style={{
-                    fontSize: 36,
-                    color: "var(--fg-faint)",
-                    letterSpacing: "-0.03em",
-                  }}
-                >
-                  {String(i + 1).padStart(2, "0")}
-                </div>
-                <div>
-                  <div className="label" style={{ marginBottom: 6 }}>
-                    {s.actor}
-                  </div>
-                  <h4
-                    style={{
-                      fontSize: 22,
-                      letterSpacing: "-0.02em",
-                      fontWeight: 400,
-                      margin: 0,
-                      color: "var(--fg)",
-                    }}
-                  >
-                    {s.title}
-                  </h4>
-                </div>
-                <div
-                  style={{ color: "var(--fg-muted)", fontSize: 13, lineHeight: 1.55 }}
-                >
-                  {s.body}
-                </div>
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: 6,
-                    fontSize: 11,
-                    color: "var(--fg-muted)",
-                  }}
-                >
-                  {s.spec.map(([k, v], j) => (
-                    <div
-                      key={j}
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        borderBottom: "1px dashed var(--line)",
-                        paddingBottom: 4,
-                      }}
-                    >
-                      <span
-                        style={{
-                          color: "var(--fg-faint)",
-                          letterSpacing: "0.12em",
-                          textTransform: "uppercase",
-                          fontSize: 9.5,
-                        }}
-                      >
-                        {k}
-                      </span>
-                      <span className="num" style={{ color: "var(--fg)" }}>
-                        {v}
-                      </span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* ROADMAP */}
-      <section id="06-roadmap" className="a-section">
-        <SectionHead idx="06" kicker="ROADMAP" title="The path to mainnet." />
-        <div
-          className="shell"
-          style={{ paddingTop: 32, paddingBottom: 80, maxWidth: 900 }}
-        >
-          <div style={{ borderTop: "1px solid var(--line)" }}>
-            {[
-              {
-                d: true,
-                t: "V0: Devnet contracts",
-                s: "Program deployed, 92 tests passing.",
-              },
-              {
-                d: true,
-                t: "V0.5: Investor app",
-                s: "Buy, claim, and pool flows live on devnet.",
-              },
-              {
-                d: false,
-                now: true,
-                t: "V1: MRV attestations",
-                s: "Licensed auditors submit baselines + verifications on-chain.",
-              },
-              {
-                d: false,
-                t: "V1.5: Pool aggregation",
-                s: "Sweep pooled project returns into pool vaults automatically.",
-              },
-              {
-                d: false,
-                t: "V2: Mainnet",
-                s: "Audited program. Real USDC. Real MSME projects.",
-              },
-              {
-                d: false,
-                t: "V2.5: TabPFN serving + on-chain audit-hash",
-                s: "TabPFN v2 retrained on the full 21-feature audit schema, promoted from headline-benchmark to serving model. Every /v1/predict commits sha256(inputs, outputs, git_commit) as a Solana Memo — underwriting trail becomes tamper-evident on-chain.",
-              },
-              {
-                d: false,
-                t: "V3: Queue-priority liquidity",
-                s: "FIFO redemption queue + auction-priority bidding for early exits (junior absorbs first). Adapts the DePIN-credit QEV pattern to our monthly USDC sweep cadence. Triggered when senior tranche TVL ≥ $1M.",
-              },
-              {
-                d: false,
-                t: "V3.5: MSME insurance partner",
-                s: "Default + savings-shortfall cover via SBI General / ICICI Lombard / Bajaj Allianz (Indian-MSME analogue to the Munich Re collateral-value cover pattern). BD track, not engineering — flagged so it's not lost.",
-              },
-            ].map((r, i) => (
-              <div
-                key={i}
-                style={{
-                  display: "grid",
-                  gridTemplateColumns: "120px 1fr",
-                  gap: 32,
-                  padding: "20px 0",
-                  borderBottom: "1px solid var(--line)",
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  {r.d ? (
-                    <>
-                      <span
-                        className="pulse"
-                        style={{
-                          ["--c" as string]: "var(--accent)",
-                        } as React.CSSProperties}
-                      />
-                      <span className="label">SHIPPED</span>
-                    </>
-                  ) : r.now ? (
-                    <>
-                      <span className="pulse" />
-                      <span className="label label--accent">IN FLIGHT</span>
-                    </>
-                  ) : (
-                    <>
-                      <span
-                        className="pulse"
-                        style={{
-                          ["--c" as string]: "var(--fg-faint)",
-                        } as React.CSSProperties}
-                      />
-                      <span className="label">PLANNED</span>
-                    </>
-                  )}
-                </div>
-                <div>
-                  <div
-                    style={{
-                      fontSize: 16,
-                      color: "var(--fg)",
-                      letterSpacing: "-0.01em",
-                    }}
-                  >
-                    {r.t}
-                  </div>
-                  <div
-                    style={{
-                      color: "var(--fg-muted)",
-                      fontSize: 12.5,
-                      marginTop: 4,
-                    }}
-                  >
-                    {r.s}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* LIQUIDITY & EXIT — secondary market roadmap */}
-      <section id="06.5-liquidity" className="a-section">
-        <SectionHead
-          idx="06.5"
-          kicker="LIQUIDITY & EXIT"
-          title="A clear path to secondary."
-          intro="LPs ask 'how do I exit?' before they wire. Our answer is dated, not vague — primary today, whitelisted OTC in Q1 2026, native in-house orderbook in Q3 2026, and a queue-priority auction mechanism triggered once senior TVL crosses ~$1M."
-        />
-        <div
-          className="shell"
-          style={{ paddingTop: 32, paddingBottom: 80, maxWidth: 1100 }}
-        >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
-              gap: 16,
+              marginTop: 24,
+              fontSize: 13,
+              color: "var(--fg-muted)",
+              maxWidth: "70ch",
+              lineHeight: 1.6,
             }}
           >
-            {[
-              {
-                phase: "v0 — TODAY",
-                title: "Hold to maturity",
-                state: "shipped",
-                lines: [
-                  "Primary subscription only",
-                  "1–7 yr tenor, fixed schedule",
-                  "Cash-flow distributions in USDC",
-                ],
-              },
-              {
-                phase: "v1 — Q1 2026",
-                title: "Whitelisted OTC desk",
-                state: "in-flight",
-                lines: [
-                  "Centrifuge V3 wrapper",
-                  "Daily NAV transparency",
-                  "ERC-3643 KYC enforced on transfer",
-                ],
-              },
-              {
-                phase: "v2 — Q3 2026",
-                title: "In-house orderbook",
-                state: "planned",
-                lines: [
-                  "20 bps fee per secondary trade",
-                  "Cross-chain via Wormhole NTT",
-                  "Triggers when AUM > $50M",
-                ],
-              },
-              {
-                phase: "v3 — when senior TVL ≥ $1M",
-                title: "Queue-priority auctions",
-                state: "planned",
-                lines: [
-                  "FIFO redemption queue + auction priority bidding",
-                  "Junior tranche absorbs queue stress first (§5.5)",
-                  "Adopts the DePIN-credit QEV pattern, adapted to monthly USDC sweeps",
-                ],
-              },
-            ].map((p, i) => {
-              const isActive = p.state === "in-flight";
-              const isShipped = p.state === "shipped";
-              return (
-                <div
-                  key={i}
-                  style={{
-                    border: isActive
-                      ? "1px solid var(--accent)"
-                      : "1px solid var(--line)",
-                    background: isActive
-                      ? "var(--accent-soft)"
-                      : "var(--bg-1)",
-                    padding: 18,
-                  }}
-                >
-                  <span
-                    className="label"
-                    style={{
-                      color: isActive
-                        ? "var(--accent-deep)"
-                        : "var(--fg-muted)",
-                    }}
-                  >
-                    {p.phase}
-                  </span>
-                  <h3
-                    style={{
-                      fontSize: 18,
-                      letterSpacing: "-0.01em",
-                      marginTop: 6,
-                      color: isActive ? "var(--accent-deep)" : "var(--fg)",
-                    }}
-                  >
-                    {p.title}
-                  </h3>
-                  <ul
-                    style={{
-                      marginTop: 12,
-                      fontSize: 12.5,
-                      color: "var(--fg-muted)",
-                      listStyle: "none",
-                      padding: 0,
-                    }}
-                  >
-                    {p.lines.map((l, j) => (
-                      <li key={j} style={{ padding: "3px 0" }}>
-                        {isShipped ? "✓ " : "· "}
-                        {l}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              );
-            })}
-          </div>
+            ESCOs are the 1980s answer to “how do you finance industrial efficiency
+            when you can’t underwrite savings?” Their answer: don’t — wrap savings
+            in a corporate guarantee, charge enterprise customers a fat margin,
+            stay out of the SME market entirely. Ascertainty is the 2026 answer:
+            actually underwrite the savings using physics-informed AI.{" "}
+            <strong style={{ color: "var(--fg)" }}>
+              Same risk profile for the borrower (non-recourse + sculpted
+              amortization), 10× bigger addressable market, 1/4 the friction.
+            </strong>
+          </p>
         </div>
       </section>
 
-      {/* FAQ */}
-      <section id="07-faq" className="a-section">
-        <SectionHead idx="07" kicker="FAQ" title="Answers." />
+      {/* FAQ — three teasers + link to the full FAQ in /docs/faq */}
+      <section id="05-faq" className="a-section">
+        <SectionHead idx="05" kicker="FAQ" title="Answers." />
         <div
           className="shell"
           style={{ paddingTop: 32, paddingBottom: 80, maxWidth: 900 }}
@@ -1386,24 +673,16 @@ curl -s https://inference.ascertainty.com/v1/predict \\
           <Accordion type="single" collapsible>
             {[
               {
-                q: "Is this real USDC?",
-                a: "On devnet today, using a test USDC mint. Mainnet with real USDC is in the roadmap.",
+                q: "How is this different from an ESCO?",
+                a: "ESCOs are the 1980s answer: wrap savings in a corporate guarantee, charge enterprise customers a fat margin, stay out of the SME market entirely. Their model requires investment-grade borrowers, 12–24 month close cycles, and $5M+ ticket minimums. Ascertainty is the 2026 answer: actually underwrite the savings with physics-informed AI. Same risk profile for the borrower (non-recourse + sculpted amortization), 10× bigger addressable market, 1/4 the friction — $25K minimums, 4–6 week close, no recourse to the borrower’s balance sheet.",
               },
               {
-                q: "Who custodies my funds?",
-                a: "You do. Every investment is a Solana transaction you sign. Ascertainty's program holds vaults on PDAs; no off-chain custodian.",
+                q: "What if savings don’t materialize?",
+                a: "Three structural protections, in order. (1) Loans are sized to the P5 floor of the calibrated savings distribution, not the median — DSCR @ P5 ≥ 1.30× is a hard covenant. The borrower stays solvent in the bottom-5% scenario by design. (2) Sculpted amortization absorbs variance: if a quarter’s realized savings come in below forecast, the scheduled payment scales down. (3) Junior tranche absorbs first-loss before senior. Realized portfolio default rates within the model’s predicted band are priced into LP yield; that’s the deal LPs sign up for.",
               },
               {
-                q: "How is yield generated?",
-                a: "MSMEs use the capital to deploy verified energy upgrades. Realized savings (measured by licensed auditors) flow back as USDC distributions.",
-              },
-              {
-                q: "What happens if a project fails?",
-                a: "Your position is on-chain and non-custodial. If an MSME under-delivers, distributions reflect actual savings; there is no insurance on devnet.",
-              },
-              {
-                q: "Can I exit before the term ends?",
-                a: "Positions are claimable at any time for accrued distributions. Secondary market for tokens is on the roadmap.",
+                q: "What if Ascertainty goes out of business?",
+                a: "Loans persist on-chain on the underlying vault protocol — they don’t depend on our company’s existence. Servicing is contractually transferable to a successor servicer. The underwriting policy + every prediction’s audit hash are public, so any qualified successor can pick up where we left off. LP capital is at risk to the borrowers’ performance, not to our corporate solvency.",
               },
             ].map((f, i) => (
               <AccordionItem
@@ -1423,13 +702,28 @@ curl -s https://inference.ascertainty.com/v1/predict \\
               </AccordionItem>
             ))}
           </Accordion>
+          <Link
+            href="/docs/faq"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              marginTop: 22,
+              fontSize: 12.5,
+              color: "var(--accent)",
+              textDecoration: "none",
+            }}
+          >
+            Full FAQ — lender · borrower · credit reviewer{" "}
+            <span aria-hidden>→</span>
+          </Link>
         </div>
       </section>
 
       {/* MOAT — why this is hard to copy */}
-      <section id="08-moat" className="a-section">
+      <section id="06-moat" className="a-section">
         <SectionHead
-          idx="08"
+          idx="06"
           kicker="MOAT"
           title="What stops a copycat."
           intro="Five reinforcing edges. The first is relational and copyable in 18 months. The second compounds with every loan we close. The third is a coordination problem no single counterparty wants to own. The fourth is the structural advantage over every other on-chain credit protocol: our underwriting is verifiable from a curl, not an expert's reputation. The fifth is the market itself — banks won't touch retrofits because the salvage leg is too weak, which is exactly why the gap exists and exactly why only a calibrated model can fill it."
@@ -1471,14 +765,14 @@ curl -s https://inference.ascertainty.com/v1/predict \\
                 num: "04",
                 title: "Verifiable underwriting",
                 lead: "calibrated model, not human curators",
-                body: "Every other on-chain credit protocol underwrites via 'trust our independent experts' — a marketing claim, not a verifiable system. Ascertainty's underwriting is a calibrated ML model with a published 90% conformal PI (R²=+0.56 LOO, verifiable on /v1/health from a curl). DSCR @ P5 ≥ 1.30× is a quantitative covenant a lender writes into the contract. Reconciliation against realized Day-30 metered savings is mechanical. v0.5 commits a sha256 of every prediction's (inputs, outputs, git_commit) to a Solana Memo, making the audit trail tamper-evident on-chain.",
+                body: "Every other on-chain credit protocol underwrites via 'trust our independent experts' — a marketing claim, not a verifiable system. Ascertainty's underwriting is a calibrated ML model with a published 90% conformal PI (R²=+0.56 LOO, verifiable on /v1/health from a curl). DSCR @ P5 ≥ 1.30× is a quantitative covenant a lender writes into the contract. Reconciliation against realized Day-30 metered savings is mechanical. A future release commits a sha256 of every prediction's (inputs, outputs, git_commit) to a Solana Memo, making the audit trail tamper-evident on-chain.",
                 kind: "verifiability",
               },
               {
                 num: "05",
                 title: "Weak-salvage market",
-                lead: "the gap that filters out competitors",
-                body: "A $500K compressed-air retrofit resells for ~$50K post-default (vs. ~$300K for $500K of GPUs). Retrofit equipment is custom-fitted to a specific factory's pipework — uninstallation often costs more than resale, and the secondary market for used VFDs/chillers/heat-exchangers is thin. Banks therefore can't lend against the salvage leg, only against the cash-flow leg. Cash-flow underwriting demands a calibrated savings forecast. Without that, the market is unserved by banks and ESCOs alike. With it, the difficulty IS the moat — anyone with a balance sheet can compete in GPU credit; nobody can compete here without a calibrated physics model.",
+                lead: "the difficulty IS the moat",
+                body: "A $500K compressed-air retrofit resells for ~$50K post-default — about 10% recovery. The same $500K of GPUs resells for ~$300K — about 60%. Retrofit equipment is custom-fitted to a specific factory's pipework; uninstallation often costs more than resale; the secondary market for used VFDs, chillers, and heat-exchangers is thin. A non-recourse loan needs two legs: salvage value (sell the asset) and cash flow (income the asset generates). Banks rely on the salvage leg, so they won't touch retrofits. We have only the cash-flow leg — but it's a leg only a calibrated physics model can build. Anyone with a balance sheet can compete in GPU credit. Nobody can compete here without our underwriting tech.",
                 kind: "structural",
               },
             ].map((p) => (
@@ -1598,10 +892,11 @@ curl -s https://inference.ascertainty.com/v1/predict \\
           </span>
           <h2
             style={{
-              fontWeight: 400,
+              fontFamily: "var(--font-display)",
+              fontWeight: 500,
               fontSize: "clamp(40px, 7vw, 96px)",
-              letterSpacing: "-0.04em",
-              lineHeight: 0.95,
+              letterSpacing: "-0.02em",
+              lineHeight: 1.02,
               margin: "22px auto 0",
               maxWidth: "20ch",
               position: "relative",

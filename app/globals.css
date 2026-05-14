@@ -156,7 +156,7 @@
 
   --font-sans: var(--font-poppins), "Poppins", Arial, Helvetica, sans-serif;
   --font-mono: var(--font-poppins), "Poppins", Arial, Helvetica, sans-serif;
-  --font-display: Arial, Helvetica, "Helvetica Neue", system-ui, sans-serif;
+  --font-display: var(--font-geist-sans), "Geist", Inter, "Helvetica Neue", Arial, system-ui, sans-serif;
   /* Instrument Serif has been retired site-wide; `--font-serif` and the
      `font-serif` Tailwind utility now resolve to Poppins so legacy callsites
      re-theme automatically without per-file edits. */
@@ -277,11 +277,13 @@
     width: 100%;
     height: 64px;
     padding: 0 28px;
-    border-bottom: 1px solid var(--line);
-    background: color-mix(in oklab, var(--bg-0) 86%, transparent);
-    backdrop-filter: blur(14px) saturate(140%);
-    -webkit-backdrop-filter: blur(14px) saturate(140%);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    /* Solid ink ground — matches the footer exactly (var(--fg) is the
+       Forest ink). No transparency, no blur, no tint. Light text reads
+       cleanly on top. */
+    background: var(--fg);
     font-size: 11px;
+    color: rgba(255, 255, 255, 0.85);
   }
   .a-nav__brand {
     display: flex;
@@ -325,7 +327,7 @@
     font-size: 10.5px;
     letter-spacing: 0.18em;
     text-transform: uppercase;
-    color: var(--fg-muted);
+    color: rgba(255, 255, 255, 0.82);
     transition: color .15s, background .15s;
     white-space: nowrap;
     position: relative;
@@ -335,20 +337,34 @@
     position: absolute;
     left: 50%;
     right: 50%;
-    bottom: -1px;
-    height: 1px;
+    bottom: -2px;
+    height: 2px;
     background: var(--accent);
     transition: left .2s, right .2s;
   }
-  .a-nav__link:hover { color: var(--fg); }
-  .a-nav__link:hover::before { left: 24%; right: 24%; }
-  .a-nav__link[aria-current="true"] { color: var(--fg); }
-  .a-nav__link[aria-current="true"]::before { left: 18%; right: 18%; }
+  .a-nav__link:hover { color: #ffffff; }
+  .a-nav__link:hover::before { left: 18%; right: 18%; }
+  .a-nav__link[aria-current="true"] { color: #ffffff; }
+  .a-nav__link[aria-current="true"]::before { left: 12%; right: 12%; }
   .a-nav__link-idx {
     color: var(--fg-faint);
     font-size: 9.5px;
   }
   .a-nav__link[aria-current="true"] .a-nav__link-idx { color: var(--accent); }
+  /* Button form of nav link (used for dropdown triggers): reset native button chrome. */
+  button.a-nav__link {
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    line-height: inherit;
+  }
+  button.a-nav__link:focus-visible {
+    outline: 1px solid var(--accent);
+    outline-offset: 4px;
+  }
   .a-nav__right {
     display: flex;
     align-items: center;
@@ -369,21 +385,24 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    height: 28px;
-    padding: 0 16px 0 14px;
-    border: 0;
-    border-left: 1px solid var(--line);
-    margin-left: 8px;
-    border-radius: 0;
+    height: 34px;
+    padding: 0 18px;
+    margin-left: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.24);
+    border-radius: 999px;
     font-size: 10.5px;
-    letter-spacing: 0.2em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     background: transparent;
-    color: var(--fg);
-    transition: color .15s;
+    color: rgba(255, 255, 255, 0.94);
+    transition: color .15s, background .15s, border-color .15s;
     cursor: pointer;
   }
-  .a-connect-btn:hover { color: var(--accent); }
+  .a-connect-btn:hover {
+    color: var(--fg);
+    background: var(--accent);
+    border-color: var(--accent);
+  }
   @media (max-width: 1000px) {
     .a-nav__links { display: none; }
   }
@@ -481,46 +500,35 @@
 
   /* sections */
   .a-section {
-    border-top: 1px solid var(--line);
     position: relative;
   }
+  /* Single-column stack: pill kicker, then title, then optional intro.
+     Reference: USD.AI section heads. Replaces the previous 2-col grid that
+     put the §idx in a left rail. */
   .a-section__head {
-    display: grid;
-    grid-template-columns: 280px 1fr;
-    gap: 64px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
     padding: 96px 0 32px;
   }
   @media (max-width: 880px) {
-    .a-section__head { grid-template-columns: 1fr; gap: 16px; padding: 56px 0 16px; }
+    .a-section__head { padding: 56px 0 16px; gap: 14px; }
   }
-  .a-section__index {
-    font-size: 10.5px;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--fg-muted);
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    align-self: start;
-    padding-top: 8px;
-    border-top: 1px solid var(--accent);
-    padding-right: 32px;
-  }
-  .a-section__index b { color: var(--fg); font-weight: 400; font-size: 11px; }
   .a-section__title {
     font-family: var(--font-display);
     font-size: clamp(40px, 5.4vw, 76px);
-    letter-spacing: -0.025em;
-    line-height: 0.95;
-    font-weight: 300;
-    max-width: 18ch;
+    letter-spacing: -0.02em;
+    line-height: 0.98;
+    font-weight: 500;
+    max-width: 22ch;
     text-wrap: balance;
   }
   .a-section__title em {
     font-family: var(--font-display);
     font-style: normal;
     color: var(--fg-muted);
-    font-weight: 300;
+    font-weight: 400;
   }
 
   /* tables */
@@ -673,6 +681,121 @@
     }
   }
 
+  /* §02.4 Bankable-collateral 4-step transformation grid.
+     Each row: [step number] [raw promise] [arrow] [bankable] [supporting body].
+     Stacks on phones via the .bc-row inner grid collapsing. */
+  .bc-grid {
+    display: grid;
+    gap: 0;
+    border-top: 1px solid var(--line);
+  }
+  .bc-row {
+    display: grid;
+    grid-template-columns: 56px minmax(0, 1fr) 40px minmax(0, 1fr) minmax(0, 1.4fr);
+    gap: 24px;
+    padding: 24px 0;
+    border-bottom: 1px solid var(--line);
+    align-items: start;
+  }
+  .bc-step {
+    font-family: var(--font-geist-mono);
+    font-size: 22px;
+    color: var(--fg-faint);
+    letter-spacing: -0.02em;
+  }
+  .bc-arrow {
+    color: var(--accent);
+    font-size: 20px;
+    line-height: 1;
+    padding-top: 18px;
+    text-align: center;
+  }
+  .bc-text {
+    margin-top: 6px;
+    font-size: 16px;
+    letter-spacing: -0.01em;
+    line-height: 1.35;
+  }
+  .bc-text--muted { color: var(--fg-muted); }
+  .bc-text--accent { color: var(--accent-deep); font-weight: 600; }
+  .bc-body {
+    font-size: 12.5px;
+    color: var(--fg-muted);
+    line-height: 1.55;
+    padding-top: 4px;
+  }
+  @media (max-width: 880px) {
+    .bc-row {
+      grid-template-columns: 40px 1fr;
+      gap: 12px;
+    }
+    .bc-arrow,
+    .bc-row > .bc-left,
+    .bc-row > .bc-right,
+    .bc-row > .bc-body {
+      grid-column: 2;
+    }
+    .bc-arrow {
+      transform: rotate(90deg);
+      padding-top: 0;
+      width: max-content;
+    }
+  }
+
+  /* §04 Competition comparison table — 4 cols, Banks · ESCOs · Ascertainty */
+  .cmp-tbl-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    background: var(--bg-1);
+  }
+  .cmp-tbl {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  .cmp-tbl th,
+  .cmp-tbl td {
+    text-align: left;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  .cmp-tbl thead th {
+    font-family: var(--font-geist-mono);
+    font-size: 10.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    font-weight: 500;
+    background: var(--bg-2);
+  }
+  .cmp-tbl__sub {
+    display: block;
+    margin-top: 2px;
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    text-transform: none;
+    color: var(--fg-faint);
+    font-weight: 400;
+  }
+  .cmp-tbl__row-label {
+    color: var(--fg-muted);
+    font-weight: 500;
+    width: 22%;
+  }
+  .cmp-tbl tbody td {
+    color: var(--fg);
+  }
+  .cmp-tbl__us {
+    color: var(--accent-deep) !important;
+    background: var(--accent-soft);
+    font-weight: 600;
+  }
+  .cmp-tbl thead .cmp-tbl__us {
+    color: var(--accent-deep) !important;
+    background: var(--accent-soft);
+  }
+
   /* benchmark code block (verifiable claims section) */
   .a-code {
     display: block;
@@ -748,27 +871,52 @@
     overflow: hidden;
     border-bottom: 1px solid var(--line);
   }
+  /* USD.AI-style framed-card variant: viewport-fitting tile with gutter
+     padding and rounded corners. Used on the landing hero only — audience
+     pages keep the flat base treatment. Height uses 100svh (small viewport
+     height) so the card always fits on first paint regardless of mobile
+     URL bar / desktop bookmarks chrome state. */
+  .a-hero--card {
+    margin: 14px;
+    min-height: calc(100svh - 92px);
+    border: 1px solid var(--line);
+    border-radius: 22px;
+  }
+  @media (max-width: 720px) {
+    .a-hero--card {
+      margin: 8px;
+      min-height: calc(100svh - 80px);
+      border-radius: 16px;
+    }
+  }
   .a-hero__bg {
     position: absolute;
     inset: 0;
     pointer-events: none;
     z-index: 0;
+    overflow: hidden;
+    /* Base layer: 135° sage-tinted diagonal stripes — adapted from the
+       Uiverse pattern by chase2k25, retoned to the Forest palette. The
+       four colour stops alternate slightly lifted/recessed sage tints so
+       the stripes whisper rather than shout. */
+    background: repeating-linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--accent) 7%, var(--bg-0)) 0px,
+      color-mix(in oklab, var(--accent) 7%, var(--bg-0)) 60px,
+      color-mix(in oklab, var(--accent) 14%, var(--bg-0)) 70px,
+      color-mix(in oklab, var(--accent) 4%, var(--bg-0)) 130px
+    );
   }
-  .a-hero__bg::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background-image:
-      linear-gradient(var(--line-dim) 1px, transparent 1px),
-      linear-gradient(90deg, var(--line-dim) 1px, transparent 1px);
-    background-size: 64px 64px;
-    mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
-  }
+  /* Bottom sage glow echo (preserves the original accent at the seam) */
   .a-hero__bg::after {
     content: "";
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse 60% 50% at 50% 100%, var(--accent-soft), transparent 60%);
+    background: radial-gradient(
+      ellipse 60% 50% at 50% 100%,
+      var(--accent-soft),
+      transparent 60%
+    );
   }
   .a-hero__inner {
     position: relative;
@@ -798,10 +946,10 @@
   }
   .a-hero__heading {
     font-family: var(--font-display);
-    font-weight: 400;
+    font-weight: 500;
     font-size: clamp(40px, 7vw, 96px);
-    letter-spacing: -0.04em;
-    line-height: 0.95;
+    letter-spacing: -0.02em;
+    line-height: 1.02;
     margin: 32px 0 0;
     color: var(--fg);
     padding-bottom: 0.12em;
@@ -818,7 +966,7 @@
     color: var(--accent);
     font-family: var(--font-display);
     font-style: normal;
-    font-weight: 600;
+    font-weight: 500;
   }
   .a-hero__sub {
     margin-top: 40px;
@@ -827,6 +975,114 @@
     font-size: 13px;
     line-height: 1.65;
     letter-spacing: 0.005em;
+  }
+  /* Emphasized phrases inside the hero subline. Bumped to full ink + 700
+     weight so they read as proper bolds at 13px body size. Each emphasis
+     answers a different reader's scan question (model / LPs / borrowers /
+     collateral). The green ".serif" sibling stays at 600 so the weight
+     hierarchy is body 400 → green 600 → bold 700, all three visually distinct. */
+  .a-hero__sub-em {
+    color: var(--fg);
+    font-weight: 700;
+  }
+
+  /* Calibration / underwriting badge above the H1. Small pill with a live-pulse
+     dot, linking to the §03 benchmarks section. Signals model authority for
+     scanners (VCs, lenders) without burdening borrowers who skip it. */
+  .a-hero__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    margin-bottom: 8px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 11.5px;
+    line-height: 1.4;
+    color: var(--fg-muted);
+    text-decoration: none;
+    transition: border-color 150ms, color 150ms, background 150ms;
+    background: var(--bg-1);
+    max-width: 100%;
+  }
+  .a-hero__badge:hover {
+    border-color: var(--accent);
+    color: var(--fg);
+    background: var(--accent-soft);
+  }
+  .a-hero__badge strong {
+    color: var(--fg);
+    font-weight: 600;
+  }
+  .a-hero__badge-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+  .a-hero__badge-sep {
+    color: var(--line-strong);
+    margin: 0 2px;
+  }
+  .a-hero__badge-sub {
+    color: var(--fg-muted);
+  }
+  .a-hero__badge-arrow {
+    color: var(--accent);
+    margin-left: 2px;
+    transition: transform 150ms;
+  }
+  .a-hero__badge:hover .a-hero__badge-arrow {
+    transform: translateX(2px);
+  }
+  /* Collapse the verbose half on narrow viewports — keep only model attribution */
+  @media (max-width: 720px) {
+    .a-hero__badge-sub,
+    .a-hero__badge-sep {
+      display: none;
+    }
+  }
+
+  /* Section / audience kicker — pill chrome mirroring the landing hero badge,
+     used above H1 titles across audience pages and PageHeader-based routes so
+     "the text above the title" reads as one shared element across the site. */
+  .a-kicker-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--bg-1);
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    line-height: 1.4;
+    width: max-content;
+    max-width: 100%;
+  }
+  .a-kicker-pill::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 999px;
+    background: var(--accent);
+    flex-shrink: 0;
+    box-shadow: 0 0 0 3px var(--accent-soft);
+  }
+
+  /* Footnote caption under each stats-meta tile. Reads as a small qualifying
+     line so the qualitative replacements (Pilot region · Seed deals · Target
+     net APY · First M&V cycle) feel transparent rather than empty. */
+  .a-hero__meta-foot {
+    margin-top: 4px;
+    font-size: 10.5px;
+    color: var(--fg-faint);
+    letter-spacing: 0.01em;
   }
   .a-hero__ctas {
     display: flex;
@@ -1023,39 +1279,110 @@
   }
 
   /* audience triptych */
-  .a-audience {
+  /* USD.AI-inspired audience cards: rounded-corner tiles with a faint
+     dotted texture bg (mimicking the printed-paper feel), sage-tinted
+     decorative illustration in the lower-right corner, kicker / title /
+     description / KPI strip / "more →" footer. Replaces the column
+     triptych. */
+  .a-audience-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0;
-    border-top: 1px solid var(--line-strong);
-    border-bottom: 1px solid var(--line-strong);
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    margin-top: 28px;
   }
-  .a-audience__col {
-    padding: 36px 28px;
-    border-right: 1px solid var(--line);
+  @media (max-width: 880px) {
+    .a-audience-grid { grid-template-columns: 1fr; }
+  }
+  .a-audience-card {
     position: relative;
-    transition: background .15s;
-    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    min-height: 420px;
+    padding: 28px 26px 24px;
+    /* Diagonal sage stripes — same family as the hero card, lighter
+       percentages so the cards sit calmer than the hero in the visual
+       hierarchy. */
+    background: repeating-linear-gradient(
+      135deg,
+      color-mix(in oklab, var(--accent) 4%, var(--bg-0)) 0px,
+      color-mix(in oklab, var(--accent) 4%, var(--bg-0)) 60px,
+      color-mix(in oklab, var(--accent) 8%, var(--bg-0)) 70px,
+      color-mix(in oklab, var(--accent) 2%, var(--bg-0)) 130px
+    );
+    border: 1px solid var(--line);
+    border-radius: 22px;
+    text-decoration: none;
+    color: inherit;
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
   }
-  .a-audience__col:hover { background: var(--bg-1); }
-  .a-audience__col:last-child { border-right: 0; }
-  .a-audience__col h3 {
+  .a-audience-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-2px);
+  }
+  /* Legacy kicker style — audience cards now use .a-kicker-pill instead. */
+  .a-audience-card__kicker {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+  }
+  .a-audience-card__title {
     font-family: var(--font-display);
-    font-size: 32px;
+    font-size: 28px;
     letter-spacing: -0.02em;
-    font-style: italic;
-    font-weight: 400;
-    margin: 14px 0 12px;
+    font-weight: 500;
+    line-height: 1.08;
+    margin: 14px 0 14px;
     color: var(--fg);
+    max-width: 18ch;
   }
-  .a-audience__col p {
-    font-size: 12.5px;
+  .a-audience-card__desc {
+    font-size: 13px;
     color: var(--fg-muted);
     line-height: 1.55;
     max-width: 36ch;
   }
-  .a-audience__col .more {
-    margin-top: 22px;
+  .a-audience-card__art {
+    position: absolute;
+    right: -10px;
+    bottom: 70px;
+    width: 160px;
+    height: 100px;
+    opacity: 0.55;
+    pointer-events: none;
+  }
+  .a-audience-card__footer {
+    margin-top: auto;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 16px;
+    border-top: 1px solid var(--line);
+  }
+  .a-audience-card__kpis {
+    display: flex;
+    gap: 28px;
+  }
+  .a-audience-card__kpis > div { display: flex; flex-direction: column; }
+  .a-audience-card__kpis .label {
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+  .a-audience-card__kpis .num {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    margin-top: 2px;
+    color: var(--fg);
+  }
+  .a-audience-card__more {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
     font-size: 10.5px;
     letter-spacing: 0.16em;
     text-transform: uppercase;
@@ -1063,38 +1390,93 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
   }
-  .a-audience__col .more::after {
+  .a-audience-card__more::after {
     content: "→";
-    transition: transform .2s;
+    transition: transform 0.2s;
   }
-  .a-audience__col:hover .more::after { transform: translateX(4px); }
-  .a-audience__col .kpi-strip {
-    margin-top: 22px;
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0;
-    border-top: 1px solid var(--line);
+  .a-audience-card:hover .a-audience-card__more::after {
+    transform: translateX(4px);
   }
-  .a-audience__col .kpi-strip > div {
-    padding: 10px 12px 10px 0;
-    border-right: 1px solid var(--line);
+  /* Illustration animations — sage line-art that breathes slowly. Respects
+     prefers-reduced-motion: falls back to static. */
+  @keyframes aud-curve-draw {
+    0%   { stroke-dashoffset: 220; }
+    55%  { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 0; }
   }
-  .a-audience__col .kpi-strip > div:last-child {
-    border-right: 0;
-    padding-left: 12px;
-    padding-right: 0;
+  @keyframes aud-meter-sweep {
+    0%, 100% { transform: rotate(-32deg); }
+    50%      { transform: rotate(32deg); }
   }
-  .a-audience__col .kpi-strip .num {
-    font-size: 28px;
-    font-family: var(--font-display);
-    letter-spacing: -0.02em;
+  @keyframes aud-hex-pulse {
+    0%, 100% { opacity: 0.35; }
+    50%      { opacity: 0.85; }
   }
-  .a-audience__col .kpi-strip .label { font-size: 9.5px; margin-top: 2px; }
-  @media (max-width: 880px) {
-    .a-audience { grid-template-columns: 1fr; }
-    .a-audience__col { border-right: 0; border-bottom: 1px solid var(--line); }
-    .a-audience__col:last-child { border-bottom: 0; }
+  .aud-art--lenders .curve {
+    stroke-dasharray: 220;
+    animation: aud-curve-draw 7s ease-in-out infinite;
+  }
+  /* Logo overlay on the lenders card — the brand mark builds bottom-stroke
+     to top-stroke, with the triangle peak landing on (80,18) at the same
+     instant the curve's pen reaches its apex. Curve draws 0→55% with
+     ease-in-out, midpoint ≈ 27.5% → triangle appears at 28%. */
+  @keyframes aud-logo-arc1 {
+    0%   { stroke-dashoffset: 1; }
+    8%   { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: 0; }
+  }
+  @keyframes aud-logo-arc2 {
+    0%, 8%   { stroke-dashoffset: 1; }
+    16%      { stroke-dashoffset: 0; }
+    100%     { stroke-dashoffset: 0; }
+  }
+  @keyframes aud-logo-arc3 {
+    0%, 16%  { stroke-dashoffset: 1; }
+    24%      { stroke-dashoffset: 0; }
+    100%     { stroke-dashoffset: 0; }
+  }
+  @keyframes aud-logo-peak {
+    0%, 24%  { opacity: 0; transform: translateY(4px); }
+    28%      { opacity: 1; transform: translateY(0); }
+    100%     { opacity: 1; transform: translateY(0); }
+  }
+  .aud-art--lenders .logo-arc {
+    stroke-dasharray: 1;
+    stroke-dashoffset: 1;
+    animation-duration: 7s;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+  }
+  .aud-art--lenders .logo-arc-1 { animation-name: aud-logo-arc1; }
+  .aud-art--lenders .logo-arc-2 { animation-name: aud-logo-arc2; }
+  .aud-art--lenders .logo-arc-3 { animation-name: aud-logo-arc3; }
+  .aud-art--lenders .logo-peak {
+    opacity: 0;
+    transform-origin: 80px 22px;
+    animation: aud-logo-peak 7s ease-in-out infinite;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .aud-art--lenders .logo-arc,
+    .aud-art--lenders .logo-peak {
+      animation: none !important;
+      opacity: 1 !important;
+      stroke-dashoffset: 0 !important;
+      transform: none !important;
+    }
+  }
+  .aud-art--borrowers .needle {
+    transform-origin: 50px 50px;
+    animation: aud-meter-sweep 6s ease-in-out infinite;
+  }
+  .aud-art--approach .hex:nth-child(1) { animation: aud-hex-pulse 4.5s ease-in-out infinite; }
+  .aud-art--approach .hex:nth-child(2) { animation: aud-hex-pulse 4.5s ease-in-out infinite 0.7s; }
+  .aud-art--approach .hex:nth-child(3) { animation: aud-hex-pulse 4.5s ease-in-out infinite 1.4s; }
+  @media (prefers-reduced-motion: reduce) {
+    .aud-art--lenders .curve,
+    .aud-art--borrowers .needle,
+    .aud-art--approach .hex { animation: none !important; }
   }
 
   /* primitives grid */
@@ -1218,13 +1600,21 @@
     padding: 56px 0 40px;
     position: relative;
   }
+  .a-footer__brand {
+    padding-bottom: 32px;
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--line);
+  }
   .a-footer__grid {
     display: grid;
-    grid-template-columns: 2fr 1fr 1fr 1fr;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
     gap: 32px;
   }
-  @media (max-width: 880px) {
-    .a-footer__grid { grid-template-columns: 1fr 1fr; }
+  @media (max-width: 1080px) {
+    .a-footer__grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  }
+  @media (max-width: 720px) {
+    .a-footer__grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   }
   .a-footer h5 {
     font-size: 10.5px;
@@ -1257,6 +1647,28 @@
     text-transform: uppercase;
     color: var(--fg-faint);
   }
+  .a-footer__social {
+    margin-top: 36px;
+    display: flex;
+    gap: 10px;
+    align-items: center;
+  }
+  .a-footer__social-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.62);
+    transition: color 120ms, border-color 120ms, background 120ms;
+  }
+  .a-footer__social-link:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+    background: rgba(95, 166, 127, 0.08);
+  }
 
   /* Forest brand-kit: dark footer ground (light landing → dark settlement pattern). */
   .a-footer--dark {
@@ -1277,6 +1689,9 @@
   .a-footer--dark .a-footer__mono {
     color: rgba(255, 255, 255, 0.42);
     border-top-color: rgba(255, 255, 255, 0.10);
+  }
+  .a-footer--dark .a-footer__brand {
+    border-bottom-color: rgba(255, 255, 255, 0.08);
   }
   .a-chip--dark {
     background: rgba(255, 255, 255, 0.06);
@@ -1300,10 +1715,10 @@
   }
   .a-page-head h1 {
     font-family: var(--font-display);
-    font-weight: 400;
+    font-weight: 500;
     font-size: clamp(48px, 6vw, 84px);
-    letter-spacing: -0.035em;
-    line-height: 0.95;
+    letter-spacing: -0.02em;
+    line-height: 1.02;
     margin: 18px 0 0;
   }
 

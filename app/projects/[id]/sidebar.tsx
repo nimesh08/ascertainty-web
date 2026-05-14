@@ -81,7 +81,7 @@ export function Sidebar({
                 </span>
               ) : null}
               <span className="text-[10px] text-fg-muted">
-                {underwriting.modelUsed ?? "PINN v0.1"}
+                {underwriting.modelUsed ?? "PINN"}
               </span>
             </div>
           ) : null}

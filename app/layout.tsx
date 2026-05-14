@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { poppins, geistMono } from "./fonts";
+import { poppins, geistSans, geistMono } from "./fonts";
 import { Providers } from "./providers";
 import { BackgroundFX } from "@/components/layout/background-fx";
 import { Nav } from "@/components/layout/nav";
@@ -18,10 +18,10 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${poppins.variable} ${geistMono.variable}`}
+      className={`${poppins.variable} ${geistSans.variable} ${geistMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="overflow-x-clip antialiased">
+      <body className="overflow-x-clip antialiased" suppressHydrationWarning>
         <Providers>
           <BackgroundFX />
           <Nav />
