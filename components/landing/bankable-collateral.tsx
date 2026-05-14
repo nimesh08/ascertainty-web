@@ -89,7 +89,8 @@ export function BankableCollateral() {
       <div className="shell">
         <div className="a-section__head">
           <h2 className="a-section__title">
-            We make energy savings a{" "}
+            We make{" "}
+            <span style={{ color: "var(--accent)" }}>energy savings</span> a{" "}
             <span style={{ color: "var(--accent)" }}>bankable</span> asset
             class.
           </h2>

@@ -369,7 +369,7 @@ export default function ProtocolPage() {
               serving in v2.5.
             </p>
             <Link
-              href="/#04-benchmarks"
+              href="/#05-benchmarks"
               style={{
                 display: "inline-flex",
                 alignItems: "center",

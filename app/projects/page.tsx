@@ -40,6 +40,7 @@ export default async function ProjectsPage() {
         kicker="Projects"
         title="Underlying facilities, every meter on-chain."
         description="Back specific MSME upgrades. Each project mints a share-of-savings token that accrues USDC distributions as savings are realized on-chain."
+        noBorder
       />
       <ProjectsList projects={projects} />
     </Container>

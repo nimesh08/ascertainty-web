@@ -111,7 +111,7 @@ export function UnderwritingBriefSection({
               {" "}
               TabPFN is the benchmark headline (R²=+0.56 LOO on a 6-feature corpus) and will
               become the serving default once retrained on the full audit schema —{" "}
-              <Link href="/#04-benchmarks" className="underline underline-offset-2 hover:text-accent">
+              <Link href="/#05-benchmarks" className="underline underline-offset-2 hover:text-accent">
                 see benchmarks
               </Link>.
             </span>{" "}
@@ -131,7 +131,7 @@ export function UnderwritingBriefSection({
               Underwriting timeline <ArrowRight className="size-3" />
             </Link>
             <Link
-              href="/#04-benchmarks"
+              href="/#05-benchmarks"
               className="inline-flex items-center gap-1 rounded-md border border-line/60 bg-bg-2/40 px-2.5 py-1 text-fg-muted transition-colors hover:text-fg"
             >
               Model benchmarks <ArrowRight className="size-3" />

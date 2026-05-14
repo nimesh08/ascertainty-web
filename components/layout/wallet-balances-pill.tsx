@@ -39,7 +39,7 @@ export function WalletBalancesPill() {
     <Link
       href="/portfolio"
       aria-label="Open portfolio"
-      className="mono-num hidden items-center gap-2 border border-line bg-bg-1 px-3 py-1.5 text-[10.5px] uppercase tracking-[0.18em] text-fg-muted transition-colors hover:border-line-strong hover:text-fg md:inline-flex"
+      className="mono-num hidden h-[34px] items-center gap-2 rounded-full border border-line bg-bg-1 px-4 text-[10.5px] uppercase tracking-[0.18em] text-fg-muted transition-colors hover:border-line-strong hover:text-fg md:inline-flex"
     >
       <span>
         <span className="text-fg-muted">◎</span> {fmtNumber(sol, 3)}

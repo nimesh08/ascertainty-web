@@ -41,10 +41,9 @@ export const FAQ_SECTIONS: FaqSection[] = [
   {
     persona: "lenders",
     heading: "For lenders & LPs",
-    kicker: "GETTING STARTED",
-    shortLabel: "Lenders & LPs",
-    intro:
-      "Basics about depositing, distributions, and exit. Risk-reviewer questions are in the third section below.",
+    kicker: "YIELD & EXIT",
+    shortLabel: "For lenders",
+    intro: "Basics about depositing, distributions, and exit.",
     landingIntro:
       "How yield is sized, when distributions arrive, exit liquidity.",
     entries: [
@@ -98,10 +97,10 @@ export const FAQ_SECTIONS: FaqSection[] = [
   {
     persona: "borrowers",
     heading: "For borrowers",
-    kicker: "APPLYING",
-    shortLabel: "Borrowers",
+    kicker: "FACILITY TERMS",
+    shortLabel: "For borrowers",
     intro:
-      "Most common questions from MSMEs evaluating a retrofit facility. Full process detail on the borrower page.",
+      "Most common questions from MSMEs evaluating a retrofit facility.",
     landingIntro:
       "Timeline, collateral structure, savings-shortfall protections.",
     entries: [
@@ -144,8 +143,8 @@ export const FAQ_SECTIONS: FaqSection[] = [
   {
     persona: "reviewers",
     heading: "For credit & risk reviewers",
-    kicker: "DUE DILIGENCE",
-    shortLabel: "Credit & Risk",
+    kicker: "MODEL & RISK",
+    shortLabel: "Due diligence",
     intro:
       "Questions every LP credit committee asks before signing. Answers cite the underwriting policy and the public model.",
     landingIntro:
@@ -189,16 +188,26 @@ export const FAQ_SECTIONS: FaqSection[] = [
         q: "How is the underwriting model verifiable?",
         a: (
           <>
-            The benchmark is R²=+0.56 LOO on the 72-ECM KISEM corpus with a
-            90% conformal prediction interval of ±69,254 kWh. Reproduction
-            script via curl is on the landing’s benchmark section. The serving
-            model and the headline-benchmark model differ in v0 (PINN unified
-            serves live; TabPFN holds the headline R²) — that gap closes in
-            v0.5 when TabPFN is retrained on the 21-feature audit schema and
-            promoted to serving. Every /v1/predict will then commit a sha256
-            of (inputs, outputs, git_commit) as a Solana Memo, making the
-            underwriting trail tamper-evident on-chain.{" "}
-            <Link href="/#04-benchmarks" style={linkStyle}>
+            Three layers. (1){" "}
+            <b>Headline benchmark</b>: R²=+0.56 LOO on the 72-ECM KISEM corpus
+            with a calibrated 90% conformal prediction interval — the math
+            behind P5 loan sizing, reproducible from the underlying audit
+            corpus. (2) <b>Per-deal transparency</b>: every project on{" "}
+            <Link href="/projects" style={linkStyle}>
+              /projects
+            </Link>{" "}
+            publishes its own P5 / P50 / P95 band from the serving model, so
+            each loan’s sizing is auditable at the asset level. (3){" "}
+            <b>Public methodology</b>: the{" "}
+            <Link href="/docs/underwriting-policy" style={linkStyle}>
+              underwriting policy
+            </Link>{" "}
+            spells out every step from input features through the DSCR @ P5 ≥
+            1.30× covenant. A public reproduction notebook for the LOO
+            benchmark on the IAC subset is in preparation; on-chain
+            audit-hash commits — per-prediction tamper-evidence tying inputs,
+            outputs, and model commit — are on the roadmap.{" "}
+            <Link href="/#05-benchmarks" style={linkStyle}>
               See the benchmark table →
             </Link>
           </>

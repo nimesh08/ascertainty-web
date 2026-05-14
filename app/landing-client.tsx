@@ -8,6 +8,8 @@ import { BankableCollateral } from "@/components/landing/bankable-collateral";
 import { Term } from "@/components/landing/term";
 import { SectionHead } from "@/components/landing/ascertainty/section-head";
 import { FaqPersonas } from "@/components/landing/faq-personas";
+import { MoatFortifications } from "@/components/landing/moat-fortifications";
+import { ArchitectureFlow } from "@/components/landing/architecture-flow";
 
 export interface LandingStats {
   /** Best APY (%) across live projects. Null when none set. */
@@ -361,13 +363,29 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
           predictable. Component owns its own state + illustrations. */}
       <BankableCollateral />
 
+      {/* ARCHITECTURE FLOW — diagram of the three-party relationship
+          (Borrowers / Vault / Lenders) with Ascertainty as a data-layer
+          side-node. Encodes the regulatory positioning: capital never
+          touches Ascertainty, data never touches LP capital. */}
+      <section id="03-architecture" className="a-section">
+        <SectionHead
+          idx="03"
+          kicker="HOW IT WORKS"
+          title="How it works."
+          intro="One deal, end-to-end: audit, capital, retrofit, repayment, yield."
+        />
+        <div className="shell" style={{ paddingBottom: 64 }}>
+          <ArchitectureFlow />
+        </div>
+      </section>
+
       {/* COMPETITION — spectrum bar visualizing the SME gap + 3 comparison
           cards with hover focus. Replaces the wide table + closing prose.
           Ascertainty card is sage-highlighted; hovering any card dims the
           other two so the active one reads cleanly. */}
-      <section id="03-competition" className="a-section">
+      <section id="04-competition" className="a-section">
         <SectionHead
-          idx="03"
+          idx="04"
           kicker="COMPETITION"
           title={
             <>
@@ -538,9 +556,9 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
           matches the footer + nav, sage accents pop on dark. Sits between
           cream §03 (above) and §05 (below) so the dark band adds rhythm
           to the landing. */}
-      <section id="04-benchmarks" className="a-section a-section--dark">
+      <section id="05-benchmarks" className="a-section a-section--dark">
         <SectionHead
-          idx="04"
+          idx="05"
           kicker="BENCHMARKS"
           title="Underwriting you can verify."
           intro={
@@ -796,11 +814,47 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
         </div>
       </section>
 
+      {/* MOAT — five reinforcing layers stacked by copy-difficulty.
+          Click each band to expand its body. Content + interaction live
+          in components/landing/moat-fortifications.tsx; section here
+          just supplies the intro, container, and closing synthesis. */}
+      <section id="06-moat" className="a-section">
+        <SectionHead
+          idx="06"
+          kicker="MOAT"
+          title="Hard to copy."
+          intro="Five layers, sorted by replication difficulty."
+        />
+        <div
+          className="shell"
+          style={{ paddingTop: 32, paddingBottom: 80, maxWidth: 1100 }}
+        >
+          <MoatFortifications />
+          <div
+            style={{
+              marginTop: 20,
+              fontSize: 12,
+              color: "var(--fg-faint)",
+            }}
+          >
+            <Link
+              href="/docs/underwriting-policy"
+              style={{
+                color: "var(--accent)",
+                textDecoration: "none",
+              }}
+            >
+              Underwriting policy →
+            </Link>
+          </div>
+        </div>
+      </section>
+
       {/* FAQ — persona toggle (lenders / borrowers / reviewers), 3 featured
           Q&As per persona, sourced from lib/faq-content.tsx so /docs/faq
           and the landing stay in sync. */}
-      <section id="05-faq" className="a-section">
-        <SectionHead idx="05" kicker="FAQ" title="Answers." />
+      <section id="07-faq" className="a-section">
+        <SectionHead idx="07" kicker="FAQ" title="Answers." />
         <div
           className="shell"
           style={{ paddingTop: 32, paddingBottom: 80, maxWidth: 900 }}
@@ -824,154 +878,6 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
         </div>
       </section>
 
-      {/* MOAT — why this is hard to copy */}
-      <section id="06-moat" className="a-section">
-        <SectionHead
-          idx="06"
-          kicker="MOAT"
-          title="What stops a copycat."
-          intro="Five reinforcing edges. The first is relational and copyable in 18 months. The second compounds with every loan we close. The third is a coordination problem no single counterparty wants to own. The fourth is the structural advantage over every other on-chain credit protocol: our underwriting is verifiable from a curl, not an expert's reputation. The fifth is the market itself — banks won't touch retrofits because the salvage leg is too weak, which is exactly why the gap exists and exactly why only a calibrated model can fill it."
-        />
-        <div
-          className="shell"
-          style={{ paddingTop: 32, paddingBottom: 80, maxWidth: 1100 }}
-        >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              gap: 16,
-            }}
-          >
-            {[
-              {
-                num: "01",
-                title: "KISEM funnel",
-                lead: "Top-of-funnel cost ≈ ₹0",
-                body: "Proprietary access to ~600 BEE/KISEM-audited MSMEs/year via IIT-Madras partnership. The 12 audits already in our corpus took a competitor 18 months to duplicate.",
-                kind: "relational",
-              },
-              {
-                num: "02",
-                title: "PINN data flywheel",
-                lead: "σ tightens with portfolio scale",
-                body: "Every realized M&V data point recalibrates per-category σ-scales. After 50 loans our P5 is meaningfully tighter than a competitor with 5 — meaning we can price more competitively, win more deals, generate more data.",
-                kind: "compounding",
-              },
-              {
-                num: "03",
-                title: "Coordination edge",
-                lead: "7 capabilities in rare combination",
-                body: "Auditor relationship + ML/physics underwriting + tokenization rails + Singapore-Asia regulatory wrappers + LP onboarding + NBFC INR disbursement + IoT M&V. Each individually doable; assembling all seven in parallel is the moat.",
-                kind: "structural",
-              },
-              {
-                num: "04",
-                title: "Verifiable underwriting",
-                lead: "calibrated model, not human curators",
-                body: "Every other on-chain credit protocol underwrites via 'trust our independent experts' — a marketing claim, not a verifiable system. Ascertainty's underwriting is a calibrated ML model with a published 90% conformal PI (R²=+0.56 LOO, verifiable on /v1/health from a curl). DSCR @ P5 ≥ 1.30× is a quantitative covenant a lender writes into the contract. Reconciliation against realized Day-30 metered savings is mechanical. A future release commits a sha256 of every prediction's (inputs, outputs, git_commit) to a Solana Memo, making the audit trail tamper-evident on-chain.",
-                kind: "verifiability",
-              },
-              {
-                num: "05",
-                title: "Weak-salvage market",
-                lead: "the difficulty IS the moat",
-                body: "A $500K compressed-air retrofit resells for ~$50K post-default — about 10% recovery. The same $500K of GPUs resells for ~$300K — about 60%. Retrofit equipment is custom-fitted to a specific factory's pipework; uninstallation often costs more than resale; the secondary market for used VFDs, chillers, and heat-exchangers is thin. A non-recourse loan needs two legs: salvage value (sell the asset) and cash flow (income the asset generates). Banks rely on the salvage leg, so they won't touch retrofits. We have only the cash-flow leg — but it's a leg only a calibrated physics model can build. Anyone with a balance sheet can compete in GPU credit. Nobody can compete here without our underwriting tech.",
-                kind: "structural",
-              },
-            ].map((p) => (
-              <div
-                key={p.num}
-                style={{
-                  border: "1px solid var(--line)",
-                  background: "var(--bg-1)",
-                  padding: 20,
-                  position: "relative",
-                  minHeight: 260,
-                }}
-              >
-                <span
-                  className="label"
-                  style={{
-                    color: "var(--fg-faint)",
-                    fontSize: 10,
-                  }}
-                >
-                  M / {p.num}
-                </span>
-                <h3
-                  style={{
-                    fontSize: 20,
-                    letterSpacing: "-0.01em",
-                    marginTop: 10,
-                    color: "var(--fg)",
-                  }}
-                >
-                  {p.title}
-                </h3>
-                <div
-                  style={{
-                    marginTop: 6,
-                    fontSize: 12,
-                    fontFamily: "var(--font-mono, ui-monospace)",
-                    color: "var(--accent-deep)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.06em",
-                  }}
-                >
-                  {p.lead}
-                </div>
-                <p
-                  style={{
-                    marginTop: 14,
-                    fontSize: 13,
-                    color: "var(--fg-muted)",
-                    lineHeight: 1.55,
-                  }}
-                >
-                  {p.body}
-                </p>
-                <div
-                  style={{
-                    position: "absolute",
-                    bottom: 12,
-                    right: 14,
-                    fontSize: 10,
-                    color: "var(--fg-faint)",
-                    textTransform: "uppercase",
-                    letterSpacing: "0.08em",
-                  }}
-                >
-                  {p.kind} moat
-                </div>
-              </div>
-            ))}
-          </div>
-          <p
-            style={{
-              marginTop: 24,
-              fontSize: 12,
-              color: "var(--fg-faint)",
-              maxWidth: "60ch",
-            }}
-          >
-            The KISEM relationship gets us the wedge. The PINN flywheel turns the
-            wedge into a durable position. The coordination edge keeps any
-            single-discipline team from collapsing the gap.{" "}
-            <Link
-              href="/docs/underwriting-policy"
-              style={{
-                color: "var(--fg-muted)",
-                textDecoration: "underline",
-                textUnderlineOffset: 2,
-              }}
-            >
-              Read the underwriting policy ↗
-            </Link>
-          </p>
-        </div>
-      </section>
-
       {/* FINAL CTA */}
       <section className="a-section">
         <div
@@ -991,9 +897,6 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
               pointerEvents: "none",
             }}
           />
-          <span className="label">
-            // STOP LETTING MSMEs STAY LOCKED OUT
-          </span>
           <h2
             style={{
               fontFamily: "var(--font-display)",
@@ -1001,7 +904,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
               fontSize: "clamp(40px, 7vw, 96px)",
               letterSpacing: "-0.02em",
               lineHeight: 1.02,
-              margin: "22px auto 0",
+              margin: "0 auto",
               maxWidth: "20ch",
               position: "relative",
             }}
@@ -1024,9 +927,6 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
           >
             <Link className="a-btn a-btn--primary" href="/projects">
               Explore projects <span className="arrow">→</span>
-            </Link>
-            <Link className="a-btn a-btn--ghost" href="/pools">
-              Browse pools
             </Link>
             <Link
               href="/docs/underwriting-policy"

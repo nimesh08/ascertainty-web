@@ -16,6 +16,8 @@ interface PageHeaderProps {
   kicker?: string;
   /** Optional right-side slot (filter chips, status badges, etc.) */
   right?: React.ReactNode;
+  /** Suppress the bottom border under the header. */
+  noBorder?: boolean;
 }
 
 export function PageHeader({
@@ -25,9 +27,13 @@ export function PageHeader({
   className,
   kicker,
   right,
+  noBorder,
 }: PageHeaderProps) {
   return (
-    <header className={cn("a-page-head", className)}>
+    <header
+      className={cn("a-page-head", className)}
+      style={noBorder ? { borderBottom: "none" } : undefined}
+    >
       <div>
         {breadcrumbs && breadcrumbs.length > 0 ? (
           <nav

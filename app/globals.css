@@ -209,8 +209,9 @@
 
   .serif {
     font-family: var(--font-poppins), "Poppins", system-ui, sans-serif;
-    font-weight: 600;
     letter-spacing: -0.02em;
+    /* No font-weight: when paired with sage color (its primary use), the
+       color carries the emphasis; doubling up with bold is redundant. */
   }
 
   ::-webkit-scrollbar {
@@ -317,7 +318,7 @@
     align-items: center;
     flex: 1;
     justify-content: center;
-    gap: 4px;
+    gap: 8px;
     margin: 0 24px;
   }
   /* Nav links as outlined pill buttons — matches the Connect Wallet CTA
@@ -359,10 +360,12 @@
     font-size: 9.5px;
   }
   .a-nav__link[aria-current="true"] .a-nav__link-idx { color: var(--accent); }
-  /* Button form of nav link (used for dropdown triggers): reset native button chrome. */
+  /* Button form of nav link (used for dropdown triggers): keep the same
+     transparent 1px border as anchor links so the trigger and the active
+     pill have matching geometry (height, padding-box, hover affordance). */
   button.a-nav__link {
     background: transparent;
-    border: 0;
+    border: 1px solid transparent;
     cursor: pointer;
     font: inherit;
     letter-spacing: 0.18em;
@@ -974,6 +977,360 @@
     }
   }
 
+  /* §03 Architecture flow — three-phase animated diagram of the deal
+     lifecycle. CYAN = audit-data intake + underwriting output.
+     YELLOW = capital flow. GREEN = M&V outcomes + yield distribution.
+     Layout: Borrowers (top, teal label) → 3-circle row with the
+     Ascertainty coin in the centre → Vault SPV card → Lenders
+     (bottom, yellow label). Animation loops every 17s. */
+  .arch-flow {
+    --arch-blue: #2563eb;
+    --arch-blue-soft: #dbeafe;
+    --arch-red: #dc2626;
+    --arch-red-soft: #fee2e2;
+    --arch-yellow: #eab308;
+    --arch-yellow-soft: #fef3c7;
+    --arch-green: #22c55e;
+    --arch-green-soft: #dcfce7;
+    --arch-grey: #94a3b8;
+    --arch-grey-soft: #e2e8f0;
+    /* Legacy aliases kept for any reused selectors */
+    --arch-cyan: #06b6d4;
+    --arch-peach: #fed7c0;
+    --arch-mint: #d1fae5;
+    margin-top: 32px;
+    width: 100%;
+    max-width: 880px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 14px 16px;
+    border: 1px solid color-mix(in oklab, var(--line) 80%, transparent);
+    border-radius: 22px;
+    background:
+      radial-gradient(
+        ellipse 70% 50% at 50% 50%,
+        color-mix(in oklab, var(--accent) 3%, transparent),
+        transparent 70%
+      ),
+      var(--bg-0);
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.4) inset,
+      0 20px 60px -28px color-mix(in oklab, var(--accent) 28%, transparent);
+  }
+  .arch-flow__svg {
+    width: 100%;
+    height: auto;
+    display: block;
+    overflow: visible;
+  }
+  /* Base lines — always visible, distinguishes data (dotted) vs capital (solid) */
+  .arch-flow__base-line {
+    stroke: color-mix(in oklab, var(--line) 95%, transparent);
+    stroke-width: 1.5;
+    fill: none;
+  }
+  .arch-flow__base-line--dotted {
+    stroke-dasharray: 2 4;
+    stroke-linecap: round;
+  }
+  .arch-flow__base-line--solid {
+    /* solid line for capital path */
+  }
+  /* Cluster frames — borrowers (top) + lenders (bottom) */
+  .arch-flow__cluster-frame {
+    fill: color-mix(in oklab, var(--accent) 2%, var(--bg-0));
+    stroke: color-mix(in oklab, var(--line) 80%, transparent);
+    stroke-width: 1;
+    stroke-dasharray: 5 4;
+  }
+  /* Cluster background images — image inside clip path with moderate opacity */
+  .arch-flow__cluster-bg-img {
+    opacity: 0.42;
+    mix-blend-mode: multiply;
+    pointer-events: none;
+  }
+  /* Coloured cluster label pills — teal for borrowers, yellow for lenders */
+  .arch-flow__cluster-label rect {
+    stroke: none;
+  }
+  .arch-flow__cluster-label--borrowers rect {
+    fill: var(--arch-cyan);
+  }
+  .arch-flow__cluster-label--lenders rect {
+    fill: var(--arch-yellow);
+  }
+  .arch-flow__cluster-label--vault rect {
+    fill: #6366f1;
+  }
+  .arch-flow__cluster-label text {
+    font-family: var(--font-display);
+    font-size: 12px;
+    font-weight: 600;
+    fill: #fff;
+    letter-spacing: -0.01em;
+  }
+  /* SECTORS 12+ corner badge */
+  .arch-flow__sectors-label {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 8.5px;
+    letter-spacing: 0.18em;
+    fill: var(--fg-faint);
+  }
+  .arch-flow__sectors-num {
+    font-family: var(--font-display);
+    font-size: 18px;
+    font-weight: 600;
+    fill: var(--fg);
+    letter-spacing: -0.02em;
+  }
+  /* Pills inside clusters — frosted-glass fill so the curated cluster
+     background image reads through. SVG can't do true backdrop-filter
+     on shapes; translucent white with a slightly brighter stroke is
+     the cheapest read of the same aesthetic. */
+  .arch-flow__pill-bg {
+    fill: rgba(255, 255, 255, 0.6);
+    stroke: rgba(255, 255, 255, 0.4);
+    stroke-width: 1;
+  }
+  .arch-flow__pill-label {
+    font-family: var(--font-display);
+    font-size: 11.5px;
+    fill: var(--fg);
+    font-weight: 500;
+    letter-spacing: -0.005em;
+  }
+  .arch-flow__pill--ellipsis .arch-flow__pill-bg {
+    fill: rgba(255, 255, 255, 0.45);
+    stroke-dasharray: 2 3;
+    stroke: rgba(255, 255, 255, 0.35);
+  }
+  .arch-flow__pill--ellipsis .arch-flow__pill-label {
+    fill: var(--fg-faint);
+    font-size: 11px;
+  }
+  /* Inline icons in pills */
+  .arch-flow__pill-icon {
+    stroke: var(--accent-deep);
+    fill: none;
+  }
+  .arch-flow__spv-icon {
+    stroke: var(--accent-deep);
+    fill: var(--accent-deep);
+  }
+  /* Ascertainty centre coin */
+  .arch-flow__coin-ring {
+    fill: none;
+    stroke: color-mix(in oklab, var(--accent) 25%, transparent);
+    stroke-width: 1.5;
+  }
+  .arch-flow__coin-body {
+    fill: var(--bg-0);
+    stroke: var(--accent);
+    stroke-width: 3;
+    filter: drop-shadow(0 12px 28px color-mix(in oklab, var(--accent) 28%, transparent));
+  }
+  .arch-flow__coin-brand {
+    color: var(--accent);
+  }
+  /* Status circles flanking the coin (left/right) */
+  .arch-flow__status-bg {
+    fill: var(--arch-peach);
+    stroke: color-mix(in oklab, var(--arch-peach) 65%, #000);
+    stroke-opacity: 0.10;
+    stroke-width: 1;
+  }
+  .arch-flow__status-bg--mint {
+    fill: var(--arch-mint);
+    stroke: color-mix(in oklab, var(--arch-mint) 65%, #000);
+    stroke-opacity: 0.10;
+  }
+  .arch-flow__status-active--cyan {
+    fill: var(--arch-cyan);
+    stroke: none;
+    filter: drop-shadow(0 0 8px color-mix(in oklab, var(--arch-cyan) 50%, transparent));
+  }
+  .arch-flow__status-icon--cyan {
+    color: #fff;
+  }
+  /* Vault SPV node */
+  .arch-flow__node--vault .arch-flow__node-bg {
+    fill: var(--bg-0);
+    stroke: color-mix(in oklab, var(--line) 60%, transparent);
+    stroke-width: 1.5;
+    filter: drop-shadow(0 8px 22px rgba(0, 0, 0, 0.05));
+  }
+  .arch-flow__node-kicker {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    fill: var(--accent-deep);
+    font-weight: 600;
+  }
+  .arch-flow__node-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    fill: var(--fg);
+    letter-spacing: -0.015em;
+  }
+  .arch-flow__node-line {
+    font-family: var(--font-poppins), system-ui, sans-serif;
+    font-size: 11.5px;
+    fill: var(--fg-muted);
+    font-weight: 400;
+  }
+  /* Red/Green outcome nodes flanking Ascertainty (always visible, idle) */
+  .arch-flow__outcome-bg {
+    fill: var(--bg-0);
+    stroke-width: 1.6;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.06));
+  }
+  .arch-flow__outcome--red .arch-flow__outcome-bg {
+    stroke: color-mix(in oklab, var(--arch-red) 60%, transparent);
+    fill: var(--arch-red-soft);
+  }
+  .arch-flow__outcome--green .arch-flow__outcome-bg {
+    stroke: color-mix(in oklab, var(--arch-green) 60%, transparent);
+    fill: var(--arch-green-soft);
+  }
+  .arch-flow__outcome--red .arch-flow__outcome-icon {
+    stroke: var(--arch-red);
+    color: var(--arch-red);
+  }
+  .arch-flow__outcome--green .arch-flow__outcome-icon {
+    stroke: var(--arch-green);
+    color: var(--arch-green);
+  }
+  /* Status circles at borrower bottom edge — grey idle / green active */
+  .arch-flow__status-bg-grey {
+    fill: var(--arch-grey-soft);
+    stroke: var(--arch-grey);
+    stroke-width: 1.4;
+  }
+  .arch-flow__status-icon-grey {
+    color: var(--arch-grey);
+    stroke: var(--arch-grey);
+    fill: none;
+  }
+  .arch-flow__status-bg-green {
+    fill: var(--arch-green);
+    stroke: none;
+    filter: drop-shadow(0 0 10px color-mix(in oklab, var(--arch-green) 55%, transparent));
+  }
+  .arch-flow__status-icon-green {
+    color: #fff;
+    stroke: #fff;
+    fill: none;
+  }
+  /* Animated coloured line overlays — fade in/out per phase */
+  .arch-flow__active-line {
+    fill: none;
+    stroke-width: 3;
+    stroke-linecap: round;
+  }
+  .arch-flow__active-line--blue {
+    stroke: var(--arch-blue);
+    filter: drop-shadow(0 0 6px color-mix(in oklab, var(--arch-blue) 50%, transparent));
+  }
+  .arch-flow__active-line--red {
+    stroke: var(--arch-red);
+    filter: drop-shadow(0 0 6px color-mix(in oklab, var(--arch-red) 50%, transparent));
+  }
+  .arch-flow__active-line--yellow {
+    stroke: var(--arch-yellow);
+    filter: drop-shadow(0 0 6px color-mix(in oklab, var(--arch-yellow) 50%, transparent));
+  }
+  .arch-flow__active-line--green {
+    stroke: var(--arch-green);
+    filter: drop-shadow(0 0 6px color-mix(in oklab, var(--arch-green) 50%, transparent));
+  }
+  /* Green-blink variant for the "retrofit live" moment — pulses for emphasis */
+  .arch-flow__active-line--green-blink {
+    stroke: var(--arch-green);
+    stroke-dasharray: 6 6;
+    animation: arch-flow-blink 0.9s linear infinite;
+    filter: drop-shadow(0 0 6px color-mix(in oklab, var(--arch-green) 55%, transparent));
+  }
+  @keyframes arch-flow-blink {
+    0% { stroke-dashoffset: 0; }
+    100% { stroke-dashoffset: -12; }
+  }
+  /* Travelling bubble particles */
+  .arch-flow__bubble {
+    stroke: rgba(255, 255, 255, 0.8);
+    stroke-width: 2;
+  }
+  .arch-flow__bubble--blue {
+    fill: var(--arch-blue);
+    filter: drop-shadow(0 0 10px color-mix(in oklab, var(--arch-blue) 55%, transparent));
+  }
+  .arch-flow__bubble--red {
+    fill: var(--arch-red);
+    filter: drop-shadow(0 0 10px color-mix(in oklab, var(--arch-red) 55%, transparent));
+  }
+  .arch-flow__bubble--yellow {
+    fill: var(--arch-yellow);
+    filter: drop-shadow(0 0 10px color-mix(in oklab, var(--arch-yellow) 55%, transparent));
+  }
+  .arch-flow__bubble--green {
+    fill: var(--arch-green);
+    filter: drop-shadow(0 0 10px color-mix(in oklab, var(--arch-green) 55%, transparent));
+  }
+  .arch-flow__bubble-icon {
+    color: #fff;
+    stroke: #fff;
+    fill: #fff;
+  }
+  /* Tagline callback — appears when M&V goes live */
+  .arch-flow__tagline-text {
+    font-family: var(--font-display);
+    font-size: 14px;
+    font-weight: 500;
+    fill: var(--fg-muted);
+    letter-spacing: -0.005em;
+  }
+  .arch-flow__tagline-em {
+    fill: var(--arch-green);
+    font-style: italic;
+  }
+  /* Caption strip — floats in the white space above SPV; opaque
+     background so it reads cleanly even crossing the dotted line */
+  .arch-flow__caption-bg {
+    fill: var(--bg-0);
+    stroke: color-mix(in oklab, var(--line) 70%, transparent);
+    stroke-width: 1;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.06));
+  }
+  .arch-flow__caption {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+  .arch-flow__caption-num {
+    fill: var(--accent-deep);
+    font-weight: 600;
+  }
+  .arch-flow__caption-text {
+    fill: var(--fg-muted);
+    font-weight: 500;
+  }
+  /* Reduced motion: hide all animated overlays, static layout remains */
+  @media (prefers-reduced-motion: reduce) {
+    .arch-flow__active-line,
+    .arch-flow__bubble,
+    .arch-flow__bubble-icon,
+    .arch-flow__status-grey,
+    .arch-flow__status-green,
+    .arch-flow__tagline,
+    .arch-flow__captions {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .arch-flow { padding: 16px 8px; border-radius: 14px; }
+  }
+
   /* §04 Competition — spectrum bar (visualizes the structural ticket-size
      gap) + 3 comparison cards (Ascertainty highlighted; hovering any card
      focuses it by dimming the others). */
@@ -1029,7 +1386,6 @@
   }
   .cmp-spectrum__label--us {
     color: var(--accent-deep);
-    font-weight: 600;
   }
   .cmp-spectrum__plot {
     display: flex;
@@ -1078,7 +1434,6 @@
     letter-spacing: 0.08em;
     text-transform: uppercase;
     color: var(--accent-deep);
-    font-weight: 600;
     white-space: nowrap;
     background: var(--bg-1);
     padding: 2px 8px;
@@ -1192,7 +1547,9 @@
   .cmp-card--us .cmp-card__name { color: var(--accent-deep); }
   .cmp-card--us .cmp-card__stats .num { color: var(--accent-deep); }
   .cmp-card--us .cmp-card__tagline { color: var(--fg); }
-  .cmp-card--us .cmp-card__tagline b { color: var(--accent-deep); font-weight: 600; }
+  /* Green color carries the emphasis on the highlight card — no bold,
+     per site-wide rule: never green-AND-bold a span at the same time. */
+  .cmp-card--us .cmp-card__tagline b { color: var(--accent-deep); font-weight: 400; }
   /* Focus pattern: dim the non-hovered cards when any card is hovered. */
   .cmp-cards:has(.cmp-card:hover) .cmp-card:not(:hover) {
     opacity: 0.5;
@@ -1201,10 +1558,10 @@
   /* §05 FAQ — atmospheric background (suspended translucent glass
      panels in fog). Cream overlay + top/bottom fade keeps the section
      readable while signalling layered clarity / answers. */
-  [id="05-faq"] {
+  [id="07-faq"] {
     isolation: isolate;
   }
-  [id="05-faq"]::before {
+  [id="07-faq"]::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -1282,6 +1639,175 @@
   }
   @media (prefers-reduced-motion: reduce) {
     .faq-personas__accordion { animation: none; }
+  }
+
+  /* §06 Moat fortifications — five stacked bands ordered by copy
+     difficulty. Sage saturation grows top→bottom (tier 1 → tier 5),
+     literalising "reinforcing layers". Click to expand the body. */
+  .moat-stack {
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--bg-0);
+    box-shadow: 0 1px 0 rgba(255, 255, 255, 0.04) inset,
+      0 12px 40px -16px color-mix(in oklab, var(--accent) 18%, transparent);
+  }
+  .moat-band {
+    border-bottom: 1px solid color-mix(in oklab, var(--line) 80%, transparent);
+    transition: background 0.3s;
+  }
+  .moat-band:last-child { border-bottom: none; }
+  .moat-band[data-tier="1"] {
+    background: color-mix(in oklab, var(--accent) 2%, var(--bg-0));
+  }
+  .moat-band[data-tier="2"] {
+    background: color-mix(in oklab, var(--accent) 9%, var(--bg-0));
+  }
+  .moat-band[data-tier="3"] {
+    background: color-mix(in oklab, var(--accent) 18%, var(--bg-0));
+  }
+  .moat-band[data-tier="4"] {
+    background: color-mix(in oklab, var(--accent) 30%, var(--bg-0));
+  }
+  .moat-band[data-tier="5"] {
+    background: color-mix(in oklab, var(--accent) 45%, var(--bg-0));
+  }
+  .moat-band__head {
+    width: 100%;
+    appearance: none;
+    background: transparent;
+    border: 0;
+    padding: 22px 28px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto 18px;
+    column-gap: 24px;
+    align-items: center;
+    text-align: left;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    transition: background 0.18s;
+  }
+  .moat-band__head:hover {
+    background: color-mix(in oklab, var(--accent) 4%, transparent);
+  }
+  .moat-band__title-block {
+    min-width: 0;
+  }
+  .moat-band__title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+    margin: 0;
+  }
+  .moat-band__lead {
+    display: block;
+    margin-top: 4px;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.10em;
+    color: var(--accent-deep);
+  }
+  .moat-band__meter {
+    display: inline-flex;
+    gap: 5px;
+    align-items: center;
+  }
+  .moat-band__dot {
+    width: 7px;
+    height: 7px;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--line) 70%, transparent);
+    display: block;
+  }
+  .moat-band__dot--lit {
+    background: var(--accent);
+    box-shadow: 0 0 0 1px color-mix(in oklab, var(--accent) 25%, transparent);
+  }
+  .moat-band__kind {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 9.5px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--fg-muted);
+    padding: 4px 10px;
+    border: 1px solid color-mix(in oklab, var(--line) 70%, transparent);
+    border-radius: 999px;
+    background: var(--bg-0);
+    /* Fixed min-width sized to fit the widest tag (VERIFIABILITY) so
+       all five tag pills land at the same width, and the meter column
+       to their left lines up vertically across every band. */
+    min-width: 116px;
+    text-align: center;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+  }
+  .moat-band__chevron {
+    font-size: 18px;
+    color: var(--fg-muted);
+    transition: transform 0.3s ease;
+    line-height: 1;
+    text-align: center;
+  }
+  .moat-band--active .moat-band__chevron {
+    transform: rotate(180deg);
+    color: var(--accent-deep);
+  }
+  .moat-band__body {
+    max-height: 0;
+    overflow: hidden;
+    opacity: 0;
+    padding: 0 28px;
+    transition: max-height 0.4s ease, opacity 0.25s ease,
+      padding 0.4s ease;
+  }
+  .moat-band--active .moat-band__body {
+    max-height: 600px;
+    opacity: 1;
+    padding: 0 28px 24px 28px;
+  }
+  .moat-band__body p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--fg-muted);
+    max-width: 78ch;
+  }
+  @media (max-width: 720px) {
+    .moat-band__head {
+      grid-template-columns: 1fr 16px;
+      grid-template-rows: auto auto;
+      row-gap: 10px;
+      padding: 16px 18px;
+    }
+    .moat-band__title-block {
+      grid-row: 1;
+      grid-column: 1;
+    }
+    .moat-band__chevron {
+      grid-row: 1;
+      grid-column: 2;
+    }
+    .moat-band__title { font-size: 19px; }
+    .moat-band__meter {
+      grid-row: 2;
+      grid-column: 1 / -1;
+    }
+    .moat-band__kind { display: none; }
+    .moat-band__body { padding: 0 18px; }
+    .moat-band--active .moat-band__body { padding: 0 18px 18px 18px; }
+    .moat-band__body p { margin-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .moat-band__body,
+    .moat-band__chevron { transition: none; }
   }
 
   /* benchmark code block (verifiable claims section) */

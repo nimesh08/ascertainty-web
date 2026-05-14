@@ -84,7 +84,7 @@ export function Footer() {
             <ul>
               <li><Link href="/docs/underwriting-policy">Underwriting policy</Link></li>
               <li><Link href="/docs/faq">FAQ</Link></li>
-              <li><Link href="/#04-benchmarks">Benchmarks</Link></li>
+              <li><Link href="/#05-benchmarks">Benchmarks</Link></li>
               <li><Link href="/#06-moat">Moat</Link></li>
             </ul>
           </div>
@@ -95,7 +95,7 @@ export function Footer() {
               <li><Link href="/">Team</Link></li>
               <li><Link href="/">Press</Link></li>
               <li><Link href="/">Careers</Link></li>
-              <li><a href="mailto:hello@ascertainty.com">Contact</a></li>
+              <li><a href="mailto:info@ascertainty.com">Contact</a></li>
             </ul>
           </div>
           <div>
