@@ -84,7 +84,7 @@ export function Footer() {
             <ul>
               <li><Link href="/docs/underwriting-policy">Underwriting policy</Link></li>
               <li><Link href="/docs/faq">FAQ</Link></li>
-              <li><Link href="/#03-benchmarks">Benchmarks</Link></li>
+              <li><Link href="/#04-benchmarks">Benchmarks</Link></li>
               <li><Link href="/#06-moat">Moat</Link></li>
             </ul>
           </div>

@@ -198,7 +198,7 @@ export const FAQ_SECTIONS: FaqSection[] = [
             promoted to serving. Every /v1/predict will then commit a sha256
             of (inputs, outputs, git_commit) as a Solana Memo, making the
             underwriting trail tamper-evident on-chain.{" "}
-            <Link href="/#03-benchmarks" style={linkStyle}>
+            <Link href="/#04-benchmarks" style={linkStyle}>
               See the benchmark table →
             </Link>
           </>

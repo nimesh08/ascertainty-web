@@ -361,13 +361,186 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
           predictable. Component owns its own state + illustrations. */}
       <BankableCollateral />
 
-      {/* BENCHMARKS — verifiable accuracy claims. Dark themed: ink ground
-          matches the footer + nav, sage accents pop on dark. Sits between
-          cream §02 (above) and cream §04 (below) so the dark band adds
-          rhythm to the landing. */}
-      <section id="03-benchmarks" className="a-section a-section--dark">
+      {/* COMPETITION — spectrum bar visualizing the SME gap + 3 comparison
+          cards with hover focus. Replaces the wide table + closing prose.
+          Ascertainty card is sage-highlighted; hovering any card dims the
+          other two so the active one reads cleanly. */}
+      <section id="03-competition" className="a-section">
         <SectionHead
           idx="03"
+          kicker="COMPETITION"
+          title={
+            <>
+              Banks need{" "}
+              <span style={{ color: "var(--accent)" }}>salvage</span>. ESCOs
+              need{" "}
+              <span style={{ color: "var(--accent)" }}>guarantees</span>. We
+              underwrite the{" "}
+              <span style={{ color: "var(--accent)" }}>savings</span>.
+            </>
+          }
+        />
+        <div className="shell" style={{ paddingTop: 16, paddingBottom: 80 }}>
+          {/* Spectrum bar — visualizes the structural gap by ticket size.
+              The $25K – $1M gap is rendered as a sage band overlaying the
+              three rows; no redundant text callout below. */}
+          <div className="cmp-spectrum">
+            <div className="cmp-spectrum__head">
+              <span className="cmp-spectrum__heading">Ticket-size coverage</span>
+              <span className="cmp-spectrum__hint">
+                Filled portion = the ticket sizes each can actually serve.
+              </span>
+            </div>
+
+            <div className="cmp-spectrum__body">
+              <div className="cmp-spectrum__labels">
+                <span className="cmp-spectrum__label cmp-spectrum__label--us">
+                  Ascertainty
+                </span>
+                <span className="cmp-spectrum__label">Banks</span>
+                <span className="cmp-spectrum__label">ESCOs</span>
+              </div>
+
+              <div className="cmp-spectrum__plot">
+                {/* Axis labels along the top of the plot area */}
+                <div className="cmp-spectrum__axis" aria-hidden>
+                  <span style={{ left: "5%" }}>$25K</span>
+                  <span style={{ left: "35%" }}>$1M</span>
+                  <span style={{ left: "55%" }}>$5M</span>
+                  <span style={{ left: "75%" }}>$20M</span>
+                  <span style={{ left: "95%" }}>$50M+</span>
+                </div>
+
+                <div className="cmp-spectrum__tracks">
+                  {/* Sage-tinted overlay band marking the $25K–$1M gap */}
+                  <div className="cmp-spectrum__gap-band" aria-hidden>
+                    <span className="cmp-spectrum__gap-band-label">
+                      $25K – $1M · Ascertainty alone
+                    </span>
+                  </div>
+
+                  <div className="cmp-spectrum__track">
+                    <div
+                      className="cmp-spectrum__fill cmp-spectrum__fill--us"
+                      style={{ left: "5%", width: "70%" }}
+                    />
+                  </div>
+                  <div className="cmp-spectrum__track">
+                    <div
+                      className="cmp-spectrum__fill"
+                      style={{ left: "35%", width: "65%" }}
+                    />
+                  </div>
+                  <div className="cmp-spectrum__track">
+                    <div
+                      className="cmp-spectrum__fill"
+                      style={{ left: "55%", width: "45%" }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* 3 comparison cards — Ascertainty highlighted with sage outline.
+              Hover any card to focus it; the other two dim. */}
+          <div className="cmp-cards">
+            <article className="cmp-card">
+              <span className="cmp-card__name">Banks</span>
+              <span className="cmp-card__sub">Commercial · DFI</span>
+              <div className="cmp-card__stats">
+                <div>
+                  <span className="label">Min ticket</span>
+                  <span className="num">$1M+</span>
+                </div>
+                <div>
+                  <span className="label">Time to close</span>
+                  <span className="num">6+ mo</span>
+                </div>
+                <div>
+                  <span className="label">Recourse</span>
+                  <span className="num">Full</span>
+                </div>
+                <div>
+                  <span className="label">Geography</span>
+                  <span className="num">OECD</span>
+                </div>
+              </div>
+              <p className="cmp-card__tagline">
+                <b>Need salvage to lend.</b> Retrofit equipment resells at
+                ~10%, so they require full corporate recourse on top — which
+                only investment-grade balance sheets can post. Lights off
+                below $1M.
+              </p>
+            </article>
+
+            <article className="cmp-card">
+              <span className="cmp-card__name">ESCOs</span>
+              <span className="cmp-card__sub">Johnson Controls · Trane · Honeywell</span>
+              <div className="cmp-card__stats">
+                <div>
+                  <span className="label">Min ticket</span>
+                  <span className="num">$5–10M+</span>
+                </div>
+                <div>
+                  <span className="label">Time to close</span>
+                  <span className="num">12–24 mo</span>
+                </div>
+                <div>
+                  <span className="label">Structure</span>
+                  <span className="num">ESPC guarantee</span>
+                </div>
+                <div>
+                  <span className="label">Geography</span>
+                  <span className="num">US + EU</span>
+                </div>
+              </div>
+              <p className="cmp-card__tagline">
+                <b>Need a corporate guarantee.</b> The 1980s answer: don&apos;t
+                underwrite the savings — wrap them in the borrower&apos;s
+                creditworthiness. Only investment-grade enterprises qualify.
+              </p>
+            </article>
+
+            <article className="cmp-card cmp-card--us">
+              <span className="cmp-card__name">Ascertainty</span>
+              <span className="cmp-card__sub">This product</span>
+              <div className="cmp-card__stats">
+                <div>
+                  <span className="label">Min ticket</span>
+                  <span className="num">$25K</span>
+                </div>
+                <div>
+                  <span className="label">Time to close</span>
+                  <span className="num">4–6 wk</span>
+                </div>
+                <div>
+                  <span className="label">Recourse</span>
+                  <span className="num">None</span>
+                </div>
+                <div>
+                  <span className="label">Geography</span>
+                  <span className="num">India · SEA</span>
+                </div>
+              </div>
+              <p className="cmp-card__tagline">
+                <b>Underwrite the savings directly.</b> Calibrated PINN +
+                IoT M&amp;V + legal assignment of the kWh delta. No salvage
+                needed, no corporate guarantee needed —{" "}
+                <b>10× the addressable market</b>.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      {/* BENCHMARKS — verifiable accuracy claims. Dark themed: ink ground
+          matches the footer + nav, sage accents pop on dark. Sits between
+          cream §03 (above) and §05 (below) so the dark band adds rhythm
+          to the landing. */}
+      <section id="04-benchmarks" className="a-section a-section--dark">
+        <SectionHead
+          idx="04"
           kicker="BENCHMARKS"
           title="Underwriting you can verify."
           intro={
@@ -619,179 +792,6 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
                 the IAC subset ships with V1 mainnet.
               </div>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* COMPETITION — spectrum bar visualizing the SME gap + 3 comparison
-          cards with hover focus. Replaces the wide table + closing prose.
-          Ascertainty card is sage-highlighted; hovering any card dims the
-          other two so the active one reads cleanly. */}
-      <section id="04-competition" className="a-section">
-        <SectionHead
-          idx="04"
-          kicker="COMPETITION"
-          title={
-            <>
-              Banks need{" "}
-              <span style={{ color: "var(--accent)" }}>salvage</span>. ESCOs
-              need{" "}
-              <span style={{ color: "var(--accent)" }}>guarantees</span>. We
-              underwrite the{" "}
-              <span style={{ color: "var(--accent)" }}>savings</span>.
-            </>
-          }
-        />
-        <div className="shell" style={{ paddingTop: 16, paddingBottom: 80 }}>
-          {/* Spectrum bar — visualizes the structural gap by ticket size.
-              The $25K – $1M gap is rendered as a sage band overlaying the
-              three rows; no redundant text callout below. */}
-          <div className="cmp-spectrum">
-            <div className="cmp-spectrum__head">
-              <span className="cmp-spectrum__heading">Ticket-size coverage</span>
-              <span className="cmp-spectrum__hint">
-                Filled portion = the ticket sizes each can actually serve.
-              </span>
-            </div>
-
-            <div className="cmp-spectrum__body">
-              <div className="cmp-spectrum__labels">
-                <span className="cmp-spectrum__label cmp-spectrum__label--us">
-                  Ascertainty
-                </span>
-                <span className="cmp-spectrum__label">Banks</span>
-                <span className="cmp-spectrum__label">ESCOs</span>
-              </div>
-
-              <div className="cmp-spectrum__plot">
-                {/* Axis labels along the top of the plot area */}
-                <div className="cmp-spectrum__axis" aria-hidden>
-                  <span style={{ left: "5%" }}>$25K</span>
-                  <span style={{ left: "35%" }}>$1M</span>
-                  <span style={{ left: "55%" }}>$5M</span>
-                  <span style={{ left: "75%" }}>$20M</span>
-                  <span style={{ left: "95%" }}>$50M+</span>
-                </div>
-
-                <div className="cmp-spectrum__tracks">
-                  {/* Sage-tinted overlay band marking the $25K–$1M gap */}
-                  <div className="cmp-spectrum__gap-band" aria-hidden>
-                    <span className="cmp-spectrum__gap-band-label">
-                      $25K – $1M · Ascertainty alone
-                    </span>
-                  </div>
-
-                  <div className="cmp-spectrum__track">
-                    <div
-                      className="cmp-spectrum__fill cmp-spectrum__fill--us"
-                      style={{ left: "5%", width: "70%" }}
-                    />
-                  </div>
-                  <div className="cmp-spectrum__track">
-                    <div
-                      className="cmp-spectrum__fill"
-                      style={{ left: "35%", width: "65%" }}
-                    />
-                  </div>
-                  <div className="cmp-spectrum__track">
-                    <div
-                      className="cmp-spectrum__fill"
-                      style={{ left: "55%", width: "45%" }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* 3 comparison cards — Ascertainty highlighted with sage outline.
-              Hover any card to focus it; the other two dim. */}
-          <div className="cmp-cards">
-            <article className="cmp-card">
-              <span className="cmp-card__name">Banks</span>
-              <span className="cmp-card__sub">Commercial · DFI</span>
-              <div className="cmp-card__stats">
-                <div>
-                  <span className="label">Min ticket</span>
-                  <span className="num">$1M+</span>
-                </div>
-                <div>
-                  <span className="label">Time to close</span>
-                  <span className="num">6+ mo</span>
-                </div>
-                <div>
-                  <span className="label">Recourse</span>
-                  <span className="num">Full</span>
-                </div>
-                <div>
-                  <span className="label">Geography</span>
-                  <span className="num">OECD</span>
-                </div>
-              </div>
-              <p className="cmp-card__tagline">
-                <b>Need salvage to lend.</b> Retrofit equipment resells at
-                ~10%, so they require full corporate recourse on top — which
-                only investment-grade balance sheets can post. Lights off
-                below $1M.
-              </p>
-            </article>
-
-            <article className="cmp-card">
-              <span className="cmp-card__name">ESCOs</span>
-              <span className="cmp-card__sub">Johnson Controls · Trane · Honeywell</span>
-              <div className="cmp-card__stats">
-                <div>
-                  <span className="label">Min ticket</span>
-                  <span className="num">$5–10M+</span>
-                </div>
-                <div>
-                  <span className="label">Time to close</span>
-                  <span className="num">12–24 mo</span>
-                </div>
-                <div>
-                  <span className="label">Structure</span>
-                  <span className="num">ESPC guarantee</span>
-                </div>
-                <div>
-                  <span className="label">Geography</span>
-                  <span className="num">US + EU</span>
-                </div>
-              </div>
-              <p className="cmp-card__tagline">
-                <b>Need a corporate guarantee.</b> The 1980s answer: don&apos;t
-                underwrite the savings — wrap them in the borrower&apos;s
-                creditworthiness. Only investment-grade enterprises qualify.
-              </p>
-            </article>
-
-            <article className="cmp-card cmp-card--us">
-              <span className="cmp-card__name">Ascertainty</span>
-              <span className="cmp-card__sub">This product</span>
-              <div className="cmp-card__stats">
-                <div>
-                  <span className="label">Min ticket</span>
-                  <span className="num">$25K</span>
-                </div>
-                <div>
-                  <span className="label">Time to close</span>
-                  <span className="num">4–6 wk</span>
-                </div>
-                <div>
-                  <span className="label">Recourse</span>
-                  <span className="num">None</span>
-                </div>
-                <div>
-                  <span className="label">Geography</span>
-                  <span className="num">India · SEA</span>
-                </div>
-              </div>
-              <p className="cmp-card__tagline">
-                <b>Underwrite the savings directly.</b> Calibrated PINN +
-                IoT M&amp;V + legal assignment of the kWh delta. No salvage
-                needed, no corporate guarantee needed —{" "}
-                <b>10× the addressable market</b>.
-              </p>
-            </article>
           </div>
         </div>
       </section>
