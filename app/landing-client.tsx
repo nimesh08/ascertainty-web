@@ -2,18 +2,12 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
 
 import { MeterAnimation } from "@/components/landing/meter-animation";
 import { BankableCollateral } from "@/components/landing/bankable-collateral";
-import { CodeTerminal } from "@/components/landing/code-terminal";
 import { Term } from "@/components/landing/term";
 import { SectionHead } from "@/components/landing/ascertainty/section-head";
+import { FaqPersonas } from "@/components/landing/faq-personas";
 
 export interface LandingStats {
   /** Best APY (%) across live projects. Null when none set. */
@@ -119,7 +113,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
         <div className="shell" style={{ paddingBottom: 0 }}>
           <div className="a-audience-grid">
             {/* 01 — LENDERS */}
-            <Link href="/lenders" className="a-audience-card">
+            <Link href="/lenders" className="a-audience-card a-audience-card--lenders">
               <span className="a-kicker-pill">01 · Lenders · LPs</span>
               <h3 className="a-audience-card__title">
                 Earn 10–14% yield on industrial efficiency credit.
@@ -173,7 +167,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
             </Link>
 
             {/* 02 — BORROWERS */}
-            <Link href="/borrowers" className="a-audience-card">
+            <Link href="/borrowers" className="a-audience-card a-audience-card--borrowers">
               <span className="a-kicker-pill">02 · MSME borrowers</span>
               <h3 className="a-audience-card__title">
                 Upgrade your factory. Repay from the savings.
@@ -260,7 +254,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
             </Link>
 
             {/* 03 — BUILDERS (links to /approach) */}
-            <Link href="/approach" className="a-audience-card">
+            <Link href="/approach" className="a-audience-card a-audience-card--builders">
               <span className="a-kicker-pill">03 · Builders</span>
               <h3 className="a-audience-card__title">
                 Every primitive auditable. Every prediction reproducible.
@@ -375,7 +369,7 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
         <SectionHead
           idx="03"
           kicker="BENCHMARKS"
-          title="Tested on 72 held-out audits."
+          title="Underwriting you can verify."
           intro={
             <>
               <Term
@@ -599,151 +593,219 @@ export function LandingClient({ stats }: { stats: LandingStats }) {
               </details>
             </div>
 
-            {/* Light Mac-terminal — single curl tab, copy button, sage chrome.
-                JSON delivered via heredoc (-d @- <<'JSON') so the snippet
-                pastes cleanly into zsh without the multi-line-single-quote
-                parse error the original version produced. */}
-            <CodeTerminal
-              language="curl"
-              code={`# Reproduce the Ascertainty TabPFN prediction for the Veejay
-# compressed-air leakage example (LOO held-out, real audit):
-
-curl -s -X POST https://inference.ascertainty.com/v1/predict \\
-  -H 'content-type: application/json' \\
-  -d @- <<'JSON' | jq
-{
-  "equipment_type": "compressed_air",
-  "ecm_category": "compressed_air_leakage",
-  "industry_sector": "textiles",
-  "baseline_kwh_per_year": 322623,
-  "compressor_rated_kw": 45,
-  "leakage_pct": 42
-}
-JSON
-
-# Expected response (P5 floor is what's used for debt sizing):
-# {
-#   "predicted_savings_kwh": 119913,
-#   "savings_lower_p5_kwh":   29161,
-#   "savings_upper_p95_kwh": 210665,
-#   "sigma_scale_applied":     2.82,
-#   "model_used":  "ascertainty_pinn_compressed_air_v1",
-#   "confidence_grade": "C"
-# }`}
-            />
-            <p style={{ marginTop: 14, fontSize: 12, color: "var(--fg-muted)" }}>
-              Don&apos;t take our word for it — hit the endpoint yourself. A
-              Colab notebook running the same LOO-CV reproduction is{" "}
-              <span style={{ color: "var(--accent)", borderBottom: "1px dashed var(--accent)" }}>
-                coming soon
-              </span>
-              .
-            </p>
+            {/* Verification pointers — replaces the previous hosted-curl
+                example which was dead weight (endpoint not yet live).
+                These two routes ship real per-deal numbers today. */}
+            <div className="a-callout a-callout--verify" role="note">
+              <span className="a-callout__icon" aria-hidden>?</span>
+              <div className="a-callout__body">
+                <span className="a-callout__title">How to verify these numbers</span>
+                Every seed deal on{" "}
+                <Link
+                  href="/projects"
+                  style={{ color: "var(--accent)", textDecoration: "underline", textUnderlineOffset: 2 }}
+                >
+                  /projects
+                </Link>
+                {" "}publishes its P5 / P50 / P95 band with the same model and
+                methodology. The full sizing math is in the{" "}
+                <Link
+                  href="/docs/underwriting-policy"
+                  style={{ color: "var(--accent)", textDecoration: "underline", textUnderlineOffset: 2 }}
+                >
+                  Underwriting Policy
+                </Link>
+                . A public Colab notebook running the LOO-CV reproduction on
+                the IAC subset ships with V1 mainnet.
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      {/* COMPETITION — why no one else does this. 3-column comparison vs Banks
-          and ESCOs. Sets up the moat slides below by showing the empty quadrant. */}
+      {/* COMPETITION — spectrum bar visualizing the SME gap + 3 comparison
+          cards with hover focus. Replaces the wide table + closing prose.
+          Ascertainty card is sage-highlighted; hovering any card dims the
+          other two so the active one reads cleanly. */}
       <section id="04-competition" className="a-section">
         <SectionHead
           idx="04"
           kicker="COMPETITION"
-          title="Three industries try to serve this market. None can."
-          intro="Banks won’t lend without salvage. ESCOs only serve $5M+ enterprises. The SME industrial-retrofit gap is structural, not accidental."
+          title={
+            <>
+              Banks need{" "}
+              <span style={{ color: "var(--accent)" }}>salvage</span>. ESCOs
+              need{" "}
+              <span style={{ color: "var(--accent)" }}>guarantees</span>. We
+              underwrite the{" "}
+              <span style={{ color: "var(--accent)" }}>savings</span>.
+            </>
+          }
         />
-        <div className="shell" style={{ paddingTop: 32, paddingBottom: 80 }}>
-          <div className="cmp-tbl-wrap">
-            <table className="cmp-tbl">
-              <thead>
-                <tr>
-                  <th></th>
-                  <th>Banks</th>
-                  <th>ESCOs <span className="cmp-tbl__sub">(Johnson Controls, Trane, Honeywell)</span></th>
-                  <th className="cmp-tbl__us">Ascertainty</th>
-                </tr>
-              </thead>
-              <tbody>
-                {[
-                  ["Min ticket", "$1M+", "$5–10M+", "$25K"],
-                  ["Borrower credit required", "Strong balance sheet", "Investment-grade", "None (non-recourse)"],
-                  ["Time to close", "6+ months", "12–24 months", "4–6 weeks"],
-                  ["Underwriting transparency", "Internal model", "Black box", "Calibrated PINN + on-chain audit hash"],
-                  ["Loan structure", "Full recourse", "ESPC corporate guarantee", "Non-recourse"],
-                  ["SME-accessible", "✗", "✗", "✓"],
-                  ["Geography", "OECD", "US + select EU", "India · SEA · expanding"],
-                ].map((row, i) => (
-                  <tr key={i}>
-                    <td className="cmp-tbl__row-label">{row[0]}</td>
-                    <td>{row[1]}</td>
-                    <td>{row[2]}</td>
-                    <td className="cmp-tbl__us">{row[3]}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+        <div className="shell" style={{ paddingTop: 16, paddingBottom: 80 }}>
+          {/* Spectrum bar — visualizes the structural gap by ticket size.
+              The $25K – $1M gap is rendered as a sage band overlaying the
+              three rows; no redundant text callout below. */}
+          <div className="cmp-spectrum">
+            <div className="cmp-spectrum__head">
+              <span className="cmp-spectrum__heading">Ticket-size coverage</span>
+              <span className="cmp-spectrum__hint">
+                Filled portion = the ticket sizes each can actually serve.
+              </span>
+            </div>
+
+            <div className="cmp-spectrum__body">
+              <div className="cmp-spectrum__labels">
+                <span className="cmp-spectrum__label cmp-spectrum__label--us">
+                  Ascertainty
+                </span>
+                <span className="cmp-spectrum__label">Banks</span>
+                <span className="cmp-spectrum__label">ESCOs</span>
+              </div>
+
+              <div className="cmp-spectrum__plot">
+                {/* Axis labels along the top of the plot area */}
+                <div className="cmp-spectrum__axis" aria-hidden>
+                  <span style={{ left: "5%" }}>$25K</span>
+                  <span style={{ left: "35%" }}>$1M</span>
+                  <span style={{ left: "55%" }}>$5M</span>
+                  <span style={{ left: "75%" }}>$20M</span>
+                  <span style={{ left: "95%" }}>$50M+</span>
+                </div>
+
+                <div className="cmp-spectrum__tracks">
+                  {/* Sage-tinted overlay band marking the $25K–$1M gap */}
+                  <div className="cmp-spectrum__gap-band" aria-hidden>
+                    <span className="cmp-spectrum__gap-band-label">
+                      $25K – $1M · Ascertainty alone
+                    </span>
+                  </div>
+
+                  <div className="cmp-spectrum__track">
+                    <div
+                      className="cmp-spectrum__fill cmp-spectrum__fill--us"
+                      style={{ left: "5%", width: "70%" }}
+                    />
+                  </div>
+                  <div className="cmp-spectrum__track">
+                    <div
+                      className="cmp-spectrum__fill"
+                      style={{ left: "35%", width: "65%" }}
+                    />
+                  </div>
+                  <div className="cmp-spectrum__track">
+                    <div
+                      className="cmp-spectrum__fill"
+                      style={{ left: "55%", width: "45%" }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <p
-            style={{
-              marginTop: 24,
-              fontSize: 13,
-              color: "var(--fg-muted)",
-              maxWidth: "70ch",
-              lineHeight: 1.6,
-            }}
-          >
-            ESCOs are the 1980s answer to “how do you finance industrial efficiency
-            when you can’t underwrite savings?” Their answer: don’t — wrap savings
-            in a corporate guarantee, charge enterprise customers a fat margin,
-            stay out of the SME market entirely. Ascertainty is the 2026 answer:
-            actually underwrite the savings using physics-informed AI.{" "}
-            <strong style={{ color: "var(--fg)" }}>
-              Same risk profile for the borrower (non-recourse + sculpted
-              amortization), 10× bigger addressable market, 1/4 the friction.
-            </strong>
-          </p>
+
+          {/* 3 comparison cards — Ascertainty highlighted with sage outline.
+              Hover any card to focus it; the other two dim. */}
+          <div className="cmp-cards">
+            <article className="cmp-card">
+              <span className="cmp-card__name">Banks</span>
+              <span className="cmp-card__sub">Commercial · DFI</span>
+              <div className="cmp-card__stats">
+                <div>
+                  <span className="label">Min ticket</span>
+                  <span className="num">$1M+</span>
+                </div>
+                <div>
+                  <span className="label">Time to close</span>
+                  <span className="num">6+ mo</span>
+                </div>
+                <div>
+                  <span className="label">Recourse</span>
+                  <span className="num">Full</span>
+                </div>
+                <div>
+                  <span className="label">Geography</span>
+                  <span className="num">OECD</span>
+                </div>
+              </div>
+              <p className="cmp-card__tagline">
+                <b>Need salvage to lend.</b> Retrofit equipment resells at
+                ~10%, so they require full corporate recourse on top — which
+                only investment-grade balance sheets can post. Lights off
+                below $1M.
+              </p>
+            </article>
+
+            <article className="cmp-card">
+              <span className="cmp-card__name">ESCOs</span>
+              <span className="cmp-card__sub">Johnson Controls · Trane · Honeywell</span>
+              <div className="cmp-card__stats">
+                <div>
+                  <span className="label">Min ticket</span>
+                  <span className="num">$5–10M+</span>
+                </div>
+                <div>
+                  <span className="label">Time to close</span>
+                  <span className="num">12–24 mo</span>
+                </div>
+                <div>
+                  <span className="label">Structure</span>
+                  <span className="num">ESPC guarantee</span>
+                </div>
+                <div>
+                  <span className="label">Geography</span>
+                  <span className="num">US + EU</span>
+                </div>
+              </div>
+              <p className="cmp-card__tagline">
+                <b>Need a corporate guarantee.</b> The 1980s answer: don&apos;t
+                underwrite the savings — wrap them in the borrower&apos;s
+                creditworthiness. Only investment-grade enterprises qualify.
+              </p>
+            </article>
+
+            <article className="cmp-card cmp-card--us">
+              <span className="cmp-card__name">Ascertainty</span>
+              <span className="cmp-card__sub">This product</span>
+              <div className="cmp-card__stats">
+                <div>
+                  <span className="label">Min ticket</span>
+                  <span className="num">$25K</span>
+                </div>
+                <div>
+                  <span className="label">Time to close</span>
+                  <span className="num">4–6 wk</span>
+                </div>
+                <div>
+                  <span className="label">Recourse</span>
+                  <span className="num">None</span>
+                </div>
+                <div>
+                  <span className="label">Geography</span>
+                  <span className="num">India · SEA</span>
+                </div>
+              </div>
+              <p className="cmp-card__tagline">
+                <b>Underwrite the savings directly.</b> Calibrated PINN +
+                IoT M&amp;V + legal assignment of the kWh delta. No salvage
+                needed, no corporate guarantee needed —{" "}
+                <b>10× the addressable market</b>.
+              </p>
+            </article>
+          </div>
         </div>
       </section>
 
-      {/* FAQ — three teasers + link to the full FAQ in /docs/faq */}
+      {/* FAQ — persona toggle (lenders / borrowers / reviewers), 3 featured
+          Q&As per persona, sourced from lib/faq-content.tsx so /docs/faq
+          and the landing stay in sync. */}
       <section id="05-faq" className="a-section">
         <SectionHead idx="05" kicker="FAQ" title="Answers." />
         <div
           className="shell"
           style={{ paddingTop: 32, paddingBottom: 80, maxWidth: 900 }}
         >
-          <Accordion type="single" collapsible>
-            {[
-              {
-                q: "How is this different from an ESCO?",
-                a: "ESCOs are the 1980s answer: wrap savings in a corporate guarantee, charge enterprise customers a fat margin, stay out of the SME market entirely. Their model requires investment-grade borrowers, 12–24 month close cycles, and $5M+ ticket minimums. Ascertainty is the 2026 answer: actually underwrite the savings with physics-informed AI. Same risk profile for the borrower (non-recourse + sculpted amortization), 10× bigger addressable market, 1/4 the friction — $25K minimums, 4–6 week close, no recourse to the borrower’s balance sheet.",
-              },
-              {
-                q: "What if savings don’t materialize?",
-                a: "Three structural protections, in order. (1) Loans are sized to the P5 floor of the calibrated savings distribution, not the median — DSCR @ P5 ≥ 1.30× is a hard covenant. The borrower stays solvent in the bottom-5% scenario by design. (2) Sculpted amortization absorbs variance: if a quarter’s realized savings come in below forecast, the scheduled payment scales down. (3) Junior tranche absorbs first-loss before senior. Realized portfolio default rates within the model’s predicted band are priced into LP yield; that’s the deal LPs sign up for.",
-              },
-              {
-                q: "What if Ascertainty goes out of business?",
-                a: "Loans persist on-chain on the underlying vault protocol — they don’t depend on our company’s existence. Servicing is contractually transferable to a successor servicer. The underwriting policy + every prediction’s audit hash are public, so any qualified successor can pick up where we left off. LP capital is at risk to the borrowers’ performance, not to our corporate solvency.",
-              },
-            ].map((f, i) => (
-              <AccordionItem
-                key={i}
-                value={`item-${i}`}
-                style={{ borderBottom: "1px solid var(--line)" }}
-              >
-                <AccordionTrigger
-                  className="text-base"
-                  style={{ textTransform: "none", letterSpacing: 0 }}
-                >
-                  {f.q}
-                </AccordionTrigger>
-                <AccordionContent style={{ color: "var(--fg-muted)" }}>
-                  {f.a}
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+          <FaqPersonas />
           <Link
             href="/docs/faq"
             style={{
