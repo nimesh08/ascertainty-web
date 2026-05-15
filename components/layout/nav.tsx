@@ -72,10 +72,32 @@ function ConnectButton() {
   const short = primary
     ? `${String(primary).slice(0, 4)}…${String(primary).slice(-4)}`
     : "Connected";
+  const handleCopy = () => {
+    if (!primary) return;
+    void navigator.clipboard?.writeText(String(primary));
+  };
   return (
-    <button className="a-connect-btn mono-num" onClick={() => logout()}>
-      {short}
-    </button>
+    <DropdownMenu modal={false}>
+      <DropdownMenuTrigger asChild>
+        <button className="a-connect-btn mono-num" aria-label="Wallet menu">
+          {short}
+        </button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" sideOffset={8}>
+        <DropdownMenuItem onClick={handleCopy} disabled={!primary}>
+          Copy address
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
+          <Link href="/portfolio">View portfolio</Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem
+          onClick={() => logout()}
+          className="text-red-600 focus:text-red-700"
+        >
+          Disconnect
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
 
