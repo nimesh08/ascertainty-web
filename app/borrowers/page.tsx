@@ -70,8 +70,8 @@ export default function BorrowersPage() {
           <div style={{ borderTop: "1px solid var(--line)" }}>
             {[
               {
-                k: "5+ years operating history",
-                v: "Audited financials available for the last three years. Pre-revenue or first-year operations do not qualify in v0.",
+                k: "5+ years operating · 3+ years audited financials",
+                v: "Pre-revenue or first-year operations do not qualify in v0. Audited financials must be available for the last three full years.",
               },
               {
                 k: "GST-compliant + filings current",
@@ -83,7 +83,7 @@ export default function BorrowersPage() {
               },
               {
                 k: "Indian geography (v0)",
-                v: "Pilot region is India. Indonesia and Vietnam open with v1 mainnet. Outside this footprint, please join the waitlist.",
+                v: "Pilot region is India. Indonesia and Vietnam open in 2026 H2. Outside this footprint, please join the waitlist.",
               },
               {
                 k: "ECM has a calibrated forecast",
@@ -131,8 +131,8 @@ export default function BorrowersPage() {
         <SectionHead
           idx="02"
           kicker="WHAT WE FINANCE"
-          title="Six ECM categories. One calibrated model behind each."
-          intro="Energy Conservation Measures we currently underwrite. Each has a per-category σ-scale that tightens with every realized M&V data point."
+          title="Seventy-plus ECMs. Six with the tightest calibration."
+          intro="Our PINN covers 72+ Energy Conservation Measure categories. The six below have the tightest σ — that's where direct underwriting lives today. Other ECMs route through partner ESCOs while we collect M&V."
         />
         <div className="shell" style={{ paddingTop: 32, paddingBottom: 80 }}>
           <div
@@ -225,9 +225,8 @@ export default function BorrowersPage() {
               maxWidth: "70ch",
             }}
           >
-            ECM not on this list? We can still issue a term sheet via a partner
-            ESCO routing channel. Contact us with the audit report and we’ll
-            scope it.
+            Not sure if your equipment qualifies? Send the audit report and
+            we’ll scope it.
           </p>
         </div>
       </section>
@@ -544,6 +543,8 @@ export default function BorrowersPage() {
                 background: "var(--accent-soft)",
                 padding: 22,
                 borderRadius: 12,
+                display: "flex",
+                flexDirection: "column",
               }}
             >
               <div
@@ -552,12 +553,10 @@ export default function BorrowersPage() {
               >
                 Ascertainty · parallel process
               </div>
-              <div style={{ display: "grid", gap: 10 }}>
+              <div style={{ display: "grid", gap: 10, flex: 1, alignContent: "center" }}>
                 {[
-                  ["Week 0–2", "Site audit + meter ingest → calibrated forecast = the underwriting"],
-                  ["Week 2–3", "Term sheet auto-generated from the conformal band"],
-                  ["Week 3–4", "Funds escrowed; PO issued to approved installer"],
-                  ["Week 4+", "Install, commission, IoT M&V live from day one"],
+                  ["Week 0–3", "Audit = the underwriting. Term sheet auto-emerges from the conformal band; funds escrow."],
+                  ["Week 3–6", "Install + commission. IoT M&V live from day one."],
                 ].map(([when, what]) => (
                   <div
                     key={when}
@@ -580,13 +579,14 @@ export default function BorrowersPage() {
                     </div>
                     <div
                       style={{
-                        height: 22,
+                        minHeight: 22,
                         background: "var(--accent)",
-                        padding: "3px 10px",
+                        padding: "6px 10px",
                         fontSize: 12,
                         color: "var(--accent-ink)",
                         display: "flex",
                         alignItems: "center",
+                        lineHeight: 1.4,
                       }}
                     >
                       {what}

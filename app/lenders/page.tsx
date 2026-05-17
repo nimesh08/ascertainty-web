@@ -353,7 +353,7 @@ export default async function LendersPage() {
                   ],
                 },
                 {
-                  phase: "v1 — Q1 2026",
+                  phase: "v1 — Q3 2026",
                   title: "Whitelisted OTC desk",
                   state: "in-flight" as const,
                   lines: [
@@ -363,7 +363,7 @@ export default async function LendersPage() {
                   ],
                 },
                 {
-                  phase: "v2 — Q3 2026",
+                  phase: "v2 — Q1 2027",
                   title: "In-house orderbook",
                   state: "planned" as const,
                   lines: [
