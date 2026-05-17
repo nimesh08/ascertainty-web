@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { SectionHead } from "@/components/landing/ascertainty/section-head";
 import { RiskLayers } from "@/components/lenders/risk-layers";
 import { CalibratedPIChart } from "@/components/lenders/calibrated-pi-chart";
+import { LendersCalculator } from "@/components/lenders/lenders-calculator";
 
 export const revalidate = 60;
 
@@ -46,10 +47,9 @@ export default async function LendersPage() {
               <h1
                 className="a-hero__heading"
                 style={{
-                  maxWidth: "18ch",
+                  maxWidth: "14ch",
                   marginTop: 18,
-                  fontSize: "clamp(32px, 4vw, 56px)",
-                  lineHeight: 1.02,
+                  fontSize: "clamp(38px, 5.6vw, 72px)",
                 }}
               >
                 Earn 10–14% yield on industrial efficiency credit, underwritten by{" "}
@@ -62,12 +62,12 @@ export default async function LendersPage() {
                 covenant. Distributions settle monthly in USDC.
               </p>
               <div className="a-hero__ctas" style={{ marginTop: 28 }}>
-                <Link className="a-btn a-btn--primary" href="/projects">
-                  View data room <span className="arrow">→</span>
-                </Link>
-                <a className="a-btn a-btn--ghost" href="mailto:lenders@ascertainty.com">
-                  Apply for LP onboarding
+                <a className="a-btn a-btn--primary" href="mailto:lenders@ascertainty.com">
+                  Apply for LP onboarding <span className="arrow">→</span>
                 </a>
+                <Link className="a-btn a-btn--ghost" href="/projects">
+                  View data room
+                </Link>
               </div>
             </div>
             <div className="lenders-hero__chart">
@@ -291,7 +291,7 @@ export default async function LendersPage() {
           idx="02"
           kicker="RISK FRAMEWORK"
           title="Five layers between the LP and a loss."
-          intro="The deal underwrites itself out of the median scenario. Below are the protections when the median misses."
+          intro="P5 sizing handles the typical miss. These five layers handle everything beyond that."
         />
         <div
           className="shell"
@@ -315,13 +315,26 @@ export default async function LendersPage() {
         </div>
       </section>
 
+      {/* INTERACTIVE — RUN THE NUMBERS */}
+      <section id="calculator" className="a-section">
+        <SectionHead
+          idx="03"
+          kicker="RUN THE NUMBERS"
+          title="Your deposit, your tranche, your scenario."
+          intro="Three sandboxes to feel the math: estimate yield on a deposit, weigh senior vs junior, and stress-test DSCR against realised savings."
+        />
+        <div className="shell" style={{ paddingTop: 32, paddingBottom: 80, maxWidth: 1000 }}>
+          <LendersCalculator />
+        </div>
+      </section>
+
       {/* LIQUIDITY & EXIT */}
       <section id="liquidity" className="a-section">
         <SectionHead
-          idx="03"
+          idx="04"
           kicker="LIQUIDITY & EXIT"
           title="A clear path to secondary."
-          intro="LPs ask 'how do I exit?' before they wire. Our answer is dated, not vague — primary today, whitelisted OTC in Q1 2026, native in-house orderbook in Q3 2026, and a queue-priority auction mechanism triggered once senior TVL crosses ~$1M."
+          intro="Today: primary subscription only. Three secondary-market upgrades on the roadmap."
         />
         <div className="shell" style={{ paddingTop: 32, paddingBottom: 80, maxWidth: 1100 }}>
           <div className="liq-rail">
@@ -421,7 +434,7 @@ export default async function LendersPage() {
               position: "relative",
             }}
           >
-            Underwrite the energy transition,{" "}
+            Yield on the energy transition,{" "}
             <span className="serif" style={{ color: "var(--accent)" }}>
               verifiably
             </span>
@@ -437,12 +450,12 @@ export default async function LendersPage() {
               position: "relative",
             }}
           >
-            <Link className="a-btn a-btn--primary" href="/projects">
-              View data room <span className="arrow">→</span>
-            </Link>
-            <a className="a-btn a-btn--ghost" href="mailto:lenders@ascertainty.com">
-              Apply for LP onboarding
+            <a className="a-btn a-btn--primary" href="mailto:lenders@ascertainty.com">
+              Apply for LP onboarding <span className="arrow">→</span>
             </a>
+            <Link className="a-btn a-btn--ghost" href="/projects">
+              View data room
+            </Link>
           </div>
         </div>
       </section>

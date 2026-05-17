@@ -730,6 +730,75 @@
     box-shadow: none;
   }
 
+  /* /lenders §05 Liquidity — atmospheric bg image (path / horizon) +
+     opacity-tuned overlay so the timeline rail stays legible */
+  /* /lenders §02 Risk framework — soft sage-tinted band. Anchors the
+     middle of the page so the rhythm reads: cream worked-example → tinted
+     risk → cream-with-lifted-calc-card → image-overlay liquidity. */
+  [id="risk"] {
+    isolation: isolate;
+  }
+  [id="risk"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(
+        to bottom,
+        var(--bg-0) 0%,
+        transparent 12%,
+        transparent 88%,
+        var(--bg-0) 100%
+      ),
+      color-mix(in oklab, var(--accent) 5%, var(--bg-0));
+    pointer-events: none;
+  }
+
+  /* /lenders §03 Run the numbers — ambient backdrop behind the lifted
+     calculator card. A soft radial glow gives the card something to lift
+     off of, without competing with the tabbed UI inside. */
+  [id="calculator"] {
+    isolation: isolate;
+  }
+  [id="calculator"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      radial-gradient(
+        ellipse 70% 60% at 50% 55%,
+        color-mix(in oklab, var(--accent) 7%, transparent),
+        transparent 72%
+      );
+    pointer-events: none;
+  }
+
+  [id="liquidity"] {
+    isolation: isolate;
+  }
+  [id="liquidity"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(
+        to bottom,
+        var(--bg-0) 0%,
+        transparent 12%,
+        transparent 88%,
+        var(--bg-0) 100%
+      ),
+      linear-gradient(
+        color-mix(in oklab, var(--bg-0) 56%, transparent),
+        color-mix(in oklab, var(--bg-0) 56%, transparent)
+      ),
+      url("/images/bg-liquidity.webp") center / cover no-repeat;
+    pointer-events: none;
+  }
+
   /* /lenders §05 Liquidity timeline rail — 4 milestones on a single
      horizontal track. Shipped = sage filled dot, in-flight = bright
      sage glow, planned = hollow dot. */
@@ -3643,6 +3712,267 @@
     font-size: 34px;
     letter-spacing: -0.02em;
     margin-top: 4px;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────
+     Lenders calculator — three-tab interactive widget
+     ───────────────────────────────────────────────────────────────── */
+  .calc {
+    border: 1px solid var(--line);
+    background:
+      linear-gradient(
+        180deg,
+        color-mix(in oklab, var(--bg-1) 92%, var(--accent)) 0%,
+        var(--bg-1) 42%
+      );
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.7) inset,
+      0 1px 2px rgba(22, 36, 33, 0.04),
+      0 12px 32px -16px rgba(22, 36, 33, 0.14),
+      0 32px 64px -32px rgba(22, 36, 33, 0.18);
+  }
+  .calc__tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--line);
+    background: color-mix(in oklab, var(--bg-0) 60%, transparent);
+  }
+  .calc__tab-btn {
+    flex: 1;
+    padding: 16px 18px;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    background: transparent;
+    border: 0;
+    border-right: 1px solid var(--line);
+    cursor: pointer;
+    transition: color 0.18s, background 0.18s;
+    position: relative;
+  }
+  .calc__tab-btn:last-child { border-right: 0; }
+  .calc__tab-btn:hover {
+    color: var(--fg);
+    background: color-mix(in oklab, var(--accent) 4%, transparent);
+  }
+  .calc__tab-btn--active {
+    color: var(--accent-deep);
+    background: var(--bg-1);
+  }
+  .calc__tab-btn--active::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -1px;
+    height: 2px;
+    background: var(--accent);
+  }
+  .calc__body {
+    padding: 28px;
+  }
+  @media (max-width: 640px) {
+    .calc__body { padding: 20px; }
+  }
+
+  .calc-tab {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .calc-tab__controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 24px;
+    padding-bottom: 8px;
+  }
+  .calc-tab__field {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .calc-tab__label {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+  .calc-tab__hint {
+    color: var(--fg-faint);
+    font-weight: 400;
+  }
+  .calc-tab__slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 4px;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--line) 80%, transparent);
+    outline: none;
+    cursor: pointer;
+  }
+  .calc-tab__slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--accent);
+    border: 2px solid var(--bg-1);
+    box-shadow: 0 0 0 1px var(--accent), 0 2px 6px color-mix(in oklab, var(--accent) 30%, transparent);
+    cursor: grab;
+    transition: transform 0.12s;
+  }
+  .calc-tab__slider::-webkit-slider-thumb:active { cursor: grabbing; transform: scale(1.1); }
+  .calc-tab__slider::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: var(--accent);
+    border: 2px solid var(--bg-1);
+    box-shadow: 0 0 0 1px var(--accent);
+    cursor: grab;
+  }
+  .calc-tab__value {
+    font-family: var(--font-display);
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+  }
+
+  .calc-tab__outputs {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  @media (max-width: 720px) {
+    .calc-tab__outputs { grid-template-columns: 1fr; }
+  }
+  .calc-tab__output {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 18px 20px;
+    border-right: 1px solid var(--line);
+  }
+  .calc-tab__output:last-child { border-right: 0; }
+  @media (max-width: 720px) {
+    .calc-tab__output {
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .calc-tab__output:last-child { border-bottom: 0; }
+  }
+  .calc-tab__output-label {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+  .calc-tab__output-value {
+    font-family: var(--font-display);
+    font-size: 26px;
+    letter-spacing: -0.015em;
+    color: var(--fg);
+    line-height: 1;
+  }
+  .calc-tab__output-value--big { font-size: 34px; }
+  .calc-tab__output-value--accent { color: var(--accent-deep); }
+  .calc-tab__output-value--warn { color: #b85e2a; }
+  .calc-tab__output-sub {
+    font-size: 11.5px;
+    color: var(--fg-faint);
+    line-height: 1.45;
+  }
+
+  .calc-tab__footnote {
+    margin: 0;
+    font-size: 12px;
+    color: var(--fg-faint);
+    line-height: 1.6;
+    max-width: 72ch;
+  }
+  .calc-tab__footnote em {
+    color: var(--accent-deep);
+    font-style: normal;
+  }
+
+  /* Tranche tab — toggle + waterfall */
+  .calc-tab__tranche-toggle {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+    align-self: flex-start;
+  }
+  .calc-tab__tranche-btn {
+    padding: 10px 22px;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    background: transparent;
+    border: 0;
+    border-right: 1px solid var(--line);
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .calc-tab__tranche-btn:last-child { border-right: 0; }
+  .calc-tab__tranche-btn:hover { color: var(--fg); }
+  .calc-tab__tranche-btn--active {
+    background: var(--accent);
+    color: #fff;
+  }
+
+  .calc-tab__waterfall {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .calc-tab__waterfall-block {
+    padding: 18px 20px;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    background: color-mix(in oklab, var(--bg-0) 50%, transparent);
+    border-bottom: 1px dashed var(--line);
+    transition: all 0.2s;
+  }
+  .calc-tab__waterfall-block--junior {
+    border-left: 3px solid color-mix(in oklab, var(--accent) 35%, transparent);
+  }
+  .calc-tab__waterfall-block--senior {
+    border-left: 3px solid color-mix(in oklab, var(--accent) 70%, transparent);
+  }
+  .calc-tab__waterfall-block--active {
+    background: color-mix(in oklab, var(--accent) 14%, var(--bg-1));
+    color: var(--accent-deep);
+    border-left-color: var(--accent);
+    border-left-width: 4px;
+    font-weight: 600;
+  }
+  .calc-tab__waterfall-base {
+    padding: 12px 20px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+    background: color-mix(in oklab, var(--bg-0) 80%, transparent);
+    text-align: center;
   }
 }
 
