@@ -293,16 +293,18 @@ export function ReturnsCalculatorSection({
   apyPct: number;
   termMonths: number;
 }) {
-  // Convert raw 6-dec to whole-dollar units for the slider (integer ticks).
-  // Fall back to DEFAULT_MIN if already funded.
+  // Slider bounds:
+  //   max = actual dollars remaining on this deal (don't inflate)
+  //   min = $25K unless remaining is smaller (small/test projects: slider
+  //         collapses to a single value at the remaining amount)
+  // Fallback to DEFAULT_MIN as a "preview" max when the deal is fully
+  // funded — keeps the calculator usable for browsing.
   const DEFAULT_MIN = 25_000;
   const maxDollarsRaw = remainingRaw > 0n ? Number(remainingRaw / 1_000_000n) : 0;
-  const max = maxDollarsRaw > 0 ? Math.max(DEFAULT_MIN, maxDollarsRaw) : DEFAULT_MIN;
-  // Effective min: $25K unless the remaining on this deal is smaller (small
-  // test projects might have <$25K remaining; let the slider adapt).
-  const min = Math.min(DEFAULT_MIN, Math.max(1, maxDollarsRaw));
+  const max = maxDollarsRaw > 0 ? maxDollarsRaw : DEFAULT_MIN;
+  const min = Math.min(DEFAULT_MIN, max);
 
-  const [amount, setAmount] = useState<number>(() => Math.max(min, Math.min(DEFAULT_MIN, max)));
+  const [amount, setAmount] = useState<number>(() => Math.min(DEFAULT_MIN, max));
 
   const totalReturn = useMemo(() => {
     const r = apyPct / 100;
