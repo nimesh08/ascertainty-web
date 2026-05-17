@@ -175,12 +175,28 @@ export function HeroCard({
   );
 }
 
-export function AboutSection({ text }: { text: string | null }) {
-  if (!text || text.trim() === "") return null;
+export function AboutSection({
+  text,
+  financialsText,
+}: {
+  text: string | null;
+  financialsText?: string | null;
+}) {
+  const hasAbout = !!(text && text.trim() !== "");
+  const hasFinancials = !!(financialsText && financialsText.trim() !== "");
+  if (!hasAbout && !hasFinancials) return null;
   return (
     <SectionCard delay={0.05}>
       <SectionTitle label="Overview" title="About the project" />
-      <ParagraphedText text={text} />
+      {hasAbout ? <ParagraphedText text={text!} /> : null}
+      {hasFinancials ? (
+        <div className={hasAbout ? "mt-6 border-t border-line/60 pt-5" : ""}>
+          <p className="mb-2 text-[11px] font-medium uppercase tracking-[0.18em] text-fg-muted">
+            Financial notes
+          </p>
+          <ParagraphedText text={financialsText!} />
+        </div>
+      ) : null}
     </SectionCard>
   );
 }

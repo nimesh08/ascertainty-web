@@ -7,7 +7,6 @@ import {
   FileText,
   Download,
   ExternalLink,
-  ShieldCheck,
   BadgeCheck,
   Zap,
   Flame,
@@ -107,7 +106,18 @@ export function UnderwritingBriefSection({
             </span>{" "}
             sized this facility under the DSCR-at-P5 ≥ 1.30× covenant. The serving model
             ingests all 21 fields from the audit schema (leakage, rated kW, hours/days,
-            plant context); calibration is fit on a 72-ECM Indian audit corpus.{" "}
+            plant context); calibration is fit on a 72-ECM Indian audit corpus.
+            {grade ? (
+              <>
+                {" "}
+                <span className="font-medium text-fg">Grade {grade}</span> →{" "}
+                {grade === "A"
+                  ? "senior tranche eligible at up to 60% LTV."
+                  : grade === "B"
+                    ? "senior + junior split; junior absorbs first-loss until Day-90 verification tightens the band."
+                    : "junior tranche only until a verified second audit period tightens the conformal coverage."}
+              </>
+            ) : null}{" "}
             <Link href="/#05-benchmarks" className="underline underline-offset-2 hover:text-accent">
               See full benchmarks
             </Link>{" "}
@@ -134,51 +144,6 @@ export function UnderwritingBriefSection({
               Model benchmarks <ArrowRight className="size-3" />
             </Link>
           </div>
-        </div>
-      </div>
-    </SectionCard>
-  );
-}
-
-/** A/B/C confidence grade tile — replaces the 0-100 trust score when grade is set. */
-export function ConfidenceGradeSection({
-  grade,
-  fallbackScore,
-}: {
-  grade: "A" | "B" | "C" | null;
-  fallbackScore: number | null;
-}) {
-  if (!grade) {
-    if (fallbackScore == null) return null;
-    return <TrustScoreSection score={fallbackScore} />;
-  }
-  const palette = {
-    A: { ring: "border-green/40 bg-green/10", text: "text-green", tranche: "Senior tranche eligible", explainer: "Narrow 90% conformal band (<25% of point estimate). Loan can be sized into the senior tranche at up to 60% LTV." },
-    B: { ring: "border-[#eab308]/40 bg-[#eab308]/10", text: "text-[#eab308]", tranche: "Senior + Junior split", explainer: "Moderate band width (25–50%). Senior eligible at a lower LTV; junior absorbs first-loss until Day-90 verification tightens the band." },
-    C: { ring: "border-accent/40 bg-accent/10", text: "text-accent", tranche: "Junior tranche only", explainer: "Wide band (>50%). Junior-only until a verified second audit period tightens the conformal coverage." },
-  }[grade];
-
-  return (
-    <SectionCard delay={0.4}>
-      <SectionTitle label="Confidence" title="Model confidence grade" />
-      <div className="flex flex-wrap items-center gap-6">
-        <div
-          className={[
-            "grid h-28 w-28 shrink-0 place-items-center rounded-full border",
-            palette.ring,
-          ].join(" ")}
-        >
-          <div className="text-center">
-            <div className={["mono-num text-5xl font-bold", palette.text].join(" ")}>{grade}</div>
-            <div className="text-[10px] uppercase tracking-widest text-fg-muted">grade</div>
-          </div>
-        </div>
-        <div className="max-w-md space-y-2">
-          <p className={["text-sm font-semibold", palette.text].join(" ")}>{palette.tranche}</p>
-          <p className="text-sm leading-relaxed text-fg/80">{palette.explainer}</p>
-          <p className="text-[11px] uppercase tracking-widest text-fg-muted">
-            Derived from (P95 − P5) / (2 × P50) · 90% conformal PI
-          </p>
         </div>
       </div>
     </SectionCard>
@@ -299,46 +264,6 @@ export function BaselineImpactSection({
   );
 }
 
-export function FinancialsSection({
-  project,
-  apyPct,
-}: {
-  project: {
-    targetUsdc: string;
-    termMonths: number;
-    status: string;
-    financialsText: string | null;
-  };
-  apyPct: number;
-}) {
-  return (
-    <SectionCard delay={0.3}>
-      <SectionTitle label="Financials" title="Financials & returns" />
-      {project.financialsText ? (
-        <ProseText className="mb-5">
-          <p>{project.financialsText}</p>
-        </ProseText>
-      ) : null}
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <MetricTile
-          label="Target"
-          value={formatUsd(project.targetUsdc)}
-        />
-        <MetricTile label="Term" value={`${project.termMonths} mo`} />
-        <MetricTile
-          label="APY"
-          value={apyPct > 0 ? `${apyPct.toFixed(2)}%` : "—"}
-        />
-        <MetricTile
-          label="Status"
-          value={project.status.replace(/_/g, " ")}
-          capitalize
-        />
-      </div>
-    </SectionCard>
-  );
-}
-
 /**
  * Returns calculator with a slider: pick an amount in USD between $1 and the
  * remaining target. Shows estimated total return + avg monthly income.
@@ -443,10 +368,51 @@ export function ReturnsCalculatorSection({
   );
 }
 
+/** Financials & returns — 4 metric tiles + optional commentary paragraph.
+    Retained for /pools detail page; project detail folds financialsText into
+    AboutSection instead. */
+export function FinancialsSection({
+  project,
+  apyPct,
+}: {
+  project: {
+    targetUsdc: string;
+    termMonths: number;
+    status: string;
+    financialsText: string | null;
+  };
+  apyPct: number;
+}) {
+  return (
+    <SectionCard delay={0.3}>
+      <SectionTitle label="Financials" title="Financials & returns" />
+      {project.financialsText ? (
+        <ProseText className="mb-5">
+          <p>{project.financialsText}</p>
+        </ProseText>
+      ) : null}
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <MetricTile label="Target" value={formatUsd(project.targetUsdc)} />
+        <MetricTile label="Term" value={`${project.termMonths} mo`} />
+        <MetricTile
+          label="APY"
+          value={apyPct > 0 ? `${apyPct.toFixed(2)}%` : "—"}
+        />
+        <MetricTile
+          label="Status"
+          value={project.status.replace(/_/g, " ")}
+          capitalize
+        />
+      </div>
+    </SectionCard>
+  );
+}
+
+/** 0-100 trust score tile. Retained for /pools detail page; project detail
+    uses the confidence grade chip inline in UnderwritingBriefSection instead. */
 export function TrustScoreSection({ score }: { score: number | null }) {
   if (score == null) return null;
-  const tier =
-    score >= 80 ? "high" : score >= 50 ? "medium" : "low";
+  const tier = score >= 80 ? "high" : score >= 50 ? "medium" : "low";
   const color =
     tier === "high"
       ? "text-green"

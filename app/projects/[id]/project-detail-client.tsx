@@ -21,9 +21,7 @@ import {
 } from "./sections-part-1";
 import {
   BaselineImpactSection,
-  FinancialsSection,
   ReturnsCalculatorSection,
-  ConfidenceGradeSection,
   UnderwritingBriefSection,
   DocumentsSection,
   RepaymentHistorySection,
@@ -190,7 +188,10 @@ export function ProjectDetailClient({
       <div className="min-w-0 space-y-6">
         <HeroCard project={project} />
 
-        <AboutSection text={project.aboutProject} />
+        <AboutSection
+          text={project.aboutProject}
+          financialsText={project.financialsText}
+        />
 
         <HighlightsSection highlights={project.highlights ?? []} />
 
@@ -209,21 +210,11 @@ export function ProjectDetailClient({
           auditors={auditors}
         />
 
-        <FinancialsSection
-          project={project}
-          apyPct={apyPct}
-        />
-
         <ReturnsCalculatorSection
           remainingRaw={remaining}
           targetRaw={target}
           apyPct={apyPct}
           termMonths={project.termMonths}
-        />
-
-        <ConfidenceGradeSection
-          grade={(underwriting?.confidenceGrade as "A" | "B" | "C" | null) ?? null}
-          fallbackScore={project.trustScore}
         />
 
         <DocumentsSection documents={project.documents ?? []} />
