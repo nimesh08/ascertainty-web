@@ -4,6 +4,7 @@ import { Glyph } from "@/components/landing/ascertainty/glyph";
 import { SectionHead } from "@/components/landing/ascertainty/section-head";
 import { TimelineBandLoop } from "@/components/landing/ascertainty/timeline-band-loop";
 import { CalibratedPIChart } from "@/components/lenders/calibrated-pi-chart";
+import { PinnArchitecture } from "@/components/approach/pinn-architecture";
 
 export const metadata: Metadata = {
   title: "Approach | Ascertainty",
@@ -145,18 +146,13 @@ export default function ProtocolPage() {
                 >
                   Read the underwriting policy <span className="arrow">→</span>
                 </Link>
-                <a
-                  className="a-btn a-btn--ghost"
-                  href="https://inference.ascertainty.com/v1/health"
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Verify the model · /v1/health
-                </a>
+                <Link className="a-btn a-btn--ghost" href="/#05-benchmarks">
+                  See benchmarks
+                </Link>
               </div>
             </div>
             <div className="approach-hero__sidecar">
-              <CalibratedPIChart />
+              <PinnArchitecture />
             </div>
           </div>
         </div>
@@ -288,99 +284,67 @@ export default function ProtocolPage() {
         </div>
       </section>
 
-      {/* MODEL + BENCHMARKS — link to landing's full benchmark table */}
+      {/* MODEL — chart-first + 4 compact stat tiles + benchmarks link */}
       <section id="model" className="a-section">
         <SectionHead
           idx="03"
           kicker="THE MODEL"
           title="The model produces a floor. We underwrite to it."
-          intro="A calibrated 90% prediction interval per ECM, fit on a 72-ECM Indian audit corpus. Loans size to the P5 floor — not the P50 best-case. Full benchmark table lives on the landing page; reproduction script via curl."
+          intro="A calibrated 90% prediction interval per ECM. Loans size to the P5 floor — not the P50 best-case."
         />
-        <div className="shell" style={{ paddingTop: 24, paddingBottom: 80, maxWidth: 1100 }}>
-          <div className="model-grid">
-            <div
+        <div className="shell" style={{ paddingTop: 24, paddingBottom: 80, maxWidth: 1000 }}>
+          <div className="model-chart">
+            <CalibratedPIChart
+              legendTitle="Calibrated 90% PI"
+              legendSub="per-ECM σ · 72-ECM corpus"
+              calloutText="P5 floor = underwriting floor"
+            />
+          </div>
+          <div className="model-stats">
+            {[
+              {
+                k: "Backbone",
+                v: "Tabular FM",
+                sub: "TabPFN family",
+              },
+              {
+                k: "Calibration",
+                v: "90% conformal PI",
+                sub: "split-conformal · MAPIE 1.4",
+              },
+              {
+                k: "Live serving",
+                v: "PINN unified",
+                sub: "21 features · 72-ECM corpus",
+              },
+              {
+                k: "Reproducible",
+                v: "sha256 audit-hash",
+                sub: "(inputs, outputs, git_commit)",
+              },
+            ].map((s) => (
+              <div key={s.k} className="model-stat">
+                <div className="model-stat__k">{s.k}</div>
+                <div className="model-stat__v">{s.v}</div>
+                <div className="model-stat__sub">{s.sub}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 24, textAlign: "center" }}>
+            <Link
+              href="/#05-benchmarks"
               style={{
-                border: "1px solid var(--line)",
-                background: "var(--bg-1)",
-                padding: 28,
-                borderRadius: 12,
+                display: "inline-flex",
+                alignItems: "center",
+                gap: 6,
+                fontSize: 13,
+                color: "var(--accent)",
+                textDecoration: "none",
               }}
             >
-              <div
-                style={{
-                  fontSize: 10.5,
-                  letterSpacing: "0.18em",
-                  textTransform: "uppercase",
-                  color: "var(--fg-muted)",
-                  marginBottom: 4,
-                }}
-              >
-                Backbone — tabular foundation model
-              </div>
-              <h3
-                style={{
-                  fontSize: 20,
-                  letterSpacing: "-0.01em",
-                  color: "var(--fg)",
-                  marginBottom: 16,
-                }}
-              >
-                Pretrained tabular FM, fine-tuned on the audit corpus
-              </h3>
-              <p
-                style={{
-                  fontSize: 13.5,
-                  color: "var(--fg-muted)",
-                  lineHeight: 1.6,
-                }}
-              >
-                A tabular foundation model is pretrained on synthetic priors,
-                then conditioned on the US DOE IAC database (14k implemented
-                audits, 1981–2024) and the 72-ECM Indian KISEM cohort.
-                Distribution-free 90% PI via split-conformal prediction (MAPIE
-                1.4), calibrated on leave-one-out residuals.{" "}
-                <strong style={{ color: "var(--fg)" }}>
-                  Live serving today is the 21-feature PINN unified model
-                </strong>
-                . Current FM architecture iterates on the TabPFN family
-                (Hollmann et al., <i>Nature</i> 2025); the backbone is
-                expected to evolve as the calibration corpus grows.
-              </p>
-              <Link
-                href="/#05-benchmarks"
-                style={{
-                  display: "inline-flex",
-                  alignItems: "center",
-                  gap: 6,
-                  marginTop: 18,
-                  fontSize: 12.5,
-                  color: "var(--accent)",
-                  textDecoration: "none",
-                }}
-              >
-                See full benchmark table <span aria-hidden>→</span>
-              </Link>
-            </div>
-            <div className="model-grid__chart">
-              <CalibratedPIChart
-                legendTitle="Calibrated 90% PI"
-                legendSub="per-ECM σ · 72-ECM corpus"
-                calloutText="P5 floor = underwriting floor"
-              />
-            </div>
+              See full benchmark table <span aria-hidden>→</span>
+            </Link>
           </div>
-          <p
-            style={{
-              marginTop: 18,
-              fontSize: 12,
-              color: "var(--fg-faint)",
-              maxWidth: "76ch",
-            }}
-          >
-            Reproducibility: every prediction’s sha256(inputs, outputs,
-            git_commit) is queryable, so any underwriting decision can be
-            re-derived end-to-end against the source code that produced it.
-          </p>
         </div>
       </section>
 

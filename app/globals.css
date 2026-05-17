@@ -2249,6 +2249,7 @@
     grid-template-columns: 1fr;
     gap: 16px;
     max-width: 920px;
+    border-radius: 12px;
   }
   @media (min-width: 720px) {
     .a-timeline-anim { grid-template-columns: 220px 1fr; gap: 28px; align-items: center; }
@@ -3464,14 +3465,18 @@
   }
 
   /* primitives grid */
+  /* 2x2 grid for the 4 primitives — gridline-divided "primitives table"
+     pattern, outer container rounded for visual consistency with cards
+     elsewhere on the site. */
   .a-primitives {
     display: grid;
     grid-template-columns: repeat(12, 1fr);
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
   }
   .a-prim {
-    grid-column: span 4;
+    grid-column: span 6;
     border-right: 1px solid var(--line);
     padding: 28px 24px;
     position: relative;
@@ -3479,8 +3484,8 @@
     display: flex;
     flex-direction: column;
   }
-  .a-prim:nth-child(3n) { border-right: 0; }
-  .a-prim:nth-child(n+4) { border-top: 1px solid var(--line); }
+  .a-prim:nth-child(2n) { border-right: 0; }
+  .a-prim:nth-child(n+3) { border-top: 1px solid var(--line); }
   .a-prim__num { font-size: 10px; letter-spacing: 0.2em; color: var(--fg-faint); }
   .a-prim__title {
     font-family: var(--font-display);
@@ -3862,7 +3867,7 @@
     align-items: baseline;
     gap: 6px;
     padding: 4px 10px;
-    border-radius: 4px;
+    border-radius: 6px;
     background: color-mix(in oklab, var(--bg-1) 80%, var(--accent));
     border: 1px solid var(--line);
     font-size: 11px;
@@ -3879,26 +3884,111 @@
     color: var(--fg);
   }
 
-  /* §03 Model — 2-col grid: explainer card on left, calibrated-PI chart
-     on the right. Mirrors the hero pattern so the page reads as
-     parallel: "this is the model card → this is what it produces". */
-  .model-grid {
-    display: grid;
-    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
-    gap: 28px;
-    align-items: start;
-  }
-  @media (max-width: 900px) {
-    .model-grid {
-      grid-template-columns: 1fr;
-      gap: 28px;
-    }
-  }
-  .model-grid__chart {
+  /* §03 Model — chart-first layout. Big calibrated-PI chart at the
+     top, four compact stat tiles below, single benchmarks link. */
+  .model-chart {
     border: 1px solid var(--line);
     background: var(--bg-1);
     border-radius: 12px;
-    padding: 22px;
+    padding: 24px 32px;
+    max-width: 720px;
+    margin: 0 auto;
+  }
+  .model-stats {
+    margin-top: 28px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  @media (max-width: 720px) {
+    .model-stats { grid-template-columns: repeat(2, 1fr); }
+  }
+  .model-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 20px 22px;
+    border-right: 1px solid var(--line);
+    background: var(--bg-1);
+  }
+  .model-stat:last-child { border-right: 0; }
+  @media (max-width: 720px) {
+    .model-stat:nth-child(2n) { border-right: 0; }
+    .model-stat:nth-child(n+3) { border-top: 1px solid var(--line); }
+  }
+  .model-stat__k {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+  .model-stat__v {
+    font-family: var(--font-display);
+    font-size: 18px;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+    line-height: 1.15;
+  }
+  .model-stat__sub {
+    font-size: 11px;
+    color: var(--fg-faint);
+    line-height: 1.4;
+  }
+
+  /* PINN architecture — /approach hero sidecar SVG. Inline text styles
+     applied via classes so the SVG inherits the project's display +
+     mono font stacks rather than browser defaults. */
+  .pinn-arch {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  .pinn-arch__col-label {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 9px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    fill: var(--fg-muted);
+  }
+  .pinn-arch__tile-label {
+    font-family: var(--font-display);
+    font-size: 10.5px;
+    fill: var(--fg);
+    letter-spacing: -0.005em;
+  }
+  .pinn-arch__backbone-title {
+    font-family: var(--font-display);
+    font-size: 22px;
+    font-weight: 500;
+    fill: var(--accent-deep);
+    letter-spacing: -0.01em;
+  }
+  .pinn-arch__backbone-sub {
+    font-family: var(--font-display);
+    font-size: 12px;
+    fill: var(--accent-deep);
+    opacity: 0.75;
+  }
+  .pinn-arch__backbone-spec {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 9.5px;
+    fill: var(--accent-deep);
+    opacity: 0.85;
+  }
+  .pinn-arch__output-tick {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 9px;
+    fill: var(--accent-deep);
+  }
+  .pinn-arch__output-callout {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    fill: var(--accent-ink, #fff);
+    letter-spacing: 0.06em;
   }
 
   /* ─────────────────────────────────────────────────────────────────
