@@ -295,7 +295,7 @@ export default function ProtocolPage() {
             <CalibratedPIChart
               legendTitle="Calibrated 90% PI"
               legendSub="per-ECM σ · 72-ECM corpus"
-              calloutText="P5 floor = underwriting floor"
+              calloutText="Underwriting floor"
             />
           </div>
           <div className="model-stats">
@@ -397,10 +397,10 @@ export default function ProtocolPage() {
               className="a-btn a-btn--primary"
               href="/docs/underwriting-policy"
             >
-              Underwriting policy <span className="arrow">→</span>
+              Read the underwriting policy <span className="arrow">→</span>
             </Link>
-            <Link className="a-btn a-btn--ghost" href="/projects">
-              See live deals
+            <Link className="a-btn a-btn--ghost" href="/#05-benchmarks">
+              See benchmarks
             </Link>
           </div>
         </div>
