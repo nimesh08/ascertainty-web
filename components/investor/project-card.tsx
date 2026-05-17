@@ -54,7 +54,7 @@ export function ProjectCard({ project }: { project: ProjectCardProject }) {
             <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-fg-muted">
               <span className="inline-flex items-center gap-1">
                 <Tag className="size-3" />
-                {project.sector.replace(/_/g, " ")}
+                {capitalize(project.sector.replace(/_/g, " "))}
               </span>
               <span aria-hidden className="text-fg-faint">
                 ·
@@ -91,7 +91,7 @@ export function ProjectCard({ project }: { project: ProjectCardProject }) {
             />
             <StatTile
               label="Upgrade"
-              value={project.upgradeType.replace(/_/g, " ")}
+              value={capitalize(project.upgradeType.replace(/_/g, " "))}
               truncate
             />
           </div>
@@ -135,6 +135,10 @@ function StatTile({
       </p>
     </div>
   );
+}
+
+function capitalize(s: string): string {
+  return s.length === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 export default ProjectCard;

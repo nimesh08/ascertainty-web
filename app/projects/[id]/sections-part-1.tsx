@@ -16,6 +16,13 @@ import {
 import { StatusPill } from "@/components/shared/StatusPill";
 import { ProjectHero } from "@/components/investor/project-hero";
 
+/** Small util: capitalize the first letter (sentence-case). Used for
+    sector / upgradeType labels that come from the DB as snake_case
+    lowercase strings. */
+export function capitalize(s: string): string {
+  return s.length === 0 ? s : s.charAt(0).toUpperCase() + s.slice(1);
+}
+
 /** Small util: pick a lucide icon by string name. */
 export function iconFromName(name?: string): React.ReactNode {
   switch (name) {
@@ -145,17 +152,15 @@ export function HeroCard({
       <ProjectHero kind="project" />
       <div className="space-y-4 p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
-          <h1 className="text-3xl font-bold leading-[1.05] tracking-tight sm:text-4xl md:text-5xl">
-            <span className="bg-gradient-to-br from-green via-accent to-accent bg-clip-text text-transparent">
-              {project.msmeName}
-            </span>
+          <h1 className="text-3xl font-bold leading-[1.05] tracking-tight text-fg sm:text-4xl md:text-5xl">
+            {project.msmeName}
           </h1>
           <StatusPill status={project.status} />
         </div>
         <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-fg-muted">
           <span className="inline-flex items-center gap-1.5 rounded-full border border-line/60 bg-bg-2/40 px-2.5 py-1">
             <Tag className="size-3.5" />
-            {project.sector.replace(/_/g, " ")}
+            {capitalize(project.sector.replace(/_/g, " "))}
           </span>
           <span className="inline-flex items-center gap-1.5 rounded-full border border-line/60 bg-bg-2/40 px-2.5 py-1">
             <MapPin className="size-3.5" />
@@ -226,7 +231,7 @@ export function UpgradesSection({
       <SectionTitle label="Deployment" title="Upgrades & equipment" />
       <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-green/30 bg-green/10 px-3 py-1.5 text-sm text-green">
         <Zap className="size-3.5" />
-        {upgradeType.replace(/_/g, " ")}
+        {capitalize(upgradeType.replace(/_/g, " "))}
       </div>
       {shown ? <ParagraphedText text={shown} /> : null}
     </SectionCard>

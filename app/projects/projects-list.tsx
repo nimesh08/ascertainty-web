@@ -63,11 +63,14 @@ export function ProjectsList({ projects }: { projects: ProjectsListItem[] }) {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="all">All sectors</SelectItem>
-              {sectors.map((s) => (
-                <SelectItem key={s} value={s}>
-                  {s.replace(/_/g, " ")}
-                </SelectItem>
-              ))}
+              {sectors.map((s) => {
+                const display = s.replace(/_/g, " ");
+                return (
+                  <SelectItem key={s} value={s}>
+                    {display.charAt(0).toUpperCase() + display.slice(1)}
+                  </SelectItem>
+                );
+              })}
             </SelectContent>
           </Select>
         </div>

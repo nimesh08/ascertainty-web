@@ -68,7 +68,7 @@ export function UnderwritingBriefSection({
             grade={grade ?? undefined}
             electricityRateInrKwh={rate}
             variant="full"
-            label="Predicted annual savings (TabPFN, 90% conformal PI)"
+            label="Predicted annual savings (90% conformal PI)"
           />
         ) : null}
 
@@ -105,17 +105,14 @@ export function UnderwritingBriefSection({
             <span className="font-medium text-fg">
               {underwriting.modelUsed ?? "PINN unified"}
             </span>{" "}
-            sized this facility under the DSCR-at-P5 ≥ 1.30× covenant. The serving model ingests
-            all 21 fields from the audit schema (leakage, rated kW, hours/days, plant context).
-            <span className="text-fg-muted">
-              {" "}
-              TabPFN is the benchmark headline (R²=+0.56 LOO on a 6-feature corpus) and will
-              become the serving default once retrained on the full audit schema —{" "}
-              <Link href="/#05-benchmarks" className="underline underline-offset-2 hover:text-accent">
-                see benchmarks
-              </Link>.
-            </span>{" "}
-            Carbon credits accrue on the same meter under the §11 disclosure schedule.
+            sized this facility under the DSCR-at-P5 ≥ 1.30× covenant. The serving model
+            ingests all 21 fields from the audit schema (leakage, rated kW, hours/days,
+            plant context); calibration is fit on a 72-ECM Indian audit corpus.{" "}
+            <Link href="/#05-benchmarks" className="underline underline-offset-2 hover:text-accent">
+              See full benchmarks
+            </Link>{" "}
+            for the leave-one-out residuals and reproduction script. Carbon credits accrue
+            on the same meter under the project&apos;s disclosure schedule.
           </p>
           <div className="mt-3 flex flex-wrap gap-2 text-xs">
             <Link
