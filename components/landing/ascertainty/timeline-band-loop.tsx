@@ -50,11 +50,13 @@ export function TimelineBandLoop() {
         </div>
         <p style={{ marginTop: 8 }}>
           As the auditor enters measurements across the 30-day window, the
-          model&apos;s uncertainty narrows and the P5 lender floor firms up.
+          90% prediction interval contracts around realized kWh.
           <br /><br />
-          <b>Day 1:</b> we have a wide guess.<br />
-          <b>Day 30:</b> the lender has a calibrated floor.<br />
-          <span style={{ color: "var(--fg-muted)" }}>That&apos;s the moat.</span>
+          <b>Day 1:</b> the prediction interval is wide.<br />
+          <b>Day 30:</b> it&apos;s tightened around realized kWh.<br />
+          <span style={{ color: "var(--fg-muted)" }}>
+            The P5 floor is the calibration, not the headline.
+          </span>
         </p>
       </div>
       <div>

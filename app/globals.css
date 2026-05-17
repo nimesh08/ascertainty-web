@@ -3816,6 +3816,92 @@
   }
 
   /* ─────────────────────────────────────────────────────────────────
+     /approach — hero grid + step actor chip + spec pills + model grid
+     ───────────────────────────────────────────────────────────────── */
+  .approach-hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 56px;
+    align-items: center;
+  }
+  .approach-hero__sidecar { width: 100%; }
+  @media (max-width: 900px) {
+    .approach-hero__grid {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+  }
+
+  /* Step actor chip — replaces "// LENDER" plain-text labels. Renders
+     as a small accent-tinted pill in the §02 Mechanics step rows. */
+  .step-actor {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: color-mix(in oklab, var(--accent) 10%, transparent);
+    color: var(--accent-deep);
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    line-height: 1;
+    border: 1px solid color-mix(in oklab, var(--accent) 24%, transparent);
+  }
+
+  /* Step specs — replaces the right-column 3-row dashed-underline
+     metadata table. Renders as small inline label/value pills below
+     the step body. Cross-page consistent with the .a-chip aesthetic. */
+  .step-specs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  .step-spec {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: color-mix(in oklab, var(--bg-1) 80%, var(--accent));
+    border: 1px solid var(--line);
+    font-size: 11px;
+  }
+  .step-spec__k {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 9.5px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg-faint);
+  }
+  .step-spec__v {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    color: var(--fg);
+  }
+
+  /* §03 Model — 2-col grid: explainer card on left, calibrated-PI chart
+     on the right. Mirrors the hero pattern so the page reads as
+     parallel: "this is the model card → this is what it produces". */
+  .model-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+    gap: 28px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .model-grid {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+  }
+  .model-grid__chart {
+    border: 1px solid var(--line);
+    background: var(--bg-1);
+    border-radius: 12px;
+    padding: 22px;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────
      /borrowers hero — 2-col layout: copy + CTA on left, timeline on right
      ───────────────────────────────────────────────────────────────── */
   .borrowers-hero__grid {
