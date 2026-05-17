@@ -754,6 +754,57 @@
     pointer-events: none;
   }
 
+  /* /borrowers §04 Process — faded factory-installation backdrop behind
+     the 5-step day-by-day journey. Sets up §05's audit-pipeline by
+     showing the physical install moment. Same fade-in/fade-out
+     gradient pattern as §05 for seamless section transitions. */
+  [id="process"] {
+    isolation: isolate;
+  }
+  [id="process"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(
+        to bottom,
+        var(--bg-0) 0%,
+        transparent 14%,
+        transparent 86%,
+        var(--bg-0) 100%
+      ),
+      linear-gradient(
+        color-mix(in oklab, var(--bg-0) 38%, transparent),
+        color-mix(in oklab, var(--bg-0) 38%, transparent)
+      ),
+      url("/images/bg-process-install.webp") center / cover no-repeat;
+    pointer-events: none;
+  }
+
+  /* /borrowers §06 Parallel Financing — sage tint bookend mirroring
+     §02 ECM categories. Closes the page rhythm: tint → cream → cream →
+     image → image → tint. */
+  [id="parallel-financing"] {
+    isolation: isolate;
+  }
+  [id="parallel-financing"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(
+        to bottom,
+        var(--bg-0) 0%,
+        transparent 12%,
+        transparent 88%,
+        var(--bg-0) 100%
+      ),
+      color-mix(in oklab, var(--accent) 5%, var(--bg-0));
+    pointer-events: none;
+  }
+
   /* /borrowers §05 Audit intake — faded industrial-audit backdrop behind
      the animated pipeline + KISEM matrix. Image at ~70% opacity so the
      pipeline card's backdrop-blur reads as proper liquid glass instead
