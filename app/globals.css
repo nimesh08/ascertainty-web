@@ -732,6 +732,55 @@
 
   /* /lenders §05 Liquidity — atmospheric bg image (path / horizon) +
      opacity-tuned overlay so the timeline rail stays legible */
+  /* /borrowers §02 ECM categories — sage-tinted band. Mirrors the Risk
+     tint on /lenders so the two persona pages share a rhythm. */
+  [id="ecm-categories"] {
+    isolation: isolate;
+  }
+  [id="ecm-categories"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(
+        to bottom,
+        var(--bg-0) 0%,
+        transparent 12%,
+        transparent 88%,
+        var(--bg-0) 100%
+      ),
+      color-mix(in oklab, var(--accent) 5%, var(--bg-0));
+    pointer-events: none;
+  }
+
+  /* /borrowers §05 Audit intake — faded industrial-audit backdrop behind
+     the animated pipeline + KISEM matrix. Image is engineer-desk style
+     (audit reports, schematics, instruments) at ~44% opacity. */
+  [id="audit-intake"] {
+    isolation: isolate;
+  }
+  [id="audit-intake"]::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(
+        to bottom,
+        var(--bg-0) 0%,
+        transparent 12%,
+        transparent 88%,
+        var(--bg-0) 100%
+      ),
+      linear-gradient(
+        color-mix(in oklab, var(--bg-0) 56%, transparent),
+        color-mix(in oklab, var(--bg-0) 56%, transparent)
+      ),
+      url("/images/bg-audit-intake.webp") center / cover no-repeat;
+    pointer-events: none;
+  }
+
   /* /lenders §02 Risk framework — soft sage-tinted band. Anchors the
      middle of the page so the rhythm reads: cream worked-example → tinted
      risk → cream-with-lifted-calc-card → image-overlay liquidity. */
@@ -3713,6 +3762,280 @@
     letter-spacing: -0.02em;
     margin-top: 4px;
   }
+
+  /* ─────────────────────────────────────────────────────────────────
+     /borrowers hero — 2-col layout: copy + CTA on left, timeline on right
+     ───────────────────────────────────────────────────────────────── */
+  .borrowers-hero__grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 56px;
+    align-items: center;
+  }
+  .borrowers-hero__sidecar {
+    width: 100%;
+  }
+  @media (max-width: 900px) {
+    .borrowers-hero__grid {
+      grid-template-columns: 1fr;
+      gap: 28px;
+    }
+  }
+
+  /* Hero timeline strip — vertical rail with 5 milestones */
+  .b-hero-timeline {
+    position: relative;
+    padding: 6px 0 28px 0;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .b-hero-timeline__rail {
+    position: absolute;
+    left: 11px;
+    top: 18px;
+    bottom: 56px;
+    width: 2px;
+    background: linear-gradient(
+      to bottom,
+      var(--accent) 0%,
+      var(--accent) 78%,
+      color-mix(in oklab, var(--accent) 40%, transparent) 100%
+    );
+    border-radius: 999px;
+  }
+  .b-hero-timeline__node {
+    position: relative;
+    padding-left: 36px;
+    opacity: 0;
+    animation: b-hero-timeline-in 0.5s ease forwards;
+  }
+  @keyframes b-hero-timeline-in {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .b-hero-timeline__dot {
+    position: absolute;
+    left: 0;
+    top: 4px;
+    width: 24px;
+    height: 24px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+    z-index: 2;
+  }
+  .b-hero-timeline__node--done .b-hero-timeline__dot {
+    background: var(--accent);
+    color: var(--accent-ink, #fff);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 14%, transparent);
+  }
+  .b-hero-timeline__node--ongoing .b-hero-timeline__dot {
+    background: var(--bg-1);
+    color: var(--accent-deep);
+    border: 2px solid var(--accent);
+    animation: b-hero-timeline-pulse 2.2s ease-in-out infinite;
+  }
+  @keyframes b-hero-timeline-pulse {
+    0%, 100% { box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 14%, transparent); }
+    50%      { box-shadow: 0 0 0 8px color-mix(in oklab, var(--accent) 8%, transparent); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .b-hero-timeline__node { animation: none; opacity: 1; transform: none; }
+    .b-hero-timeline__node--ongoing .b-hero-timeline__dot { animation: none; }
+  }
+  .b-hero-timeline__day {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+  }
+  .b-hero-timeline__title {
+    font-family: var(--font-display);
+    font-size: 17px;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+    margin-top: 2px;
+  }
+  .b-hero-timeline__body {
+    font-size: 12px;
+    color: var(--fg-muted);
+    line-height: 1.5;
+    margin-top: 4px;
+    max-width: 32ch;
+  }
+  .b-hero-timeline__caption {
+    margin-top: 8px;
+    padding-left: 36px;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+  .b-hero-timeline__caption-strong {
+    color: var(--accent-deep);
+    font-weight: 600;
+  }
+
+  /* ─────────────────────────────────────────────────────────────────
+     /borrowers §05 — Audit intake animation + KISEM matrix
+     ───────────────────────────────────────────────────────────────── */
+  .audit-intake {
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+  .audit-intake__pipeline {
+    position: relative;
+    width: 100%;
+    border: 1px solid var(--line);
+    background:
+      linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%);
+    border-radius: 12px;
+    padding: 20px 24px;
+    overflow: hidden;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.7) inset,
+      0 12px 32px -16px rgba(22, 36, 33, 0.10);
+  }
+  .audit-intake__svg {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  @media (max-width: 720px) {
+    .audit-intake__pipeline { padding: 12px; }
+  }
+
+  /* KISEM 12-company grid */
+  .kisem-matrix {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+  .kisem-matrix__head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  .kisem-matrix__kicker {
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    margin-bottom: 6px;
+  }
+  .kisem-matrix__title {
+    font-family: var(--font-display);
+    font-size: 28px;
+    letter-spacing: -0.015em;
+    color: var(--fg);
+  }
+  .kisem-matrix__filters {
+    display: inline-flex;
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .kisem-matrix__filter {
+    padding: 8px 14px;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+    background: transparent;
+    border: 0;
+    border-right: 1px solid var(--line);
+    cursor: pointer;
+    transition: all 0.18s;
+  }
+  .kisem-matrix__filter:last-child { border-right: 0; }
+  .kisem-matrix__filter:hover { color: var(--fg); }
+  .kisem-matrix__filter--active {
+    background: var(--accent);
+    color: var(--accent-ink, #fff);
+  }
+  .kisem-matrix__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 10px;
+  }
+  .kisem-matrix__cell {
+    position: relative;
+    padding: 14px 16px 14px 36px;
+    border: 1px solid var(--line);
+    background: var(--bg-1);
+    border-radius: 4px;
+    transition: all 0.18s;
+  }
+  .kisem-matrix__cell-status {
+    position: absolute;
+    left: 14px;
+    top: 16px;
+    font-size: 14px;
+    line-height: 1;
+  }
+  .kisem-matrix__cell-company {
+    font-size: 13px;
+    color: var(--fg);
+    letterSpacing: -0.005em;
+    margin-bottom: 4px;
+  }
+  .kisem-matrix__cell-meta {
+    font-size: 11px;
+    color: var(--fg-faint);
+    line-height: 1.4;
+  }
+  .kisem-matrix__cell-sep {
+    margin: 0 4px;
+    color: var(--fg-faint);
+  }
+  /* Status-driven left border + status-dot color */
+  .kisem-matrix__cell--green {
+    border-left: 3px solid var(--accent);
+  }
+  .kisem-matrix__cell--green .kisem-matrix__cell-status { color: var(--accent); }
+  .kisem-matrix__cell--amber {
+    border-left: 3px solid #d4a017;
+    background: color-mix(in oklab, #d4a017 3%, var(--bg-1));
+  }
+  .kisem-matrix__cell--amber .kisem-matrix__cell-status { color: #b8841a; }
+  .kisem-matrix__cell--red {
+    border-left: 3px solid #c4564a;
+    background: color-mix(in oklab, #c4564a 3%, var(--bg-1));
+  }
+  .kisem-matrix__cell--red .kisem-matrix__cell-status { color: #c4564a; }
+  .kisem-matrix__cell--blank {
+    border-left: 3px solid var(--line-strong);
+    opacity: 0.65;
+  }
+  .kisem-matrix__cell--blank .kisem-matrix__cell-status { color: var(--fg-faint); }
+
+  .kisem-matrix__legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 18px;
+    font-family: var(--font-geist-mono), ui-monospace, monospace;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--fg-muted);
+    padding-top: 6px;
+    border-top: 1px solid var(--line);
+  }
+  .kisem-matrix__legend-item { display: inline-flex; align-items: center; gap: 6px; }
+  .kisem-matrix__legend-item--green span:first-child { color: var(--accent); }
+  .kisem-matrix__legend-item--amber span:first-child { color: #b8841a; }
+  .kisem-matrix__legend-item--red span:first-child { color: #c4564a; }
+  .kisem-matrix__legend-item--blank span:first-child { color: var(--fg-faint); }
 
   /* ─────────────────────────────────────────────────────────────────
      Lenders calculator — three-tab interactive widget
