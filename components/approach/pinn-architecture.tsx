@@ -17,13 +17,15 @@
 const W = 460;
 const H = 300;
 
-// Input feature groups (5 tiles representing the 21 audit features)
+// Input feature groups (5 tiles representing the 21 audit features).
+// Y positions centered on the PINN backbone midline (y=150) so the
+// whole diagram is symmetric around the horizontal spine.
 const INPUTS: Array<{ y: number; label: string }> = [
-  { y: 38, label: "Building · area, age" },
-  { y: 78, label: "Baseline · kWh, tariff" },
-  { y: 118, label: "Equipment · class, count" },
-  { y: 158, label: "Occupancy · profile" },
-  { y: 198, label: "Tenor · schedule" },
+  { y: 80, label: "Building · area, age" },
+  { y: 115, label: "Baseline · kWh, tariff" },
+  { y: 150, label: "Equipment · class, count" },
+  { y: 185, label: "Occupancy · profile" },
+  { y: 220, label: "Tenor · schedule" },
 ];
 
 const TILE_W = 132;
@@ -106,7 +108,7 @@ export function PinnArchitecture() {
       />
       <text
         x={BACK_X + BACK_W / 2}
-        y={BACK_Y + 32}
+        y={BACK_Y + 30}
         textAnchor="middle"
         className="pinn-arch__backbone-title"
       >
@@ -114,24 +116,26 @@ export function PinnArchitecture() {
       </text>
       <text
         x={BACK_X + BACK_W / 2}
-        y={BACK_Y + 52}
+        y={BACK_Y + 50}
         textAnchor="middle"
         className="pinn-arch__backbone-sub"
       >
         unified
       </text>
+      {/* Spine line at exact backbone midheight (y=150) so the
+          animated particle visibly travels along it. */}
       <line
         x1={BACK_X + 16}
-        y1={BACK_Y + 70}
+        y1={150}
         x2={BACK_X + BACK_W - 16}
-        y2={BACK_Y + 70}
+        y2={150}
         stroke="var(--accent)"
-        strokeWidth={0.8}
-        opacity={0.4}
+        strokeWidth={1}
+        opacity={0.55}
       />
       <text
         x={BACK_X + BACK_W / 2}
-        y={BACK_Y + 92}
+        y={BACK_Y + 88}
         textAnchor="middle"
         className="pinn-arch__backbone-spec"
       >
@@ -139,7 +143,7 @@ export function PinnArchitecture() {
       </text>
       <text
         x={BACK_X + BACK_W / 2}
-        y={BACK_Y + 108}
+        y={BACK_Y + 104}
         textAnchor="middle"
         className="pinn-arch__backbone-spec"
       >
@@ -147,7 +151,7 @@ export function PinnArchitecture() {
       </text>
       <text
         x={BACK_X + BACK_W / 2}
-        y={BACK_Y + 124}
+        y={BACK_Y + 120}
         textAnchor="middle"
         className="pinn-arch__backbone-spec"
       >
@@ -239,27 +243,21 @@ export function PinnArchitecture() {
         </text>
       </g>
 
-      {/* Animated data dots — one travels inputs → backbone, another backbone → output */}
-      <circle r={3} fill="var(--accent)" opacity={0.9}>
-        <animate
-          attributeName="cx"
-          dur="3.4s"
-          values={`${TILE_X + TILE_W};${BACK_X};${BACK_X + BACK_W};${OUT_X + 56};${OUT_X + 56}`}
-          keyTimes="0;0.35;0.55;0.92;1"
+      {/* Data dot — travels strictly along the spine: middle input
+          connector (grey, horizontal) → PINN divider line (green,
+          horizontal) → middle output connector (grey, horizontal).
+          animateMotion + path keeps it on the visible lines. */}
+      <circle r={4} fill="var(--accent)">
+        <animateMotion
+          dur="3.6s"
           repeatCount="indefinite"
-        />
-        <animate
-          attributeName="cy"
-          dur="3.4s"
-          values={`118;${BACK_Y + BACK_H / 2};${BACK_Y + BACK_H / 2};110;110`}
-          keyTimes="0;0.35;0.55;0.92;1"
-          repeatCount="indefinite"
+          path={`M${TILE_X + TILE_W},150 L${OUT_X},150`}
         />
         <animate
           attributeName="opacity"
-          dur="3.4s"
-          values="0;1;1;1;0"
-          keyTimes="0;0.1;0.55;0.92;1"
+          dur="3.6s"
+          values="0;1;1;0"
+          keyTimes="0;0.08;0.88;1"
           repeatCount="indefinite"
         />
       </circle>

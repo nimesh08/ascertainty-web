@@ -158,8 +158,11 @@ export default function ProtocolPage() {
         </div>
       </section>
 
-      {/* PRIMITIVES */}
-      <section id="primitives" className="a-section">
+      {/* PRIMITIVES — dark-themed band mirroring landing §05 BENCHMARKS.
+          Visual rhythm: cream hero → DARK primitives → cream mechanics →
+          cream model → cream closer. The dark band makes the foundational
+          "what we are" section feel like the page's anchor. */}
+      <section id="primitives" className="a-section a-section--dark">
         <SectionHead
           idx="01"
           kicker="THE SYSTEM"
