@@ -7,7 +7,7 @@ import { renderPolicyMarkdown } from "@/lib/utils/policy-md";
 export const dynamic = "force-static";
 
 export const metadata = {
-  title: "Underwriting Policy · Ascertainty",
+  title: "Underwriting Policy | Ascertainty",
   description:
     "Ascertainty's binding underwriting standard for tokenized retrofit-savings vaults. Published for LP, borrower, and partner transparency.",
 };

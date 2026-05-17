@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { db, schema } from "@/lib/db";
 import { desc } from "drizzle-orm";
 import { Container } from "@/components/layout/container";
@@ -5,6 +6,12 @@ import { PageHeader } from "@/components/layout/page-header";
 import { ProjectsList } from "./projects-list";
 
 export const dynamic = "force-dynamic";
+
+export const metadata: Metadata = {
+  title: "Projects | Ascertainty",
+  description:
+    "Live and pipeline industrial-retrofit deals on Ascertainty. Each project ships with calibrated savings forecast, P5 floor, and full underwriting trail.",
+};
 
 async function loadProjects() {
   try {

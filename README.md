@@ -36,7 +36,7 @@ flowchart LR
     B[Browser<br/>Privy SDK] -->|HTTPS| C[Caddy<br/>:443]
     C -->|reverse_proxy| N[Next.js / pm2<br/>:3100]
     N -->|Drizzle / postgres-js| P[(Neon Postgres)]
-    N -->|@solana/web3.js<br/>Anchor| S[Solana Devnet<br/>via Helius RPC]
+    N -->|web3.js + Anchor| S[Solana Devnet<br/>via Helius RPC]
     B -.->|signTransaction| S
     S -.->|account reads| I[Indexer<br/>lib/indexer/*]
     I --> P
