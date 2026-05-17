@@ -181,6 +181,7 @@ export default function BorrowersPage() {
                   background: "var(--bg-1)",
                   padding: 20,
                   minHeight: 180,
+                  borderRadius: 8,
                 }}
               >
                 <h3
@@ -245,6 +246,7 @@ export default function BorrowersPage() {
               border: "1px solid var(--line)",
               background: "var(--bg-1)",
               padding: 28,
+              borderRadius: 12,
             }}
           >
             <div
@@ -468,6 +470,7 @@ export default function BorrowersPage() {
                 border: "1px solid var(--line)",
                 background: "var(--bg-1)",
                 padding: 22,
+                borderRadius: 12,
               }}
             >
               <div
@@ -540,6 +543,7 @@ export default function BorrowersPage() {
                 border: "1px solid var(--accent)",
                 background: "var(--accent-soft)",
                 padding: 22,
+                borderRadius: 12,
               }}
             >
               <div

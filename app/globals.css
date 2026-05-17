@@ -3828,20 +3828,35 @@
     font-weight: 600;
     z-index: 2;
   }
+  /* Done + ongoing dot styling mirrors the .liq-rail__dot pattern on
+     /lenders so the active-node visual stays consistent across pages. */
   .b-hero-timeline__node--done .b-hero-timeline__dot {
     background: var(--accent);
+    border: 2px solid var(--accent);
     color: var(--accent-ink, #fff);
-    box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 14%, transparent);
+    box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 18%, transparent);
   }
   .b-hero-timeline__node--ongoing .b-hero-timeline__dot {
-    background: var(--bg-1);
-    color: var(--accent-deep);
+    background: var(--bg-0);
     border: 2px solid var(--accent);
-    animation: b-hero-timeline-pulse 2.2s ease-in-out infinite;
+    color: var(--accent);
+    font-size: 10px;
+    box-shadow:
+      0 0 0 6px color-mix(in oklab, var(--accent) 22%, transparent),
+      0 0 16px color-mix(in oklab, var(--accent) 35%, transparent);
+    animation: b-hero-timeline-pulse 2.4s ease-in-out infinite;
   }
   @keyframes b-hero-timeline-pulse {
-    0%, 100% { box-shadow: 0 0 0 4px color-mix(in oklab, var(--accent) 14%, transparent); }
-    50%      { box-shadow: 0 0 0 8px color-mix(in oklab, var(--accent) 8%, transparent); }
+    0%, 100% {
+      box-shadow:
+        0 0 0 6px color-mix(in oklab, var(--accent) 22%, transparent),
+        0 0 16px color-mix(in oklab, var(--accent) 35%, transparent);
+    }
+    50% {
+      box-shadow:
+        0 0 0 10px color-mix(in oklab, var(--accent) 12%, transparent),
+        0 0 24px color-mix(in oklab, var(--accent) 50%, transparent);
+    }
   }
   @media (prefers-reduced-motion: reduce) {
     .b-hero-timeline__node { animation: none; opacity: 1; transform: none; }

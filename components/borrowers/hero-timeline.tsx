@@ -49,7 +49,7 @@ export function HeroTimeline() {
           style={{ animationDelay: `${i * 0.18}s` }}
         >
           <div className="b-hero-timeline__dot" aria-hidden>
-            {m.state === "ongoing" ? "◯" : "✓"}
+            {m.state === "ongoing" ? "●" : "✓"}
           </div>
           <div className="b-hero-timeline__content">
             <div className="b-hero-timeline__day">{m.day}</div>

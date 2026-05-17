@@ -136,12 +136,14 @@ function StageCard({
         <text
           x={x + 14}
           y={STAGE_Y + 26}
-          fontFamily="var(--font-geist-mono), ui-monospace, monospace"
-          fontSize={10}
-          letterSpacing="0.12em"
+          fontFamily="var(--font-display)"
+          fontSize={12}
+          fontWeight={500}
+          letterSpacing="-0.005em"
           fill="var(--fg-muted)"
         >
-          {String(i + 1).padStart(2, "0")} · {label}
+          <tspan fill="var(--fg-faint)">{String(i + 1).padStart(2, "0")}</tspan>
+          {"  "}{label}
         </text>
         {/* Inner content */}
         {children}
@@ -149,8 +151,9 @@ function StageCard({
         <text
           x={x + 14}
           y={STAGE_Y + STAGE_H - 16}
-          fontFamily="var(--font-geist-mono), ui-monospace, monospace"
-          fontSize={10}
+          fontFamily="var(--font-display)"
+          fontSize={11}
+          letterSpacing="-0.005em"
           fill="var(--fg-faint)"
         >
           {caption}
@@ -324,66 +327,75 @@ export function AuditIntakeFlow() {
             })}
           </StageCard>
 
-          {/* Stage 4 — Physics heads (equations) */}
+          {/* Stage 4 — Physics heads (labels in display, equations in mono) */}
           <StageCard i={3} label="PHYSICS HEAD" caption="PINN · per-ECM">
-            <g fontFamily="var(--font-geist-mono), ui-monospace, monospace">
-              <text
-                x={STAGE_X[3] + 14}
-                y={STAGE_Y + 64}
-                fontSize={10}
-                fill="var(--fg-muted)"
-              >
-                Cooling load:
-              </text>
-              <text
-                x={STAGE_X[3] + 14}
-                y={STAGE_Y + 82}
-                fontSize={13}
-                fill="var(--fg)"
-              >
-                Q = m · cp · ΔT
-              </text>
-              <text
-                x={STAGE_X[3] + 14}
-                y={STAGE_Y + 112}
-                fontSize={10}
-                fill="var(--fg-muted)"
-              >
-                COP gain:
-              </text>
-              <text
-                x={STAGE_X[3] + 14}
-                y={STAGE_Y + 130}
-                fontSize={13}
-                fill="var(--fg)"
-              >
-                η = COP₂ / COP₁
-              </text>
-              <text
-                x={STAGE_X[3] + 14}
-                y={STAGE_Y + 160}
-                fontSize={10}
-                fill="var(--fg-muted)"
-              >
-                Schedule offset:
-              </text>
-              <text
-                x={STAGE_X[3] + 14}
-                y={STAGE_Y + 178}
-                fontSize={13}
-                fill="var(--fg)"
-              >
-                ∫ P(t)·θ(t) dt
-              </text>
-              <text
-                x={STAGE_X[3] + 14}
-                y={STAGE_Y + 220}
-                fontSize={10}
-                fill="var(--accent-deep)"
-              >
-                ✓ physically feasible
-              </text>
-            </g>
+            {/* Cooling load */}
+            <text
+              x={STAGE_X[3] + 14}
+              y={STAGE_Y + 64}
+              fontFamily="var(--font-display)"
+              fontSize={11}
+              fill="var(--fg-muted)"
+            >
+              Cooling load
+            </text>
+            <text
+              x={STAGE_X[3] + 14}
+              y={STAGE_Y + 84}
+              fontFamily="var(--font-geist-mono), ui-monospace, monospace"
+              fontSize={13}
+              fill="var(--fg)"
+            >
+              Q = m · cp · ΔT
+            </text>
+            {/* COP gain */}
+            <text
+              x={STAGE_X[3] + 14}
+              y={STAGE_Y + 114}
+              fontFamily="var(--font-display)"
+              fontSize={11}
+              fill="var(--fg-muted)"
+            >
+              COP gain
+            </text>
+            <text
+              x={STAGE_X[3] + 14}
+              y={STAGE_Y + 134}
+              fontFamily="var(--font-geist-mono), ui-monospace, monospace"
+              fontSize={13}
+              fill="var(--fg)"
+            >
+              η = COP₂ / COP₁
+            </text>
+            {/* Schedule offset */}
+            <text
+              x={STAGE_X[3] + 14}
+              y={STAGE_Y + 164}
+              fontFamily="var(--font-display)"
+              fontSize={11}
+              fill="var(--fg-muted)"
+            >
+              Schedule offset
+            </text>
+            <text
+              x={STAGE_X[3] + 14}
+              y={STAGE_Y + 184}
+              fontFamily="var(--font-geist-mono), ui-monospace, monospace"
+              fontSize={13}
+              fill="var(--fg)"
+            >
+              ∫ P(t)·θ(t) dt
+            </text>
+            {/* Feasibility tag */}
+            <text
+              x={STAGE_X[3] + 14}
+              y={STAGE_Y + 222}
+              fontFamily="var(--font-display)"
+              fontSize={11}
+              fill="var(--accent-deep)"
+            >
+              ✓ physically feasible
+            </text>
           </StageCard>
 
           {/* Stage 5 — Calibrated forecast + term-sheet pill */}
@@ -489,12 +501,13 @@ export function AuditIntakeFlow() {
             x={VB.w / 2}
             y={STAGE_Y + STAGE_H + 60}
             textAnchor="middle"
-            fontFamily="var(--font-geist-mono), ui-monospace, monospace"
-            fontSize={11}
-            letterSpacing="0.16em"
+            fontFamily="var(--font-display)"
+            fontSize={14}
+            fontWeight={500}
+            letterSpacing="-0.01em"
             fill="var(--fg-muted)"
           >
-            ONE REPORT · FIVE PRIMITIVES · ONE CALIBRATED FORECAST
+            One report. Five primitives. One calibrated forecast.
           </text>
         </svg>
       </div>

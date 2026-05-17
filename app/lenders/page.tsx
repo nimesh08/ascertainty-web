@@ -179,6 +179,7 @@ export default async function LendersPage() {
                 border: "1px solid var(--line)",
                 background: "var(--bg-1)",
                 padding: 22,
+                borderRadius: 12,
               }}
             >
               {/* Deal-specific distribution chart — visualises the
