@@ -3986,9 +3986,9 @@
   }
   .pinn-arch__output-callout {
     font-family: var(--font-geist-mono), ui-monospace, monospace;
-    font-size: 10.5px;
+    font-size: 9.5px;
     fill: var(--accent-ink, #fff);
-    letter-spacing: 0.06em;
+    letter-spacing: 0.02em;
   }
 
   /* ─────────────────────────────────────────────────────────────────

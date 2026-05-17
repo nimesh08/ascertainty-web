@@ -235,7 +235,7 @@ export function PinnArchitecture() {
           textAnchor="middle"
           className="pinn-arch__output-callout"
         >
-          90% PI · calibrated
+          Calibrated 90% PI
         </text>
       </g>
 

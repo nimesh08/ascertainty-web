@@ -34,7 +34,7 @@ const PRIMITIVES = [
   {
     title: "Composable pools",
     body: "Diversify across a basket of underlying MSME projects with one token. Senior and junior tranches; junior absorbs first-loss before senior is touched.",
-    chips: ["Senior · Junior", "Tranched", "ascertaintyUSDC"],
+    chips: ["Senior · Junior", "Tranched", "USDC-denominated"],
     icon: "id" as const,
   },
 ];
@@ -51,7 +51,7 @@ const STEPS: Array<{
     body: "Wallet signs a deposit. Funds queue into the next epoch on the underlying vault protocol. Share-of-savings token mints on settlement.",
     spec: [
       ["Settle", "≤ 4s"],
-      ["Token", "ascertaintyUSDC"],
+      ["Token", "Share-of-savings"],
       ["Custody", "RWA rails"],
     ],
   },
@@ -284,15 +284,13 @@ export default function ProtocolPage() {
         </div>
       </section>
 
-      {/* MODEL — chart-first + 4 compact stat tiles + benchmarks link */}
+      {/* MODEL — chart + 4 compact stat tiles + benchmarks link.
+          SectionHead title intentionally dropped — the hero
+          architecture diagram + Primitive 2's "PINN underwriting"
+          body already establish what the model produces. This
+          section is the technical-spec callout, nothing more. */}
       <section id="model" className="a-section">
-        <SectionHead
-          idx="03"
-          kicker="THE MODEL"
-          title="The model produces a floor. We underwrite to it."
-          intro="A calibrated 90% prediction interval per ECM. Loans size to the P5 floor — not the P50 best-case."
-        />
-        <div className="shell" style={{ paddingTop: 24, paddingBottom: 80, maxWidth: 1000 }}>
+        <div className="shell" style={{ paddingTop: 96, paddingBottom: 80, maxWidth: 1000 }}>
           <div className="model-chart">
             <CalibratedPIChart
               legendTitle="Calibrated 90% PI"
