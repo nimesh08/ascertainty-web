@@ -54,6 +54,21 @@ export function Sidebar({
   underwriting,
 }: SidebarProps) {
   const hasPosition = !!(position?.exists && position.tokensHeld > 0n);
+
+  // Min investment label — adaptive: $25K cap, but for small deals where the
+  // target itself is < $25K, fall back to the target. (Symptom: most realistic
+  // deals are $25K+ and the $25K floor applies; small test seed projects
+  // naturally show their own cap as the min.)
+  const DEFAULT_MIN = 25_000;
+  const targetBig = BigInt(project.targetUsdc || "0");
+  const targetDollars = Number(targetBig / 1_000_000n);
+  const minInvDollars = targetDollars > 0
+    ? Math.min(DEFAULT_MIN, targetDollars)
+    : DEFAULT_MIN;
+  const minInvLabel =
+    minInvDollars >= 1000
+      ? `$${(minInvDollars / 1000).toLocaleString()}K`
+      : `$${minInvDollars.toLocaleString()}`;
   const grade = underwriting?.confidenceGrade as "A" | "B" | "C" | null | undefined;
   const gradePalette = grade === "A"
     ? "border-green/40 bg-green/10 text-green"
@@ -125,15 +140,15 @@ export function Sidebar({
         <div className="h-px w-full bg-line/60" />
 
         <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-lg border border-line/60 bg-bg-2/40 p-3">
+          <div className="rounded-xl border border-line/60 bg-bg-2/40 p-3">
             <p className="text-[10px] font-medium uppercase tracking-widest text-fg-muted">
               Min inv.
             </p>
             <p className="mono-num mt-0.5 text-sm font-medium text-fg">
-              $25,000
+              {minInvLabel}
             </p>
           </div>
-          <div className="rounded-lg border border-line/60 bg-bg-2/40 p-3">
+          <div className="rounded-xl border border-line/60 bg-bg-2/40 p-3">
             <p className="text-[10px] font-medium uppercase tracking-widest text-fg-muted">
               Duration
             </p>
@@ -146,7 +161,7 @@ export function Sidebar({
         {hasPosition ? (
           <>
             <div className="h-px w-full bg-line/60" />
-            <div className="space-y-2 rounded-lg border border-green/20 bg-green/5 p-3">
+            <div className="space-y-2 rounded-xl border border-green/20 bg-green/5 p-3">
               <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-green">
                 Your position
               </p>

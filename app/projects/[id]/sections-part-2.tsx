@@ -486,7 +486,7 @@ export function DocumentsSection({
               className="flex items-center justify-between gap-3 py-3"
             >
               <div className="flex min-w-0 items-center gap-3">
-                <div className="grid size-9 shrink-0 place-items-center rounded-lg bg-bg-2/60 text-fg-muted">
+                <div className="grid size-9 shrink-0 place-items-center rounded-xl bg-bg-2/60 text-fg-muted">
                   <FileText className="size-4" />
                 </div>
                 <span className="truncate text-sm text-fg">{d.name}</span>

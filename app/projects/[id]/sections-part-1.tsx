@@ -216,7 +216,7 @@ export function HighlightsSection({
             key={i}
             className="flex items-start gap-3 rounded-xl border border-line/60 bg-bg-2/40 p-4"
           >
-            <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-green/10 text-green">
+            <div className="grid size-10 shrink-0 place-items-center rounded-xl bg-green/10 text-green">
               {iconFromName(h.icon)}
             </div>
             <div className="min-w-0 flex-1">
