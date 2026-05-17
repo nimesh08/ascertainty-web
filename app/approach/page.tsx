@@ -9,7 +9,7 @@ import { PinnArchitecture } from "@/components/approach/pinn-architecture";
 export const metadata: Metadata = {
   title: "Approach | Ascertainty",
   description:
-    "How Ascertainty underwrites. Six primitives, one ledger, every prediction reproducible. Calibrated physics-informed model, IoT M&V, on-chain audit-hash — verified at the meter.",
+    "How Ascertainty underwrites. Four primitives, one ledger, every prediction reproducible. Calibrated physics-informed model, IoT M&V, verified at the meter.",
 };
 
 const PRIMITIVES = [
@@ -58,7 +58,7 @@ const STEPS: Array<{
   {
     actor: "Protocol",
     title: "Vault routes to underwritten MSMEs.",
-    body: "The PINN underwriting layer sizes per-deal exposure to the P5 floor of a calibrated 90% PI. Vault disperses to borrower wallets through pre-authorised destinations on the underlying protocol.",
+    body: "The PINN underwriting layer sizes per-deal exposure to the P5 floor of a calibrated 90% PI. Vault disburses to borrower wallets through pre-authorised destinations on the underlying protocol.",
     spec: [
       ["Model", "PINN unified"],
       ["Covenant", "DSCR @ P5 ≥ 1.30×"],
