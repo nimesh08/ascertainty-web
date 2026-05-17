@@ -49,14 +49,29 @@ export function PinnArchitecture() {
       role="img"
       aria-label="PINN architecture: 21 audit features → unified 72-ECM backbone → calibrated 90% prediction interval per ECM"
     >
-      {/* Column headers */}
-      <text x={TILE_X} y={20} className="pinn-arch__col-label">
+      {/* Column headers — centered above each column's content */}
+      <text
+        x={TILE_X + TILE_W / 2}
+        y={20}
+        textAnchor="middle"
+        className="pinn-arch__col-label"
+      >
         21 features
       </text>
-      <text x={BACK_X} y={20} className="pinn-arch__col-label">
+      <text
+        x={BACK_X + BACK_W / 2}
+        y={20}
+        textAnchor="middle"
+        className="pinn-arch__col-label"
+      >
         Backbone
       </text>
-      <text x={OUT_X} y={20} className="pinn-arch__col-label">
+      <text
+        x={OUT_X + OUT_W / 2}
+        y={20}
+        textAnchor="middle"
+        className="pinn-arch__col-label"
+      >
         72 ECM heads
       </text>
 
