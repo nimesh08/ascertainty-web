@@ -121,15 +121,16 @@ function StageCard({
   return (
     <g>
       <g opacity={i === 0 ? 1 : 0}>
-        {/* Card frame */}
+        {/* Card frame — translucent so the section's blurred desk photo
+            bleeds through, completing the liquid-glass layering. */}
         <rect
           x={x}
           y={STAGE_Y}
           width={STAGE_W}
           height={STAGE_H}
           rx={10}
-          fill="var(--bg-1)"
-          stroke="var(--line)"
+          fill="rgba(255, 255, 255, 0.62)"
+          stroke="rgba(22, 36, 33, 0.10)"
           strokeWidth={1}
         />
         {/* Kicker */}
