@@ -8,6 +8,16 @@ import { Progress } from "@/components/ui/progress";
 import { formatUsd, formatTokenAmount } from "@/lib/utils/format";
 import { type PositionData } from "@/lib/solana/reads";
 
+/** Strip version suffix + parenthetical jargon from a model name string.
+    DB stores values like "PINN unified v0.1 (21-feature audit, IN-BEE)";
+    public surface only needs "PINN unified". */
+function cleanModelName(s: string): string {
+  return s
+    .replace(/\s*\([^)]*\)\s*$/, "")
+    .replace(/\s+v\d+(?:\.\d+)*\s*$/, "")
+    .trim();
+}
+
 interface SidebarProps {
   project: {
     targetUsdc: string;
@@ -81,7 +91,7 @@ export function Sidebar({
                 </span>
               ) : null}
               <span className="text-[10px] text-fg-muted">
-                {underwriting.modelUsed ?? "PINN"}
+                {cleanModelName(underwriting.modelUsed ?? "PINN")}
               </span>
             </div>
           ) : null}
@@ -119,14 +129,16 @@ export function Sidebar({
             <p className="text-[10px] font-medium uppercase tracking-widest text-fg-muted">
               Min inv.
             </p>
-            <p className="mono-num mt-0.5 text-sm font-medium text-fg">$1</p>
+            <p className="mono-num mt-0.5 text-sm font-medium text-fg">
+              $25,000
+            </p>
           </div>
           <div className="rounded-lg border border-line/60 bg-bg-2/40 p-3">
             <p className="text-[10px] font-medium uppercase tracking-widest text-fg-muted">
               Duration
             </p>
             <p className="mono-num mt-0.5 text-sm font-medium text-fg">
-              {project.termMonths} M
+              {project.termMonths} mo
             </p>
           </div>
         </div>

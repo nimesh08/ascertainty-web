@@ -24,6 +24,16 @@ import {
 } from "@/lib/utils/format";
 import { SectionCard, SectionLabel, SectionTitle, ProseText } from "./sections-part-1";
 
+/** Strip version suffix + parenthetical jargon from a model name string.
+    DB stores values like "PINN unified v0.1 (21-feature audit, IN-BEE)";
+    public surface only needs "PINN unified". */
+function cleanModelName(s: string): string {
+  return s
+    .replace(/\s*\([^)]*\)\s*$/, "")
+    .replace(/\s+v\d+(?:\.\d+)*\s*$/, "")
+    .trim();
+}
+
 interface UnderwritingForCard {
   dealId: string;
   modelUsed: string | null;
@@ -102,7 +112,7 @@ export function UnderwritingBriefSection({
         <div className="rounded-xl border border-line/60 bg-bg-2/40 p-4 text-sm text-fg/80">
           <p className="leading-relaxed">
             <span className="font-medium text-fg">
-              {underwriting.modelUsed ?? "PINN unified"}
+              {cleanModelName(underwriting.modelUsed ?? "PINN unified")}
             </span>{" "}
             sized this facility under the DSCR-at-P5 ≥ 1.30× covenant. The serving model
             ingests all 21 fields from the audit schema (leakage, rated kW, hours/days,
@@ -284,12 +294,15 @@ export function ReturnsCalculatorSection({
   termMonths: number;
 }) {
   // Convert raw 6-dec to whole-dollar units for the slider (integer ticks).
-  // Fall back to $10,000 if already funded to target.
+  // Fall back to DEFAULT_MIN if already funded.
+  const DEFAULT_MIN = 25_000;
   const maxDollarsRaw = remainingRaw > 0n ? Number(remainingRaw / 1_000_000n) : 0;
-  const max = maxDollarsRaw > 0 ? Math.max(1, maxDollarsRaw) : 10_000;
-  const min = 1;
+  const max = maxDollarsRaw > 0 ? Math.max(DEFAULT_MIN, maxDollarsRaw) : DEFAULT_MIN;
+  // Effective min: $25K unless the remaining on this deal is smaller (small
+  // test projects might have <$25K remaining; let the slider adapt).
+  const min = Math.min(DEFAULT_MIN, Math.max(1, maxDollarsRaw));
 
-  const [amount, setAmount] = useState<number>(() => Math.min(1_000, max));
+  const [amount, setAmount] = useState<number>(() => Math.max(min, Math.min(DEFAULT_MIN, max)));
 
   const totalReturn = useMemo(() => {
     const r = apyPct / 100;
