@@ -118,14 +118,26 @@ export function Footer() {
           </div>
         </div>
 
-        {/* Social row — hrefs default to "/" until the handles ship. */}
+        {/* Social row — external profiles, open in new tab. */}
         <div className="a-footer__social" aria-label="Social links">
-          <Link href="/" aria-label="Twitter / X" className="a-footer__social-link">
+          <a
+            href="https://x.com/ascertainty"
+            aria-label="Twitter / X"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="a-footer__social-link"
+          >
             <TwitterIcon />
-          </Link>
-          <Link href="/" aria-label="LinkedIn" className="a-footer__social-link">
+          </a>
+          <a
+            href="https://www.linkedin.com/company/ascertainty"
+            aria-label="LinkedIn"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="a-footer__social-link"
+          >
             <LinkedinIcon />
-          </Link>
+          </a>
         </div>
 
         <div className="a-footer__mono">
