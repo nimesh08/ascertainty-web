@@ -3,6 +3,10 @@ import { Zap, Layers } from "lucide-react";
 export interface ProjectHeroProps {
   kind: "project" | "pool";
   className?: string;
+  /** Public URL to a hero image (resolved by lib/projects/hero-image.ts).
+   *  When provided, it renders on top of the SVG; missing files just fall
+   *  through to the SVG. */
+  heroImageUrl?: string;
 }
 
 /**
@@ -12,7 +16,7 @@ export interface ProjectHeroProps {
  * theme changes (bg-1 base + green/cyan for projects, violet/magenta
  * for pools). No external image asset required.
  */
-export function ProjectHero({ kind, className }: ProjectHeroProps) {
+export function ProjectHero({ kind, className, heroImageUrl }: ProjectHeroProps) {
   const gradId = `hero-grad-${kind}`;
   const noiseId = `hero-noise-${kind}`;
   const ringId = `hero-ring-${kind}`;
@@ -97,27 +101,37 @@ export function ProjectHero({ kind, className }: ProjectHeroProps) {
         </g>
       </svg>
 
-      {/* Sector icon overlay (lucide), centered-left */}
-      <div className="absolute inset-0 flex items-center pl-8">
+      {/* Optional photographic overlay — sits ON TOP of the SVG so a missing
+          file just falls through to the SVG (no broken-image flash). */}
+      {heroImageUrl ? (
         <div
-          className="grid size-14 place-items-center rounded-xl border border-line/70 bg-bg-1/70 backdrop-blur-sm"
-          style={{
-            boxShadow: `0 0 0 1px ${colorA}22, 0 20px 40px -20px ${colorA}33`,
-          }}
-        >
-          {isPool ? (
-            <Layers
-              className="size-6"
-              style={{ color: colorA }}
-            />
-          ) : (
-            <Zap
-              className="size-6"
-              style={{ color: colorA }}
-            />
-          )}
+          aria-hidden
+          className="absolute inset-0 bg-cover bg-center"
+          style={{ backgroundImage: `url('${heroImageUrl}')` }}
+        />
+      ) : (
+        /* Sector icon overlay (lucide), centered-left — only when no photo */
+        <div className="absolute inset-0 flex items-center pl-8">
+          <div
+            className="grid size-14 place-items-center rounded-xl border border-line/70 bg-bg-1/70 backdrop-blur-sm"
+            style={{
+              boxShadow: `0 0 0 1px ${colorA}22, 0 20px 40px -20px ${colorA}33`,
+            }}
+          >
+            {isPool ? (
+              <Layers
+                className="size-6"
+                style={{ color: colorA }}
+              />
+            ) : (
+              <Zap
+                className="size-6"
+                style={{ color: colorA }}
+              />
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* Bottom fade so the card content seam is soft */}
       <div

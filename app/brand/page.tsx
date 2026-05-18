@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 
 import { Container } from "@/components/layout/container";
 import { CoinMark } from "@/components/layout/coin-mark";
+import { PageHeader } from "@/components/layout/page-header";
 
 export const metadata: Metadata = {
   title: "Brand kit · Ascertainty",
@@ -23,28 +24,16 @@ export const metadata: Metadata = {
  */
 export default function BrandPage() {
   return (
-    <Container className="py-12 sm:py-20">
-      {/* HERO */}
-      <header className="mb-16 max-w-3xl">
-        <span className="block text-[11px] uppercase tracking-[0.22em] text-fg-muted">
-          § Brand kit
-        </span>
-        <h1
-          className="mt-4 text-5xl font-bold leading-[1.05] tracking-tight text-fg sm:text-6xl"
-          style={{ color: "var(--fg)" }}
-        >
-          The visual identity of <span style={{ color: "var(--accent)" }}>Ascertainty</span>.
-        </h1>
-        <p className="mt-6 max-w-xl text-base leading-relaxed text-fg/80">
-          Three nested arcs ascending to a peak, inscribed in a forest disc.
-          The mark builds in sequence — a quiet animation that signals the
-          calibrated, time-bounded nature of every loan we underwrite. Below:
-          all the assets, colors, and type you need to talk about us.
-        </p>
-      </header>
+    <Container className="py-10 sm:py-14">
+      <PageHeader
+        kicker="Brand kit"
+        title="The visual identity of Ascertainty."
+        description="Three nested arcs ascending to a peak, inscribed in a forest disc. The mark builds in sequence — a quiet animation that signals the calibrated, time-bounded nature of every loan we underwrite. Below: all the assets, colors, and type you need to talk about us."
+        noBorder
+      />
 
-      {/* §01 LOGOS & LOCKUPS */}
-      <section className="mb-20 border-t border-line/60 pt-14">
+      {/* Logos & lockups */}
+      <section className="mt-12 border-t border-line/60 pt-12">
         <SectionHead idx="01" title="Logos & lockups" />
         <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-3">
           <AssetCard
@@ -80,8 +69,8 @@ export default function BrandPage() {
         </div>
       </section>
 
-      {/* §02 FOREST GREENS */}
-      <section className="mb-20 border-t border-line/60 pt-14">
+      {/* Forest greens */}
+      <section className="mt-20 border-t border-line/60 pt-12">
         <SectionHead idx="02" title="Forest greens" />
         <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-5">
           <Swatch name="Pale sage" hex="#e8f1ec" />
@@ -97,8 +86,8 @@ export default function BrandPage() {
         </p>
       </section>
 
-      {/* §03 NEUTRAL TONES */}
-      <section className="mb-20 border-t border-line/60 pt-14">
+      {/* Neutral tones */}
+      <section className="mt-20 border-t border-line/60 pt-12">
         <SectionHead idx="03" title="Neutral tones" />
         <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-5">
           <Swatch name="Page" hex="#ffffff" />
@@ -114,8 +103,8 @@ export default function BrandPage() {
         </p>
       </section>
 
-      {/* §04 TYPOGRAPHY */}
-      <section className="mb-20 border-t border-line/60 pt-14">
+      {/* Typography */}
+      <section className="mt-20 mb-12 border-t border-line/60 pt-12">
         <SectionHead idx="04" title="Typography" />
         <div className="mt-10 grid grid-cols-1 gap-6 sm:grid-cols-2">
           <div className="rounded-xl border border-line/60 bg-bg-1/50 p-8">
@@ -152,13 +141,11 @@ export default function BrandPage() {
 
 function SectionHead({ idx, title }: { idx: string; title: string }) {
   return (
-    <div className="flex flex-wrap items-baseline justify-between gap-4">
-      <h2 className="text-3xl font-bold leading-tight tracking-tight text-fg sm:text-4xl">
-        // {title}
+    <div>
+      <span className="a-kicker-pill">{`Section ${idx}`}</span>
+      <h2 className="mt-3 text-3xl font-bold leading-tight tracking-tight text-fg sm:text-4xl">
+        {title}
       </h2>
-      <span className="font-mono text-xs uppercase tracking-[0.18em] text-fg-muted">
-        § {idx}
-      </span>
     </div>
   );
 }
@@ -206,7 +193,7 @@ function DownloadLink({ href, label }: { href: string; label: string }) {
     <a
       href={href}
       download
-      className="block rounded-md border border-line/60 bg-bg-1/40 px-3 py-2 text-fg-muted transition-colors hover:border-accent/50 hover:text-fg"
+      className="block rounded-lg border border-line/60 bg-bg-1/40 px-3 py-2 text-fg-muted transition-colors hover:border-accent/50 hover:text-fg"
     >
       <span className="block text-fg">{label}</span>
       <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-widest">

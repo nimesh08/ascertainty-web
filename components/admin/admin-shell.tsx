@@ -93,7 +93,7 @@ export function AdminShell({
             </div>
           </div>
           <NavLinks />
-          <div className="rounded-md border border-line/70 bg-bg-1/60 p-3">
+          <div className="rounded-xl border border-line/70 bg-bg-1/60 p-3">
             <p className="text-[10px] uppercase tracking-[0.18em] text-fg-muted">
               Signer
             </p>
@@ -124,7 +124,7 @@ export function AdminShell({
             </SheetHeader>
             <div className="px-4 pb-8">
               <NavLinks onNavigate={() => setOpen(false)} />
-              <div className="mt-6 rounded-md border border-line/70 bg-bg-1/60 p-3">
+              <div className="mt-6 rounded-xl border border-line/70 bg-bg-1/60 p-3">
                 <p className="text-[10px] uppercase tracking-[0.18em] text-fg-muted">
                   Signer
                 </p>

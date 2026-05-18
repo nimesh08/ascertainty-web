@@ -139,7 +139,7 @@ export function WalletBalancesCard({ owner }: WalletBalancesCardProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-        <div className="rounded-lg border border-line/70 bg-bg-2/40 p-4">
+        <div className="rounded-xl border border-line/70 bg-bg-2/40 p-4">
           <p className="text-xs uppercase tracking-[0.14em] text-fg-muted">
             SOL
           </p>
@@ -148,7 +148,7 @@ export function WalletBalancesCard({ owner }: WalletBalancesCardProps) {
             <span className="ml-1 text-sm text-fg-muted">◎</span>
           </p>
         </div>
-        <div className="rounded-lg border border-line/70 bg-bg-2/40 p-4">
+        <div className="rounded-xl border border-line/70 bg-bg-2/40 p-4">
           <p className="text-xs uppercase tracking-[0.14em] text-fg-muted">
             USDC
           </p>
