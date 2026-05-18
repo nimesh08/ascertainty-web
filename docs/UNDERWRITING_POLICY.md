@@ -1,8 +1,11 @@
 # Ascertainty Underwriting Policy
 
 **Version:** 1.0 (Draft)
+
 **Effective:** 2026-05-12
+
 **Owner:** Ascertainty Risk Committee
+
 **Status:** Public — published for LP and borrower transparency
 
 ---
@@ -17,7 +20,7 @@ The policy serves three audiences:
 - **Borrowers** — to understand the eligibility criteria and documentation requirements before applying.
 - **Partners (auditors, NBFCs, regulators)** — to align operations against a known standard.
 
-This policy is binding. No loan may be added to an Ascertainty vault unless it clears every requirement below or is granted a documented exception by the Risk Committee.
+This document is published as Draft v1.0 and is currently open for stakeholder review. Once finalized, it becomes binding: no loan may be added to an Ascertainty vault unless it clears every requirement below or is granted a documented exception by the Risk Committee. The thresholds in §5 and process in §7 reflect Ascertainty's intended underwriting practice for v0 vaults; material changes between Draft and final will be disclosed.
 
 ---
 
@@ -330,4 +333,5 @@ Exceptions to thresholds in §5 may be granted only by unanimous Risk Committee 
 - Ascertainty is not a regulated investment adviser. This document is published for transparency, not as investment advice.
 - v0 vaults are restricted to accredited investors and qualified institutional buyers as defined under Singapore SFA and applicable jurisdictions.
 - For regulatory and disclosure status, see [ascertainty.com](https://ascertainty.com/) and the relevant vault subscription documents.
+- For accreditation requests, regulatory questions, or LP onboarding, contact [legal@ascertainty.com](mailto:legal@ascertainty.com).
 

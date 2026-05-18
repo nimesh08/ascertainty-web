@@ -61,6 +61,46 @@ function renderInline(s: string): string {
   return out;
 }
 
+type BulletNode = { text: string; children: BulletNode[] };
+
+function buildBulletTree(
+  lines: string[],
+  startIdx: number
+): { nodes: BulletNode[]; nextIdx: number } {
+  const first = lines[startIdx].match(/^(\s*)[-*]\s+(.*)$/);
+  if (!first) return { nodes: [], nextIdx: startIdx };
+  const baseIndent = first[1].length;
+  const nodes: BulletNode[] = [];
+  let i = startIdx;
+  while (i < lines.length) {
+    const m = lines[i].match(/^(\s*)[-*]\s+(.*)$/);
+    if (!m) break;
+    const indent = m[1].length;
+    if (indent < baseIndent) break;
+    if (indent === baseIndent) {
+      nodes.push({ text: m[2], children: [] });
+      i++;
+    } else {
+      const last = nodes[nodes.length - 1];
+      if (!last) break;
+      const sub = buildBulletTree(lines, i);
+      last.children = sub.nodes;
+      i = sub.nextIdx;
+    }
+  }
+  return { nodes, nextIdx: i };
+}
+
+function renderBulletList(items: BulletNode[], depth: number): string {
+  const margin = depth === 0 ? "my-3" : "my-1";
+  return `<ul class="${margin} ml-5 list-disc space-y-1">${items
+    .map((it) => {
+      const inner = it.children.length > 0 ? renderBulletList(it.children, depth + 1) : "";
+      return `<li>${renderInline(it.text)}${inner}</li>`;
+    })
+    .join("")}</ul>`;
+}
+
 function renderTable(lines: string[]): string {
   // First line: header. Second line: alignment row. Subsequent: rows.
   const split = (line: string) =>
@@ -81,6 +121,28 @@ function renderTable(lines: string[]): string {
     )
     .join("");
   return `<div class="overflow-x-auto my-4"><table class="w-full text-sm"><thead class="text-xs uppercase tracking-wide text-fg-muted bg-bg-1"><tr>${headHtml}</tr></thead><tbody>${rowsHtml}</tbody></table></div>`;
+}
+
+export type PolicyHeading = { level: 2 | 3; text: string; id: string };
+
+export function extractHeadings(md: string): PolicyHeading[] {
+  const lines = md.replace(/\r\n/g, "\n").split("\n");
+  const out: PolicyHeading[] = [];
+  let inFence = false;
+  for (const line of lines) {
+    if (/^```/.test(line)) {
+      inFence = !inFence;
+      continue;
+    }
+    if (inFence) continue;
+    const m = line.match(/^(##|###)\s+(.*)$/);
+    if (m) {
+      const level = m[1].length as 2 | 3;
+      const text = m[2].trim();
+      out.push({ level, text, id: headingAnchor(text) });
+    }
+  }
+  return out;
 }
 
 export function renderPolicyMarkdown(md: string): string {
@@ -129,18 +191,11 @@ export function renderPolicyMarkdown(md: string): string {
       continue;
     }
 
-    // bullet list
+    // bullet list (supports nesting by indentation)
     if (/^\s*[-*]\s+/.test(line)) {
-      const items: string[] = [];
-      while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) {
-        items.push(lines[i].replace(/^\s*[-*]\s+/, ""));
-        i++;
-      }
-      html.push(
-        `<ul class="my-3 ml-5 list-disc space-y-1">${items
-          .map((it) => `<li>${renderInline(it)}</li>`)
-          .join("")}</ul>`
-      );
+      const { nodes, nextIdx } = buildBulletTree(lines, i);
+      html.push(renderBulletList(nodes, 0));
+      i = nextIdx;
       continue;
     }
 
@@ -182,7 +237,7 @@ export function renderPolicyMarkdown(md: string): string {
       }
       i++; // skip closing fence
       html.push(
-        `<pre class="my-3 overflow-x-auto bg-bg-2 p-3 text-xs font-mono">${escapeHtml(code.join("\n"))}</pre>`
+        `<pre class="my-3 overflow-x-auto bg-bg-2 p-3 text-[11px] sm:text-xs font-mono whitespace-pre-wrap break-words">${escapeHtml(code.join("\n"))}</pre>`
       );
       continue;
     }
