@@ -5,6 +5,7 @@ import { desc, eq } from "drizzle-orm";
 
 import { Container } from "@/components/layout/container";
 import { getProjectWithDetails } from "@/lib/db/queries/projects";
+import { resolveHeroImage } from "@/lib/projects/hero-image";
 import { db, schema } from "@/lib/db";
 import { ProjectDetailClient } from "./project-detail-client";
 
@@ -73,6 +74,7 @@ export default async function ProjectDetailPage({
           documents: detail.documents,
           trustScore: detail.trustScore,
           expectedApyBps: detail.expectedApyBps,
+          heroImageUrl: resolveHeroImage(detail.msmeName) ?? null,
         }}
         baseline={
           detail.baseline
@@ -102,24 +104,29 @@ export default async function ProjectDetailPage({
             createdAt: t.createdAt.toISOString(),
           }))}
         auditors={Object.fromEntries(auditorMap)}
-        underwriting={
-          detail.underwriting
-            ? {
-                dealId: detail.underwriting.dealId,
-                modelUsed: detail.underwriting.modelUsed,
-                pinnSavingsKwh: detail.underwriting.pinnSavingsKwh,
-                pinnP5LowerKwh: detail.underwriting.pinnP5LowerKwh,
-                pinnP95UpperKwh: detail.underwriting.pinnP95UpperKwh,
-                confidenceGrade: detail.underwriting.confidenceGrade,
-                electricityRateInrKwh: detail.underwriting.electricityRateInrKwh,
-                dscrAtP5: detail.underwriting.dscrAtP5,
-                dscrAtP50: detail.underwriting.dscrAtP50,
-                carbonEligible: detail.underwriting.carbonEligible,
-                carbonTco2PerYear: detail.underwriting.carbonTco2PerYear,
-                carbonMethodology: detail.underwriting.carbonMethodology,
-              }
-            : null
-        }
+        ecms={detail.ecms.map((e) => ({
+          id: e.id,
+          dealId: e.dealId,
+          ecmId: e.ecmId,
+          equipmentType: e.equipmentType,
+          description: e.description,
+          modelUsed: e.modelUsed,
+          pinnSavingsKwh: e.pinnSavingsKwh,
+          pinnP5LowerKwh: e.pinnP5LowerKwh,
+          pinnP95UpperKwh: e.pinnP95UpperKwh,
+          pinnSigmaKwh: e.pinnSigmaKwh,
+          confidenceGrade: e.confidenceGrade,
+          investmentInr: e.investmentInr,
+          electricityRateInrKwh: e.electricityRateInrKwh,
+          annualSavingsInr: e.annualSavingsInr,
+          paybackMonths: e.paybackMonths,
+          p5PaybackMonths: e.p5PaybackMonths,
+          dscrAtP5: e.dscrAtP5,
+          dscrAtP50: e.dscrAtP50,
+          carbonEligible: e.carbonEligible,
+          carbonTco2PerYear: e.carbonTco2PerYear,
+          carbonMethodology: e.carbonMethodology,
+        }))}
       />
     </Container>
   );

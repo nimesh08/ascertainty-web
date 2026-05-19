@@ -37,6 +37,7 @@ interface SidebarProps {
     dealId: string;
     confidenceGrade: string | null;
     modelUsed: string | null;
+    ecmCount?: number;
   } | null;
 }
 
@@ -103,6 +104,11 @@ export function Sidebar({
                   ].join(" ")}
                 >
                   Grade {grade}
+                </span>
+              ) : null}
+              {underwriting.ecmCount && underwriting.ecmCount > 1 ? (
+                <span className="inline-flex items-center rounded-md border border-line/60 bg-bg-2/40 px-1.5 py-0.5 text-[10px] text-fg-muted">
+                  {underwriting.ecmCount} ECMs
                 </span>
               ) : null}
               <span className="text-[10px] text-fg-muted">
@@ -209,7 +215,7 @@ export function Sidebar({
         {underwriting ? (
           <Link
             href={`/lender/${underwriting.dealId}`}
-            className="inline-flex w-full items-center justify-center gap-1 rounded-md border border-line/60 bg-bg-2/40 px-3 py-1.5 text-[11px] text-fg-muted transition-colors hover:text-fg"
+            className="inline-flex w-full items-center justify-center gap-1 rounded-full border border-line/60 bg-bg-2/40 px-4 py-2 text-xs text-fg-muted transition-colors hover:text-fg"
           >
             View lender brief <ArrowRight className="size-3" />
           </Link>

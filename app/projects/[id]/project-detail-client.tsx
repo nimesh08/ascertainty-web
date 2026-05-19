@@ -58,6 +58,7 @@ interface ProjectData {
   documents: Array<{ name: string; url: string }> | null;
   trustScore: number | null;
   expectedApyBps: number | null;
+  heroImageUrl?: string | null;
 }
 
 interface BaselineData {
@@ -84,14 +85,23 @@ interface DistributionData {
   createdAt: string;
 }
 
-interface UnderwritingData {
+interface EcmData {
+  id: string;
   dealId: string;
+  ecmId: string;
+  equipmentType: string;
+  description: string | null;
   modelUsed: string | null;
   pinnSavingsKwh: string | null;
   pinnP5LowerKwh: string | null;
   pinnP95UpperKwh: string | null;
+  pinnSigmaKwh: string | null;
   confidenceGrade: string | null;
+  investmentInr: string | null;
   electricityRateInrKwh: string | null;
+  annualSavingsInr: string | null;
+  paybackMonths: string | null;
+  p5PaybackMonths: string | null;
   dscrAtP5: string | null;
   dscrAtP50: string | null;
   carbonEligible: boolean | null;
@@ -104,20 +114,31 @@ interface AuditorInfo {
   certification: string;
 }
 
+// Bundle-level grade is the worst grade across ECMs (A < B < C).
+function worstGrade(grades: Array<string | null>): "A" | "B" | "C" | null {
+  const ok = grades.filter((g): g is "A" | "B" | "C" =>
+    g === "A" || g === "B" || g === "C"
+  );
+  if (ok.includes("C")) return "C";
+  if (ok.includes("B")) return "B";
+  if (ok.includes("A")) return "A";
+  return null;
+}
+
 export function ProjectDetailClient({
   project,
   baseline,
   verifications,
   distributions,
   auditors,
-  underwriting,
+  ecms,
 }: {
   project: ProjectData;
   baseline: BaselineData | null;
   verifications: VerificationData[];
   distributions: DistributionData[];
   auditors: Record<string, AuditorInfo>;
-  underwriting: UnderwritingData | null;
+  ecms: EcmData[];
 }) {
   const { connected, connection, publicKey, login } = useInvestor();
   const [position, setPosition] = useState<PositionData | null>(null);
@@ -198,11 +219,18 @@ export function ProjectDetailClient({
         <UpgradesSection
           upgradeType={project.upgradeType}
           description={project.description}
+          ecms={ecms.map((e) => ({
+            ecmId: e.ecmId,
+            equipmentType: e.equipmentType,
+            description: e.description,
+            investmentInr: e.investmentInr,
+            pinnSavingsKwh: e.pinnSavingsKwh,
+          }))}
         />
 
         <ManagementSection text={project.managementText} />
 
-        <UnderwritingBriefSection underwriting={underwriting} />
+        <UnderwritingBriefSection ecms={ecms} />
 
         <BaselineImpactSection
           baseline={baseline}
@@ -236,11 +264,12 @@ export function ProjectDetailClient({
           onInvest={() => setBuyOpen(true)}
           onClaim={() => setClaimOpen(true)}
           underwriting={
-            underwriting
+            ecms.length > 0
               ? {
-                  dealId: underwriting.dealId,
-                  confidenceGrade: underwriting.confidenceGrade,
-                  modelUsed: underwriting.modelUsed,
+                  dealId: ecms[0].dealId,
+                  confidenceGrade: worstGrade(ecms.map((e) => e.confidenceGrade)),
+                  modelUsed: ecms[0].modelUsed,
+                  ecmCount: ecms.length,
                 }
               : null
           }

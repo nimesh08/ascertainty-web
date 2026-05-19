@@ -15,7 +15,7 @@ interface PolicyComplianceRowProps {
  */
 export function PolicyComplianceRow({ checks, className }: PolicyComplianceRowProps) {
   return (
-    <div className={cn("border border-line bg-bg-1", className)}>
+    <div className={cn("overflow-hidden rounded-2xl border border-line bg-bg-1", className)}>
       <div className="border-b border-line px-4 py-2">
         <div className="text-[10px] uppercase tracking-wider text-fg-muted">
           Policy compliance · UNDERWRITING_POLICY.md §5

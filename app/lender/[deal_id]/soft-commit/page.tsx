@@ -1,11 +1,12 @@
 import Link from "next/link";
-import { eq, asc, desc } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { SoftCommitForm } from "@/components/lender/soft-commit-form";
+import { sortEcmsNumerically, prettyEquipment, cleanModelName, prettySector } from "@/lib/utils/equipment";
 import { db, schema } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -30,11 +31,12 @@ export default async function SoftCommitPage({
   params: Promise<{ deal_id: string }>;
 }) {
   const { deal_id } = await params;
-  const rows = await db
-    .select()
-    .from(schema.underwritingResults)
-    .where(eq(schema.underwritingResults.dealId, deal_id))
-    .orderBy(asc(schema.underwritingResults.ecmId));
+  const rows = sortEcmsNumerically(
+    await db
+      .select()
+      .from(schema.underwritingResults)
+      .where(eq(schema.underwritingResults.dealId, deal_id))
+  );
 
   if (rows.length === 0) {
     return (
@@ -99,11 +101,11 @@ export default async function SoftCommitPage({
               {(rows[0].auditInputsJson as Record<string, unknown> | null)?.["plant_name"]?.toString() ?? "TBD"}
             </div>
             <div>
-              <span className="text-zinc-500">Sector:</span> {rows[0].sector}
+              <span className="text-zinc-500">Sector:</span> {prettySector(rows[0].sector)}
             </div>
             <div>
               <span className="text-zinc-500">ECMs scope:</span>{" "}
-              {rows.map((r) => `${r.ecmId} (${r.equipmentType})`).join(", ")}
+              {rows.map((r) => `ECM ${r.ecmId} (${prettyEquipment(r.equipmentType)})`).join(", ")}
             </div>
             <div>
               <span className="text-zinc-500">Overall PINN grade:</span> {overallGrade}
@@ -211,7 +213,7 @@ export default async function SoftCommitPage({
             This letter is generated from an Ascertainty PINN prediction. The model produces
             calibrated 90% confidence intervals on retrofit savings; the P5 lower bound here
             is the calibrated floor (σ-scale applied per equipment type). Underlying model:{" "}
-            {Array.from(new Set(rows.map((r) => r.modelUsed))).filter(Boolean).join(", ")}.
+            {Array.from(new Set(rows.map((r) => cleanModelName(r.modelUsed)))).filter(Boolean).join(", ")}.
             Sigma scale applied:{" "}
             {Array.from(new Set(rows.map((r) => r.sigmaScaleApplied?.toString()))).filter(Boolean).join(", ")}.
           </p>

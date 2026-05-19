@@ -78,7 +78,7 @@ export function DistributionChart({
   return (
     <div className="w-full min-w-0" style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 8 }}>
+        <AreaChart data={data} margin={{ top: 24, right: 12, left: 0, bottom: 8 }}>
           <defs>
             <linearGradient id="distFill" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="var(--accent)" stopOpacity={0.45} />

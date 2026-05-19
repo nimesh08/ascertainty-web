@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import { db, schema } from "@/lib/db";
-import { desc } from "drizzle-orm";
+import { desc, sql } from "drizzle-orm";
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
+import { resolveHeroImage } from "@/lib/projects/hero-image";
 import { ProjectsList } from "./projects-list";
 
 export const dynamic = "force-dynamic";
@@ -15,12 +16,20 @@ export const metadata: Metadata = {
 
 async function loadProjects() {
   try {
+    // One round-trip: project rows + count of underwriting_results per project.
+    // ecm_count powers the "N ECMs" badge on the list card.
     const rows = await db
-      .select()
+      .select({
+        p: schema.projects,
+        ecmCount: sql<number>`(
+          SELECT COUNT(*)::int FROM ${schema.underwritingResults} u
+          WHERE u.project_id = ${schema.projects.id}
+        )`,
+      })
       .from(schema.projects)
       .orderBy(desc(schema.projects.createdAt))
       .limit(200);
-    return rows.map((r) => ({
+    return rows.map(({ p: r, ecmCount }) => ({
       id: r.id,
       msmeName: r.msmeName,
       sector: r.sector,
@@ -31,6 +40,8 @@ async function loadProjects() {
       tokensSold: r.tokensSold,
       termMonths: r.termMonths,
       expectedApyBps: r.expectedApyBps ?? null,
+      ecmCount: ecmCount ?? 0,
+      heroImageUrl: resolveHeroImage(r.msmeName) ?? null,
       createdAt: r.createdAt.toISOString(),
     }));
   } catch (err) {

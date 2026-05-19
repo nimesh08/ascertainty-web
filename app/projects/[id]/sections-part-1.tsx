@@ -15,6 +15,7 @@ import {
 
 import { StatusPill } from "@/components/shared/StatusPill";
 import { ProjectHero } from "@/components/investor/project-hero";
+import { prettyEquipment } from "@/lib/utils/equipment";
 
 /** Small util: capitalize the first letter (sentence-case). Used for
     sector / upgradeType labels that come from the DB as snake_case
@@ -140,6 +141,7 @@ export function HeroCard({
     location: string;
     status: string;
     termMonths: number;
+    heroImageUrl?: string | null;
   };
 }) {
   return (
@@ -149,7 +151,10 @@ export function HeroCard({
       transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className="overflow-hidden rounded-2xl border border-line/60 bg-bg-1/50"
     >
-      <ProjectHero kind="project" />
+      <ProjectHero
+        kind="project"
+        heroImageUrl={project.heroImageUrl ?? undefined}
+      />
       <div className="space-y-4 p-6 sm:p-8">
         <div className="flex flex-wrap items-start justify-between gap-4">
           <h1 className="text-3xl font-bold leading-[1.05] tracking-tight text-fg sm:text-4xl md:text-5xl">
@@ -234,14 +239,59 @@ export function HighlightsSection({
   );
 }
 
+interface UpgradeEcm {
+  ecmId: string;
+  equipmentType: string;
+  description: string | null;
+  investmentInr: string | null;
+  pinnSavingsKwh: string | null;
+}
+
 export function UpgradesSection({
   upgradeType,
   description,
+  ecms,
 }: {
   upgradeType: string;
   description: string | null;
+  ecms?: UpgradeEcm[];
 }) {
   const shown = (description ?? "").trim();
+  const list = ecms ?? [];
+
+  // Multi-ECM: show one pill per ECM (deduped) + a short scope line. Fall back
+  // to the legacy single-pill render when no ECM data is available.
+  if (list.length > 1) {
+    const seen = new Set<string>();
+    const pills: { label: string; ecmId: string }[] = [];
+    for (const e of list) {
+      const label = prettyEquipment(e.equipmentType);
+      if (seen.has(label)) continue;
+      seen.add(label);
+      pills.push({ label, ecmId: e.ecmId });
+    }
+    return (
+      <SectionCard delay={0.15}>
+        <SectionTitle
+          label="Deployment"
+          title={`Upgrades & equipment · ${list.length} ECMs`}
+        />
+        <div className="mb-4 flex flex-wrap gap-2">
+          {pills.map((p) => (
+            <div
+              key={p.ecmId}
+              className="inline-flex items-center gap-2 rounded-full border border-green/30 bg-green/10 px-3 py-1.5 text-sm text-green"
+            >
+              <Zap className="size-3.5" />
+              {p.label}
+            </div>
+          ))}
+        </div>
+        {shown ? <ParagraphedText text={shown} /> : null}
+      </SectionCard>
+    );
+  }
+
   return (
     <SectionCard delay={0.15}>
       <SectionTitle label="Deployment" title="Upgrades & equipment" />

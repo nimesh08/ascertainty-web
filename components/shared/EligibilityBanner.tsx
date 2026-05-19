@@ -33,7 +33,7 @@ export function EligibilityBanner({ evaluation, className }: EligibilityBannerPr
   return (
     <div
       className={cn(
-        "border-l-2 px-4 py-3 flex items-start justify-between gap-4",
+        "rounded-2xl border-l-2 px-4 py-3",
         TONE_STYLES[status],
         className
       )}
@@ -55,12 +55,6 @@ export function EligibilityBanner({ evaluation, className }: EligibilityBannerPr
           </div>
         ) : null}
       </div>
-      <Link
-        href="/docs/underwriting-policy"
-        className="shrink-0 text-xs underline underline-offset-2 opacity-80 hover:opacity-100"
-      >
-        Underwriting Policy ↗
-      </Link>
     </div>
   );
 }

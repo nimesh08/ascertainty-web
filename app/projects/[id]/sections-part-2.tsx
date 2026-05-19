@@ -23,24 +23,21 @@ import {
   explorerTx,
 } from "@/lib/utils/format";
 import { SectionCard, SectionLabel, SectionTitle, ProseText } from "./sections-part-1";
+import { prettyEquipment, cleanModelName } from "@/lib/utils/equipment";
 
-/** Strip version suffix + parenthetical jargon from a model name string.
-    DB stores values like "PINN unified v0.1 (21-feature audit, IN-BEE)";
-    public surface only needs "PINN unified". */
-function cleanModelName(s: string): string {
-  return s
-    .replace(/\s*\([^)]*\)\s*$/, "")
-    .replace(/\s+v\d+(?:\.\d+)*\s*$/, "")
-    .trim();
-}
-
-interface UnderwritingForCard {
+interface EcmForCard {
+  id: string;
   dealId: string;
+  ecmId: string;
+  equipmentType: string;
+  description: string | null;
   modelUsed: string | null;
   pinnSavingsKwh: string | null;
   pinnP5LowerKwh: string | null;
   pinnP95UpperKwh: string | null;
+  pinnSigmaKwh: string | null;
   confidenceGrade: string | null;
+  investmentInr: string | null;
   electricityRateInrKwh: string | null;
   dscrAtP5: string | null;
   dscrAtP50: string | null;
@@ -49,81 +46,276 @@ interface UnderwritingForCard {
   carbonMethodology: string | null;
 }
 
-/** Underwriting brief — TabPFN attribution, savings band, DSCR, carbon, lender link. */
+function gradeRank(g: string | null): number {
+  return g === "A" ? 0 : g === "B" ? 1 : g === "C" ? 2 : 3;
+}
+
+function bundleGrade(ecms: EcmForCard[]): "A" | "B" | "C" | null {
+  const grades = ecms
+    .map((e) => e.confidenceGrade)
+    .filter((g): g is "A" | "B" | "C" => g === "A" || g === "B" || g === "C");
+  if (grades.length === 0) return null;
+  return grades.reduce((worst, g) => (gradeRank(g) > gradeRank(worst) ? g : worst));
+}
+
+const fmtKwh = (n: number) =>
+  n >= 1_000_000
+    ? `${(n / 1_000_000).toFixed(2)} GWh`
+    : n >= 1_000
+      ? `${Math.round(n / 1_000)}K kWh`
+      : `${Math.round(n)} kWh`;
+
+const fmtInrShort = (n: number) =>
+  n >= 10_000_000
+    ? `₹${(n / 10_000_000).toFixed(2)} Cr`
+    : n >= 100_000
+      ? `₹${(n / 100_000).toFixed(1)} L`
+      : `₹${Math.round(n).toLocaleString("en-IN")}`;
+
+/** Single-ECM body — savings band + DSCR tiles + carbon. Used both standalone
+ *  (1-ECM deal) and inside each accordion panel (N-ECM bundle). */
+function EcmBriefBody({ ecm }: { ecm: EcmForCard }) {
+  const point = Number(ecm.pinnSavingsKwh ?? 0);
+  const p5 = Number(ecm.pinnP5LowerKwh ?? 0);
+  const p95 = Number(ecm.pinnP95UpperKwh ?? 0);
+  const rate = Number(ecm.electricityRateInrKwh ?? 8);
+  const grade = (ecm.confidenceGrade ?? null) as "A" | "B" | "C" | null;
+  const dscrP5 = ecm.dscrAtP5 != null ? Number(ecm.dscrAtP5) : null;
+  const dscrP50 = ecm.dscrAtP50 != null ? Number(ecm.dscrAtP50) : null;
+  const carbonT = ecm.carbonTco2PerYear != null ? Number(ecm.carbonTco2PerYear) : null;
+  return (
+    <div className="space-y-5">
+      {point > 0 ? (
+        <SavingsBand
+          predictedKwh={point}
+          p5Kwh={p5}
+          p95Kwh={p95}
+          grade={grade ?? undefined}
+          electricityRateInrKwh={rate}
+          variant="full"
+          label="Predicted annual savings (90% conformal PI)"
+        />
+      ) : null}
+
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+        {dscrP5 != null ? (
+          <MetricTile
+            label="DSCR @ P5"
+            value={`${dscrP5.toFixed(2)}×`}
+            hint={dscrP5 >= 1.3 ? "≥ 1.30× covenant" : "below covenant"}
+            tone={dscrP5 >= 1.3 ? "good" : "warn"}
+          />
+        ) : null}
+        {dscrP50 != null ? (
+          <MetricTile
+            label="DSCR @ P50"
+            value={`${dscrP50.toFixed(2)}×`}
+            hint={dscrP50 >= 1.75 ? "≥ 1.75× target" : "below target"}
+            tone={dscrP50 >= 1.75 ? "good" : "warn"}
+          />
+        ) : null}
+        {carbonT != null && ecm.carbonEligible ? (
+          <MetricTile
+            icon={<Leaf className="size-4 text-green" />}
+            label="Carbon §11"
+            value={`${carbonT.toFixed(1)} tCO₂/yr`}
+            hint={ecm.carbonMethodology ?? "monthly accrual"}
+            tone="good"
+          />
+        ) : null}
+      </div>
+
+      {ecm.description ? (
+        <p className="text-sm text-fg/75 leading-relaxed">{ecm.description}</p>
+      ) : null}
+    </div>
+  );
+}
+
+/** Underwriting brief — supports single-ECM (legacy render) and multi-ECM
+ *  bundle (B1.5: bundle header + first-ECM-open accordion, others collapsible). */
 export function UnderwritingBriefSection({
-  underwriting,
+  ecms,
 }: {
-  underwriting: UnderwritingForCard | null;
+  ecms: EcmForCard[];
 }) {
-  if (!underwriting) return null;
-  const point = Number(underwriting.pinnSavingsKwh ?? 0);
-  const p5 = Number(underwriting.pinnP5LowerKwh ?? 0);
-  const p95 = Number(underwriting.pinnP95UpperKwh ?? 0);
-  const rate = Number(underwriting.electricityRateInrKwh ?? 8);
-  const grade = (underwriting.confidenceGrade ?? null) as "A" | "B" | "C" | null;
-  const dscrP5 = underwriting.dscrAtP5 != null ? Number(underwriting.dscrAtP5) : null;
-  const dscrP50 = underwriting.dscrAtP50 != null ? Number(underwriting.dscrAtP50) : null;
-  const carbonT = underwriting.carbonTco2PerYear != null ? Number(underwriting.carbonTco2PerYear) : null;
+  // Hooks must run unconditionally before any early return.
+  const [openIds, setOpenIds] = useState<Set<string>>(
+    () => new Set(ecms[0] ? [ecms[0].id] : [])
+  );
+
+  if (ecms.length === 0) return null;
+
+  const single = ecms.length === 1;
+  const primary = ecms[0];
+
+  // Bundle aggregates — sum savings, RSS sigma, sum investment, blended grade,
+  // worst-of DSCRs (most conservative for lender-side framing).
+  const sumPredicted = ecms.reduce((a, e) => a + Number(e.pinnSavingsKwh ?? 0), 0);
+  const sumP5 = ecms.reduce((a, e) => a + Number(e.pinnP5LowerKwh ?? 0), 0);
+  const sumP95 = ecms.reduce((a, e) => a + Number(e.pinnP95UpperKwh ?? 0), 0);
+  const sumInvest = ecms.reduce((a, e) => a + Number(e.investmentInr ?? 0), 0);
+  const sumCarbon = ecms.reduce(
+    (a, e) => a + (e.carbonEligible ? Number(e.carbonTco2PerYear ?? 0) : 0),
+    0
+  );
+  const overallGrade = bundleGrade(ecms);
+
+  const toggle = (id: string) => {
+    setOpenIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
 
   return (
     <SectionCard delay={0.27}>
-      <SectionTitle label="Underwriting" title="Calibrated savings brief" />
+      <SectionTitle
+        label="Underwriting"
+        title={single ? "Calibrated savings brief" : `Calibrated savings · ${ecms.length} ECMs`}
+      />
+
       <div className="space-y-6">
-        {point > 0 ? (
-          <SavingsBand
-            predictedKwh={point}
-            p5Kwh={p5}
-            p95Kwh={p95}
-            grade={grade ?? undefined}
-            electricityRateInrKwh={rate}
-            variant="full"
-            label="Predicted annual savings (90% conformal PI)"
-          />
+        {/* Bundle summary — only shown for multi-ECM */}
+        {!single ? (
+          <div className="rounded-xl border border-line/60 bg-bg-2/40 p-4">
+            <div className="mb-3 flex flex-wrap items-baseline justify-between gap-3">
+              <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-fg-muted">
+                Bundle summary
+              </p>
+              {overallGrade ? (
+                <span
+                  className={[
+                    "inline-flex items-center rounded-md border px-2 py-0.5 text-[11px] font-medium",
+                    overallGrade === "A"
+                      ? "border-green/40 bg-green/10 text-green"
+                      : overallGrade === "B"
+                        ? "border-[#eab308]/40 bg-[#eab308]/10 text-[#eab308]"
+                        : "border-accent/40 bg-accent/10 text-accent",
+                  ].join(" ")}
+                >
+                  Blended grade {overallGrade}
+                </span>
+              ) : null}
+            </div>
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <MetricTile
+                label="Total P50 savings"
+                value={fmtKwh(sumPredicted)}
+                hint="sum of ECM point estimates"
+              />
+              <MetricTile
+                label="P5 floor (bundle)"
+                value={fmtKwh(sumP5)}
+                hint="conservative sum"
+              />
+              <MetricTile
+                label="Bundle investment"
+                value={fmtInrShort(sumInvest)}
+                hint="sum of ECM CAPEX"
+              />
+              {sumCarbon > 0 ? (
+                <MetricTile
+                  icon={<Leaf className="size-4 text-green" />}
+                  label="Carbon §11"
+                  value={`${sumCarbon.toFixed(1)} tCO₂/yr`}
+                  hint="monthly accrual"
+                  tone="good"
+                />
+              ) : (
+                <MetricTile
+                  label="P95 ceiling"
+                  value={fmtKwh(sumP95)}
+                  hint="upside scenario"
+                />
+              )}
+            </div>
+          </div>
         ) : null}
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-          {dscrP5 != null ? (
-            <MetricTile
-              label="DSCR @ P5"
-              value={`${dscrP5.toFixed(2)}×`}
-              hint={dscrP5 >= 1.3 ? "≥ 1.30× covenant" : "below covenant"}
-              tone={dscrP5 >= 1.3 ? "good" : "warn"}
-            />
-          ) : null}
-          {dscrP50 != null ? (
-            <MetricTile
-              label="DSCR @ P50"
-              value={`${dscrP50.toFixed(2)}×`}
-              hint={dscrP50 >= 1.75 ? "≥ 1.75× target" : "below target"}
-              tone={dscrP50 >= 1.75 ? "good" : "warn"}
-            />
-          ) : null}
-          {carbonT != null && underwriting.carbonEligible ? (
-            <MetricTile
-              icon={<Leaf className="size-4 text-green" />}
-              label="Carbon §11"
-              value={`${carbonT.toFixed(1)} tCO₂/yr`}
-              hint={underwriting.carbonMethodology ?? "monthly accrual"}
-              tone="good"
-            />
-          ) : null}
-        </div>
+        {/* Per-ECM accordion (single-ECM: just the body, no chrome) */}
+        {single ? (
+          <EcmBriefBody ecm={primary} />
+        ) : (
+          <div className="space-y-2">
+            {ecms.map((e, i) => {
+              const open = openIds.has(e.id);
+              const grade = (e.confidenceGrade ?? null) as "A" | "B" | "C" | null;
+              const ecmPoint = Number(e.pinnSavingsKwh ?? 0);
+              const ecmInr = Number(e.investmentInr ?? 0);
+              return (
+                <div
+                  key={e.id}
+                  className="rounded-xl border border-line/60 bg-bg-2/20 overflow-hidden"
+                >
+                  <button
+                    type="button"
+                    onClick={() => toggle(e.id)}
+                    className="flex w-full items-center justify-between gap-3 px-4 py-3 text-left transition-colors hover:bg-bg-2/40"
+                  >
+                    <div className="flex min-w-0 items-baseline gap-3">
+                      <span className="mono-num text-[11px] text-fg-faint">
+                        ECM {i + 1}
+                      </span>
+                      <span className="truncate text-sm text-fg">
+                        {prettyEquipment(e.equipmentType)}
+                      </span>
+                      {grade ? (
+                        <span
+                          className={[
+                            "inline-flex shrink-0 items-center rounded-md border px-1.5 py-0.5 text-[10px] font-medium",
+                            grade === "A"
+                              ? "border-green/40 bg-green/10 text-green"
+                              : grade === "B"
+                                ? "border-[#eab308]/40 bg-[#eab308]/10 text-[#eab308]"
+                                : "border-accent/40 bg-accent/10 text-accent",
+                          ].join(" ")}
+                        >
+                          {grade}
+                        </span>
+                      ) : null}
+                    </div>
+                    <div className="flex shrink-0 items-baseline gap-3 text-xs">
+                      <span className="mono-num text-fg">{fmtKwh(ecmPoint)}/yr</span>
+                      <span className="hidden mono-num text-fg-muted sm:inline">
+                        {fmtInrShort(ecmInr)}
+                      </span>
+                      <span className="text-fg-faint">{open ? "−" : "+"}</span>
+                    </div>
+                  </button>
+                  {open ? (
+                    <div className="border-t border-line/60 p-4">
+                      <EcmBriefBody ecm={e} />
+                    </div>
+                  ) : null}
+                </div>
+              );
+            })}
+          </div>
+        )}
 
+        {/* Model attribution + lender links (footer) */}
         <div className="rounded-xl border border-line/60 bg-bg-2/40 p-4 text-sm text-fg/80">
           <p className="leading-relaxed">
             <span className="font-medium text-fg">
-              {cleanModelName(underwriting.modelUsed ?? "PINN unified")}
+              {cleanModelName(primary.modelUsed ?? "PINN unified")}
             </span>{" "}
-            sized this facility under the DSCR-at-P5 ≥ 1.30× covenant. The serving model
-            ingests all 21 fields from the audit schema (leakage, rated kW, hours/days,
-            plant context); calibration is fit on a 72-ECM Indian audit corpus.
-            {grade ? (
+            sized {single ? "this facility" : `${ecms.length} ECMs on the same meter`} under
+            the DSCR-at-P5 ≥ 1.30× covenant. The serving model ingests all 21 fields from
+            the audit schema (leakage, rated kW, hours/days, plant context); calibration
+            is fit on a 72-ECM Indian audit corpus.
+            {overallGrade ? (
               <>
                 {" "}
-                <span className="font-medium text-fg">Grade {grade}</span> →{" "}
-                {grade === "A"
+                <span className="font-medium text-fg">
+                  {single ? `Grade ${overallGrade}` : `Blended grade ${overallGrade}`}
+                </span>{" "}
+                →{" "}
+                {overallGrade === "A"
                   ? "senior tranche eligible at up to 60% LTV."
-                  : grade === "B"
+                  : overallGrade === "B"
                     ? "senior + junior split; junior absorbs first-loss until Day-90 verification tightens the band."
                     : "junior tranche only until a verified second audit period tightens the conformal coverage."}
               </>
@@ -136,20 +328,20 @@ export function UnderwritingBriefSection({
           </p>
           <div className="mt-3 flex flex-wrap gap-2 text-xs">
             <Link
-              href={`/lender/${underwriting.dealId}`}
-              className="inline-flex items-center gap-1 rounded-md border border-accent/40 bg-accent/10 px-2.5 py-1 text-accent transition-colors hover:bg-accent/20"
+              href={`/lender/${primary.dealId}`}
+              className="inline-flex items-center gap-1 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-accent transition-colors hover:bg-accent/20"
             >
               View lender brief <ArrowRight className="size-3" />
             </Link>
             <Link
-              href={`/lender/${underwriting.dealId}/timeline`}
-              className="inline-flex items-center gap-1 rounded-md border border-line/60 bg-bg-2/40 px-2.5 py-1 text-fg-muted transition-colors hover:text-fg"
+              href={`/lender/${primary.dealId}/timeline`}
+              className="inline-flex items-center gap-1 rounded-full border border-line/60 bg-bg-2/40 px-3 py-1 text-fg-muted transition-colors hover:text-fg"
             >
               Underwriting timeline <ArrowRight className="size-3" />
             </Link>
             <Link
               href="/#05-benchmarks"
-              className="inline-flex items-center gap-1 rounded-md border border-line/60 bg-bg-2/40 px-2.5 py-1 text-fg-muted transition-colors hover:text-fg"
+              className="inline-flex items-center gap-1 rounded-full border border-line/60 bg-bg-2/40 px-3 py-1 text-fg-muted transition-colors hover:text-fg"
             >
               Model benchmarks <ArrowRight className="size-3" />
             </Link>

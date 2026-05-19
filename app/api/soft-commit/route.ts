@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { db, schema } from "@/lib/db";
 import { getAuditorSession } from "@/lib/auditor/session";
-import { eq, asc } from "drizzle-orm";
+import { sortEcmsNumerically } from "@/lib/utils/equipment";
+import { eq } from "drizzle-orm";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -45,11 +46,12 @@ export async function POST(req: Request) {
   }
 
   try {
-    const ecms = await db
-      .select()
-      .from(schema.underwritingResults)
-      .where(eq(schema.underwritingResults.dealId, dealId))
-      .orderBy(asc(schema.underwritingResults.ecmId));
+    const ecms = sortEcmsNumerically(
+      await db
+        .select()
+        .from(schema.underwritingResults)
+        .where(eq(schema.underwritingResults.dealId, dealId))
+    );
     if (ecms.length === 0) {
       return NextResponse.json({ error: "deal-not-found" }, { status: 404 });
     }

@@ -39,8 +39,9 @@ export default function BorrowersPage() {
               <p className="a-hero__sub" style={{ maxWidth: "56ch", marginTop: 22 }}>
                 4–6 weeks to close. No recourse to your business — repayment is
                 assigned to the kWh delta the upgrade generates.{" "}
-                <strong className="a-hero__sub-em">₹20L–₹100Cr facility sizes</strong>{" "}
-                for vetted Indian MSMEs.
+                <strong className="a-hero__sub-em">₹4L–₹40L typical MSME bundle</strong>
+                ; larger chiller / cogen / solar facilities (₹2Cr–₹40Cr) close
+                through pool aggregation. Vetted Indian MSMEs only.
               </p>
               <div className="a-hero__ctas" style={{ marginTop: 28 }}>
                 <a className="a-btn a-btn--primary" href="mailto:borrowers@ascertainty.com">
@@ -132,7 +133,7 @@ export default function BorrowersPage() {
           idx="02"
           kicker="WHAT WE FINANCE"
           title="Seventy-plus ECMs. Six with the tightest calibration."
-          intro="Our PINN covers 72+ Energy Conservation Measure categories. The six below have the tightest σ — that's where direct underwriting lives today. Other ECMs route through partner ESCOs while we collect M&V."
+          intro="Our PINN covers 72+ Energy Conservation Measure categories. The six below have the tightest σ — that's where direct underwriting lives today. Smaller MSME bundles (typically $5K–$50K) fund as single-LP deals; larger sites (chillers, cogen, captive solar) fund through pool aggregation. Other ECMs route through partner ESCOs while we collect M&V."
         />
         <div className="shell" style={{ paddingTop: 32, paddingBottom: 80 }}>
           <div
@@ -146,76 +147,114 @@ export default function BorrowersPage() {
               {
                 cat: "VFDs / motor controls",
                 why: "Variable-frequency drives on pumps, fans, compressors. Tightest σ in our corpus — physics is well-instrumented.",
-                ticket: "$15K–$200K",
+                ticket: "$1K–$200K",
+                tier: "both",
+              },
+              {
+                cat: "Compressed-air systems",
+                why: "Leakage repair, sequencing, pressure-band optimization. Dominant ECM category in KISEM textile + plastic audits.",
+                ticket: "$1K–$50K",
+                tier: "single",
+              },
+              {
+                cat: "LED retrofits",
+                why: "Industrial lighting retrofits, including high-bay and warehouse. Predictable load reduction; fast payback.",
+                ticket: "$2K–$300K",
+                tier: "both",
               },
               {
                 cat: "Solar PV (rooftop, captive)",
                 why: "Captive solar with net-metering or behind-the-meter. We underwrite the demand-offset, not the export tariff.",
                 ticket: "$50K–$2M",
-              },
-              {
-                cat: "LED retrofits",
-                why: "Industrial lighting retrofits, including high-bay and warehouse. Predictable load reduction; fast payback.",
-                ticket: "$10K–$300K",
+                tier: "pool",
               },
               {
                 cat: "Cold storage",
                 why: "Refrigeration efficiency upgrades — compressors, insulation, controls. Cooling-load model accounts for ambient.",
                 ticket: "$50K–$1M",
+                tier: "pool",
               },
               {
                 cat: "Chiller plant upgrades",
                 why: "Magnetic-bearing chillers, plate heat exchangers, BMS controls. HVAC-heavy sites including hotels, hospitals, datacenters.",
                 ticket: "$100K–$3M",
+                tier: "pool",
               },
               {
                 cat: "Cogeneration / heat recovery",
                 why: "CHP, waste-heat recovery, process steam optimization. Highest ticket sizes; σ widens for cogen due to load variability.",
                 ticket: "$200K–$5M",
+                tier: "pool",
               },
-            ].map((c) => (
-              <div
-                key={c.cat}
-                style={{
-                  border: "1px solid var(--line)",
-                  background: "var(--bg-1)",
-                  padding: 20,
-                  minHeight: 180,
-                  borderRadius: 8,
-                }}
-              >
-                <h3
-                  style={{
-                    fontSize: 17,
-                    letterSpacing: "-0.01em",
-                    color: "var(--fg)",
-                    marginBottom: 8,
-                  }}
-                >
-                  {c.cat}
-                </h3>
-                <p
-                  style={{
-                    fontSize: 13,
-                    color: "var(--fg-muted)",
-                    lineHeight: 1.55,
-                    marginBottom: 16,
-                  }}
-                >
-                  {c.why}
-                </p>
+            ].map((c) => {
+              const tierLabel =
+                c.tier === "single"
+                  ? "Single-deal"
+                  : c.tier === "pool"
+                    ? "Pool aggregation"
+                    : "Single-deal or pool";
+              const tierColor =
+                c.tier === "single"
+                  ? "var(--green, #16a34a)"
+                  : c.tier === "pool"
+                    ? "var(--accent-deep)"
+                    : "var(--fg-muted)";
+              return (
                 <div
-                  className="mono-num"
+                  key={c.cat}
                   style={{
-                    fontSize: 12,
-                    color: "var(--accent-deep)",
-                    letterSpacing: "0.04em",
+                    border: "1px solid var(--line)",
+                    background: "var(--bg-1)",
+                    padding: 20,
+                    minHeight: 200,
+                    borderRadius: 8,
                   }}
                 >
-                  Ticket: {c.ticket}
+                  <h3
+                    style={{
+                      fontSize: 17,
+                      letterSpacing: "-0.01em",
+                      color: "var(--fg)",
+                      marginBottom: 8,
+                    }}
+                  >
+                    {c.cat}
+                  </h3>
+                  <p
+                    style={{
+                      fontSize: 13,
+                      color: "var(--fg-muted)",
+                      lineHeight: 1.55,
+                      marginBottom: 16,
+                    }}
+                  >
+                    {c.why}
+                  </p>
+                  <div
+                    className="mono-num"
+                    style={{
+                      fontSize: 12,
+                      color: "var(--accent-deep)",
+                      letterSpacing: "0.04em",
+                      marginBottom: 6,
+                    }}
+                  >
+                    Ticket: {c.ticket}
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 11,
+                      color: tierColor,
+                      letterSpacing: "0.06em",
+                      textTransform: "uppercase",
+                      fontWeight: 500,
+                    }}
+                  >
+                    {tierLabel}
+                  </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
           <p
             style={{

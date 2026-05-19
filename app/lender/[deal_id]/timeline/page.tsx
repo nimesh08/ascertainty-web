@@ -6,6 +6,7 @@ import { PageHeader } from "@/components/layout/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { TimelineScrubber, type Snapshot } from "@/components/lender/timeline-scrubber";
+import { sortEcmsNumerically } from "@/lib/utils/equipment";
 import { db, schema } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -17,11 +18,12 @@ export default async function DealTimelinePage({
 }) {
   const { deal_id } = await params;
 
-  const ecms = await db
-    .select()
-    .from(schema.underwritingResults)
-    .where(eq(schema.underwritingResults.dealId, deal_id))
-    .orderBy(asc(schema.underwritingResults.ecmId));
+  const ecms = sortEcmsNumerically(
+    await db
+      .select()
+      .from(schema.underwritingResults)
+      .where(eq(schema.underwritingResults.dealId, deal_id))
+  );
 
   if (ecms.length === 0) {
     return (
@@ -66,8 +68,18 @@ export default async function DealTimelinePage({
     <Container className="py-10 sm:py-14">
       <PageHeader
         kicker={`Audit timeline · ${deal_id}`}
-        title={`How the underwriting tightened over ${snapshots.length} snapshots`}
-        description="Each row is a /predict call from the auditor's intake form. As more measurements come in, the σ shrinks, the band tightens, and the P5 floor firms up — that's the calibrated-uncertainty-on-small-data moat made visible."
+        title={
+          snapshots.length === 0
+            ? "Audit timeline pending"
+            : snapshots.length === 1
+              ? "First underwriting snapshot"
+              : `How the underwriting tightened over ${snapshots.length} snapshots`
+        }
+        description={
+          snapshots.length === 0
+            ? "Every prediction the auditor saves appends a snapshot here. Once the first /predict call lands, you'll see the band start to tighten as Day-30 and Day-90 measurements come in — that's the calibrated-uncertainty-on-small-data moat made visible."
+            : "Each row is a /predict call from the auditor's intake form. As more measurements come in, the σ shrinks, the band tightens, and the P5 floor firms up — that's the calibrated-uncertainty-on-small-data moat made visible."
+        }
         right={
           <Link href={`/lender/${encodeURIComponent(deal_id)}`}>
             <Button variant="outline">← Back to lender preview</Button>

@@ -1,7 +1,7 @@
 import "server-only";
 
 import { db, schema } from "@/lib/db";
-import { and, desc, eq, or, sql } from "drizzle-orm";
+import { and, asc, desc, eq, or, sql } from "drizzle-orm";
 
 export interface ProjectListItem {
   id: string;
@@ -178,12 +178,15 @@ export interface UnderwritingLite {
   dealId: string;
   ecmId: string;
   equipmentType: string;
+  description: string | null;
   modelUsed: string | null;
   pinnSavingsKwh: string | null;
   pinnP5LowerKwh: string | null;
   pinnP95UpperKwh: string | null;
   pinnSigmaKwh: string | null;
   confidenceGrade: string | null;
+  baselineKwhPerYear: string | null;
+  investmentInr: string | null;
   electricityRateInrKwh: string | null;
   annualSavingsInr: string | null;
   recommendedLoanInr: string | null;
@@ -205,7 +208,99 @@ export interface ProjectDetail extends ProjectListItem {
   verifications: VerificationLite[];
   recentTransactions: ProjectTxLite[];
   investorCount: number;
-  underwriting: UnderwritingLite | null;
+  // All ECM rows for this project, ordered by ecmId. Single-ECM deals just
+  // have one entry; multi-ECM bundles render an accordion (B1.5 pattern).
+  ecms: UnderwritingLite[];
+}
+
+/**
+ * Bundle-level aggregates across a project's ECMs. Independent sigmas combine
+ * in quadrature (RSS). Overall grade is the worst grade across ECMs (A < B < C).
+ */
+export interface EcmBundleAggregate {
+  ecmCount: number;
+  totalPredictedKwh: number;
+  totalP5Kwh: number;
+  totalP95Kwh: number;
+  totalSigmaKwh: number;
+  totalInvestmentInr: number;
+  totalCarbonTco2: number;
+  electricityRateInrKwh: number;
+  overallGrade: "A" | "B" | "C" | null;
+  worstDscrAtP5: number | null;
+  worstDscrAtP50: number | null;
+  worstPaybackMonths: number | null;
+  primaryDealId: string | null;
+}
+
+export function aggregateEcms(ecms: UnderwritingLite[]): EcmBundleAggregate {
+  if (ecms.length === 0) {
+    return {
+      ecmCount: 0,
+      totalPredictedKwh: 0,
+      totalP5Kwh: 0,
+      totalP95Kwh: 0,
+      totalSigmaKwh: 0,
+      totalInvestmentInr: 0,
+      totalCarbonTco2: 0,
+      electricityRateInrKwh: 8.0,
+      overallGrade: null,
+      worstDscrAtP5: null,
+      worstDscrAtP50: null,
+      worstPaybackMonths: null,
+      primaryDealId: null,
+    };
+  }
+  const sumPredicted = ecms.reduce((a, e) => a + Number(e.pinnSavingsKwh ?? 0), 0);
+  const sumP5 = ecms.reduce((a, e) => a + Number(e.pinnP5LowerKwh ?? 0), 0);
+  const sumP95 = ecms.reduce((a, e) => a + Number(e.pinnP95UpperKwh ?? 0), 0);
+  const sumSigma = Math.sqrt(
+    ecms.reduce((a, e) => a + Math.pow(Number(e.pinnSigmaKwh ?? 0), 2), 0)
+  );
+  const sumInvest = ecms.reduce((a, e) => a + Number(e.investmentInr ?? 0), 0);
+  const sumCarbon = ecms.reduce(
+    (a, e) => a + (e.carbonEligible ? Number(e.carbonTco2PerYear ?? 0) : 0),
+    0
+  );
+  const grades = ecms
+    .map((e) => e.confidenceGrade)
+    .filter((g): g is "A" | "B" | "C" => g === "A" || g === "B" || g === "C");
+  const overallGrade: "A" | "B" | "C" | null = grades.includes("C")
+    ? "C"
+    : grades.includes("B")
+      ? "B"
+      : grades.length > 0
+        ? "A"
+        : null;
+  const worstOf = (vals: Array<number | null>, cmp: "min" | "max") => {
+    const ok = vals.filter((v): v is number => v != null);
+    if (ok.length === 0) return null;
+    return cmp === "min" ? Math.min(...ok) : Math.max(...ok);
+  };
+  return {
+    ecmCount: ecms.length,
+    totalPredictedKwh: sumPredicted,
+    totalP5Kwh: sumP5,
+    totalP95Kwh: sumP95,
+    totalSigmaKwh: sumSigma,
+    totalInvestmentInr: sumInvest,
+    totalCarbonTco2: sumCarbon,
+    electricityRateInrKwh: Number(ecms[0]?.electricityRateInrKwh ?? 8.0),
+    overallGrade,
+    worstDscrAtP5: worstOf(
+      ecms.map((e) => (e.dscrAtP5 != null ? Number(e.dscrAtP5) : null)),
+      "min"
+    ),
+    worstDscrAtP50: worstOf(
+      ecms.map((e) => (e.dscrAtP50 != null ? Number(e.dscrAtP50) : null)),
+      "min"
+    ),
+    worstPaybackMonths: worstOf(
+      ecms.map((e) => (e.paybackMonths != null ? Number(e.paybackMonths) : null)),
+      "max"
+    ),
+    primaryDealId: ecms[0]?.dealId ?? null,
+  };
 }
 
 export async function getProjectWithDetails(
@@ -299,40 +394,40 @@ export async function getProjectWithDetails(
     .from(schema.investorPositions)
     .where(eq(schema.investorPositions.projectId, base.id));
 
-  const [uwRow] = await db
+  const uwRows = await db
     .select()
     .from(schema.underwritingResults)
     .where(eq(schema.underwritingResults.projectId, base.id))
-    .orderBy(desc(schema.underwritingResults.createdAt))
-    .limit(1);
+    .orderBy(asc(schema.underwritingResults.ecmId));
 
-  const underwriting: UnderwritingLite | null = uwRow
-    ? {
-        id: uwRow.id,
-        dealId: uwRow.dealId,
-        ecmId: uwRow.ecmId,
-        equipmentType: uwRow.equipmentType,
-        modelUsed: uwRow.modelUsed,
-        pinnSavingsKwh: uwRow.pinnSavingsKwh,
-        pinnP5LowerKwh: uwRow.pinnP5LowerKwh,
-        pinnP95UpperKwh: uwRow.pinnP95UpperKwh,
-        pinnSigmaKwh: uwRow.pinnSigmaKwh,
-        confidenceGrade: uwRow.confidenceGrade,
-        electricityRateInrKwh: uwRow.electricityRateInrKwh,
-        annualSavingsInr: uwRow.annualSavingsInr,
-        recommendedLoanInr: uwRow.recommendedLoanInr,
-        paybackMonths: uwRow.paybackMonths,
-        p5PaybackMonths: uwRow.p5PaybackMonths,
-        dscrAtP5: uwRow.dscrAtP5,
-        dscrAtP50: uwRow.dscrAtP50,
-        carbonEligible: uwRow.carbonEligible,
-        carbonTco2PerYear: uwRow.carbonTco2PerYear,
-        carbonMethodology: uwRow.carbonMethodology,
-        eligibilityStatus: uwRow.eligibilityStatus,
-        status: uwRow.status,
-        createdAt: uwRow.createdAt.toISOString(),
-      }
-    : null;
+  const ecms: UnderwritingLite[] = uwRows.map((r) => ({
+    id: r.id,
+    dealId: r.dealId,
+    ecmId: r.ecmId,
+    equipmentType: r.equipmentType,
+    description: r.description,
+    modelUsed: r.modelUsed,
+    pinnSavingsKwh: r.pinnSavingsKwh,
+    pinnP5LowerKwh: r.pinnP5LowerKwh,
+    pinnP95UpperKwh: r.pinnP95UpperKwh,
+    pinnSigmaKwh: r.pinnSigmaKwh,
+    confidenceGrade: r.confidenceGrade,
+    baselineKwhPerYear: r.baselineKwhPerYear,
+    investmentInr: r.investmentInr,
+    electricityRateInrKwh: r.electricityRateInrKwh,
+    annualSavingsInr: r.annualSavingsInr,
+    recommendedLoanInr: r.recommendedLoanInr,
+    paybackMonths: r.paybackMonths,
+    p5PaybackMonths: r.p5PaybackMonths,
+    dscrAtP5: r.dscrAtP5,
+    dscrAtP50: r.dscrAtP50,
+    carbonEligible: r.carbonEligible,
+    carbonTco2PerYear: r.carbonTco2PerYear,
+    carbonMethodology: r.carbonMethodology,
+    eligibilityStatus: r.eligibilityStatus,
+    status: r.status,
+    createdAt: r.createdAt.toISOString(),
+  }));
 
   return {
     ...base,
@@ -341,6 +436,6 @@ export async function getProjectWithDetails(
     verifications,
     recentTransactions,
     investorCount: countRow?.n ?? 0,
-    underwriting,
+    ecms,
   };
 }

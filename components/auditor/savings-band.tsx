@@ -46,7 +46,7 @@ export function SavingsBand({
         <div className="flex items-center justify-between gap-3">
           <div className="text-sm text-zinc-500">{label ?? "Predicted annual savings"}</div>
           {grade && (
-            <span className={cn("inline-flex items-center rounded-md border px-2 py-0.5 text-xs font-medium", gradeColor)}>
+            <span className={cn("inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-medium", gradeColor)}>
               Grade {grade}
             </span>
           )}
@@ -73,33 +73,103 @@ export function SavingsBand({
         />
       </div>
 
-      {/* Numeric callouts */}
-      <div className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
+      {/* Numeric callouts — absolutely anchored to their tick positions so
+          P5 sits below the P5 tick, etc. On narrow viewports we fall back to
+          a stacked layout (sm:hidden vs sm:block) so callouts don't collide. */}
+      <BandCallouts
+        p5Kwh={p5Kwh}
+        predictedKwh={predictedKwh}
+        p95Kwh={p95Kwh}
+        p5Pct={p5Pct}
+        pointPct={pointPct}
+        p95Pct={p95Pct}
+        electricityRateInrKwh={electricityRateInrKwh}
+      />
+    </div>
+  );
+}
+
+/** Anchored callouts — uses `translateX(-50%)` to center each label under its
+ *  tick. Clamps each label's transform so the leftmost/rightmost stay inside
+ *  the container instead of overflowing. */
+function BandCallouts({
+  p5Kwh,
+  predictedKwh,
+  p95Kwh,
+  p5Pct,
+  pointPct,
+  p95Pct,
+  electricityRateInrKwh,
+}: {
+  p5Kwh: number;
+  predictedKwh: number;
+  p95Kwh: number;
+  p5Pct: number;
+  pointPct: number;
+  p95Pct: number;
+  electricityRateInrKwh: number;
+}) {
+  // Clamp translate so labels near 0% or 100% don't overflow the container.
+  // Below ~10% we left-align; above ~90% we right-align; otherwise center.
+  const transformFor = (pct: number) => {
+    if (pct < 10) return "translateX(0)";
+    if (pct > 90) return "translateX(-100%)";
+    return "translateX(-50%)";
+  };
+
+  const fmtKwh = (n: number) =>
+    `${n.toLocaleString(undefined, { maximumFractionDigits: 0 })} kWh/yr`;
+  const fmtInr = (n: number) =>
+    `≈ ₹${(n * electricityRateInrKwh).toLocaleString(undefined, {
+      maximumFractionDigits: 0,
+    })}/yr`;
+
+  return (
+    <>
+      {/* Stacked fallback for narrow viewports — keeps labels readable when
+          two ticks would crash into each other under 480px. */}
+      <div className="grid grid-cols-3 gap-2 text-xs sm:hidden">
         <div>
-          <div className="text-xs uppercase tracking-wide text-zinc-500">P5 (lender floor)</div>
-          <div className="font-medium text-emerald-700 dark:text-emerald-300">
-            {p5Kwh.toLocaleString(undefined, { maximumFractionDigits: 0 })} kWh/yr
-          </div>
-          <div className="text-xs text-zinc-500">
-            ≈ ₹{(p5Kwh * electricityRateInrKwh).toLocaleString(undefined, { maximumFractionDigits: 0 })}/yr
-          </div>
+          <div className="uppercase tracking-wide text-zinc-500">P5 (floor)</div>
+          <div className="font-medium text-emerald-700 dark:text-emerald-300">{fmtKwh(p5Kwh)}</div>
         </div>
         <div>
-          <div className="text-xs uppercase tracking-wide text-zinc-500">Point estimate</div>
-          <div className="font-medium">
-            {predictedKwh.toLocaleString(undefined, { maximumFractionDigits: 0 })} kWh/yr
-          </div>
-          <div className="text-xs text-zinc-500">
-            ≈ ₹{(predictedKwh * electricityRateInrKwh).toLocaleString(undefined, { maximumFractionDigits: 0 })}/yr
-          </div>
+          <div className="uppercase tracking-wide text-zinc-500">Point</div>
+          <div className="font-medium">{fmtKwh(predictedKwh)}</div>
         </div>
-        <div>
-          <div className="text-xs uppercase tracking-wide text-zinc-500">P95 (upper)</div>
-          <div className="font-medium">
-            {p95Kwh.toLocaleString(undefined, { maximumFractionDigits: 0 })} kWh/yr
-          </div>
+        <div className="text-right">
+          <div className="uppercase tracking-wide text-zinc-500">P95</div>
+          <div className="font-medium">{fmtKwh(p95Kwh)}</div>
         </div>
       </div>
-    </div>
+
+      {/* Tick-anchored layout for tablet+ */}
+      <div className="relative hidden h-16 w-full text-sm sm:block">
+        <div
+          className="absolute top-0"
+          style={{ left: `${p5Pct}%`, transform: transformFor(p5Pct) }}
+        >
+          <div className="text-xs uppercase tracking-wide text-zinc-500">P5 (lender floor)</div>
+          <div className="font-medium text-emerald-700 dark:text-emerald-300">{fmtKwh(p5Kwh)}</div>
+          <div className="text-xs text-zinc-500">{fmtInr(p5Kwh)}</div>
+        </div>
+        <div
+          className="absolute top-0"
+          style={{ left: `${pointPct}%`, transform: transformFor(pointPct) }}
+        >
+          <div className="text-xs uppercase tracking-wide text-zinc-500">Point estimate</div>
+          <div className="font-medium">{fmtKwh(predictedKwh)}</div>
+          <div className="text-xs text-zinc-500">{fmtInr(predictedKwh)}</div>
+        </div>
+        <div
+          className="absolute top-0"
+          style={{ left: `${p95Pct}%`, transform: transformFor(p95Pct) }}
+        >
+          <div className="text-xs uppercase tracking-wide text-zinc-500">P95 (upper)</div>
+          <div className="font-medium">{fmtKwh(p95Kwh)}</div>
+          <div className="text-xs text-zinc-500">{fmtInr(p95Kwh)}</div>
+        </div>
+      </div>
+    </>
   );
 }

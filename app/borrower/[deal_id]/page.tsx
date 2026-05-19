@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { eq, asc, desc } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { SavingsBand } from "@/components/auditor/savings-band";
 import { IoTMockChart } from "@/components/shared/IoTMockChart";
 import { CarbonCreditPanel } from "@/components/shared/CarbonCreditPanel";
+import { sortEcmsNumerically } from "@/lib/utils/equipment";
 import { db, schema } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -39,11 +40,12 @@ export default async function BorrowerDealPage({
 }) {
   const { deal_id } = await params;
 
-  const ecms = await db
-    .select()
-    .from(schema.underwritingResults)
-    .where(eq(schema.underwritingResults.dealId, deal_id))
-    .orderBy(asc(schema.underwritingResults.ecmId));
+  const ecms = sortEcmsNumerically(
+    await db
+      .select()
+      .from(schema.underwritingResults)
+      .where(eq(schema.underwritingResults.dealId, deal_id))
+  );
 
   if (ecms.length === 0) {
     return (

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { eq, asc } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
@@ -20,6 +20,7 @@ import {
   evaluatePolicy,
   type PolicyEvaluation,
 } from "@/lib/underwriting/policy";
+import { prettyEquipment, cleanModelName, sortEcmsNumerically, prettySector } from "@/lib/utils/equipment";
 import { db, schema } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -35,11 +36,12 @@ export default async function LenderDealPage({
 }) {
   const { deal_id } = await params;
 
-  const rows = await db
-    .select()
-    .from(schema.underwritingResults)
-    .where(eq(schema.underwritingResults.dealId, deal_id))
-    .orderBy(asc(schema.underwritingResults.ecmId));
+  const rows = sortEcmsNumerically(
+    await db
+      .select()
+      .from(schema.underwritingResults)
+      .where(eq(schema.underwritingResults.dealId, deal_id))
+  );
 
   if (rows.length === 0) {
     return (
@@ -107,40 +109,45 @@ export default async function LenderDealPage({
     <Container className="py-10 sm:py-14">
       <PageHeader
         kicker={`Lender preview · ${deal_id}`}
-        title={`${filledEcms} ECM${filledEcms === 1 ? "" : "s"} · ${sector}`}
+        title={`${filledEcms} ECM${filledEcms === 1 ? "" : "s"} · ${prettySector(sector)}`}
         description="Live underwriting from the auditor's measurements. DSCR at P5 is the governing metric — soft commitment is conditional on every §5 threshold clearing."
         right={
-          <div className="flex flex-wrap items-center gap-2">
-            {linkedProjectId ? (
+          <div className="flex flex-col items-end gap-3">
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <Link href={`/lender/${encodeURIComponent(deal_id)}/timeline`}>
+                <Button variant="outline" className="rounded-full">View audit timeline</Button>
+              </Link>
+              {dealEligibleForCommit ? (
+                <Link href={`/lender/${encodeURIComponent(deal_id)}/soft-commit`}>
+                  <Button size="lg" className="rounded-full">Sign soft commitment →</Button>
+                </Link>
+              ) : (
+                <Button
+                  size="lg"
+                  disabled
+                  className="rounded-full"
+                  title="Deal does not currently clear all §5 underwriting thresholds. See ineligibility detail."
+                >
+                  Sign soft commitment →
+                </Button>
+              )}
+            </div>
+            <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-1 text-xs text-fg-muted">
+              {linkedProjectId ? (
+                <Link
+                  href={`/projects/${linkedProjectId}`}
+                  className="underline underline-offset-2 hover:text-accent"
+                >
+                  Investor view ↗
+                </Link>
+              ) : null}
               <Link
-                href={`/projects/${linkedProjectId}`}
-                className="text-xs text-fg-muted underline underline-offset-2 hover:text-accent"
+                href="/docs/underwriting-policy"
+                className="underline underline-offset-2 hover:text-accent"
               >
-                Investor view ↗
+                Underwriting policy ↗
               </Link>
-            ) : null}
-            <Link
-              href="/docs/underwriting-policy"
-              className="text-xs text-fg-muted underline underline-offset-2 hover:text-accent"
-            >
-              Underwriting Policy ↗
-            </Link>
-            <Link href={`/lender/${encodeURIComponent(deal_id)}/timeline`}>
-              <Button variant="outline">View audit timeline</Button>
-            </Link>
-            {dealEligibleForCommit ? (
-              <Link href={`/lender/${encodeURIComponent(deal_id)}/soft-commit`}>
-                <Button size="lg">Sign soft commitment →</Button>
-              </Link>
-            ) : (
-              <Button
-                size="lg"
-                disabled
-                title="Deal does not currently clear all §5 underwriting thresholds. See ineligibility detail."
-              >
-                Sign soft commitment →
-              </Button>
-            )}
+            </div>
           </div>
         }
       />
@@ -263,14 +270,14 @@ export default async function LenderDealPage({
           return (
             <Card key={r.id}>
               <CardHeader>
-                <div className="flex items-center justify-between">
+                <div className="flex items-center justify-between gap-3">
                   <CardTitle className="text-base">
-                    <span className="font-mono text-sm text-fg-muted">{r.ecmId}</span>
+                    <span className="font-mono text-sm text-fg-muted">ECM {r.ecmId}</span>
                     <span className="mx-2 text-fg-faint">·</span>
-                    {r.equipmentType}
+                    {prettyEquipment(r.equipmentType)}
                   </CardTitle>
-                  <span className="text-xs text-fg-muted">
-                    {r.modelUsed?.replace("exira_pinn_", "")}
+                  <span className="shrink-0 text-xs text-fg-muted">
+                    {cleanModelName(r.modelUsed)}
                   </span>
                 </div>
               </CardHeader>

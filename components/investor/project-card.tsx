@@ -20,6 +20,8 @@ export interface ProjectCardProject {
   tokensSold: string;
   termMonths: number;
   expectedApyBps?: number | null;
+  ecmCount?: number | null;
+  heroImageUrl?: string | null;
 }
 
 export function ProjectCard({ project }: { project: ProjectCardProject }) {
@@ -40,9 +42,16 @@ export function ProjectCard({ project }: { project: ProjectCardProject }) {
     >
       <Card className="group relative h-full gap-0 overflow-hidden rounded-2xl border-line/60 bg-bg-1/50 p-0 transition-colors hover:border-green/40">
         <div className="relative">
-          <ProjectHero kind="project" className="aspect-[16/9]" />
-          <div className="absolute right-3 bottom-3">
-            <StatusBadge status={project.status} />
+          <ProjectHero
+            kind="project"
+            className="aspect-[16/9]"
+            heroImageUrl={project.heroImageUrl ?? undefined}
+          />
+          {/* Backdrop-blur wrapper keeps the status badge crisp on top of any
+              photographic hero — without it the translucent accent/10 fill
+              vanishes against the image. */}
+          <div className="absolute right-3 bottom-3 rounded-full bg-bg-1/80 backdrop-blur-sm ring-1 ring-line/60">
+            <StatusBadge status={project.status} className="border-transparent" />
           </div>
         </div>
 
@@ -90,7 +99,11 @@ export function ProjectCard({ project }: { project: ProjectCardProject }) {
               valueClassName="text-green"
             />
             <StatTile
-              label="Upgrade"
+              label={
+                project.ecmCount && project.ecmCount > 1
+                  ? `${project.ecmCount} ECMs`
+                  : "Upgrade"
+              }
               value={capitalize(project.upgradeType.replace(/_/g, " "))}
               truncate
             />

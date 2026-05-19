@@ -1,10 +1,11 @@
 import { redirect } from "next/navigation";
-import { eq, asc } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 import { Container } from "@/components/layout/container";
 import { PageHeader } from "@/components/layout/page-header";
 import { AuditorIntakeForm } from "@/components/auditor/intake-form";
 import { getAuditorSession } from "@/lib/auditor/session";
+import { prettyEquipment, sortEcmsNumerically } from "@/lib/utils/equipment";
 import { db, schema } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
@@ -19,11 +20,12 @@ export default async function AuditorDealIntakePage({
   const { deal_id } = await params;
   if (!deal_id) redirect("/auditor/intake");
 
-  const rows = await db
-    .select()
-    .from(schema.underwritingResults)
-    .where(eq(schema.underwritingResults.dealId, deal_id))
-    .orderBy(asc(schema.underwritingResults.ecmId));
+  const rows = sortEcmsNumerically(
+    await db
+      .select()
+      .from(schema.underwritingResults)
+      .where(eq(schema.underwritingResults.dealId, deal_id))
+  );
 
   const latest = rows[rows.length - 1] ?? null;
 
@@ -31,7 +33,7 @@ export default async function AuditorDealIntakePage({
     <Container className="py-10 sm:py-14">
       <PageHeader
         kicker={`Auditor intake · ${deal_id}`}
-        title={latest ? `Continuing ${latest.equipmentType} ECM` : "New ECM on existing deal"}
+        title={latest ? `Continuing ${prettyEquipment(latest.equipmentType)} ECM` : "New ECM on existing deal"}
         description={
           rows.length > 0
             ? `${rows.length} ECM${rows.length === 1 ? "" : "s"} recorded so far. Add another or update the most recent.`
@@ -73,7 +75,7 @@ export default async function AuditorDealIntakePage({
                 {rows.map((r) => (
                   <tr key={r.id} className="border-t border-zinc-200 dark:border-zinc-800">
                     <td className="px-3 py-2 font-mono">{r.ecmId}</td>
-                    <td className="px-3 py-2">{r.equipmentType}</td>
+                    <td className="px-3 py-2">{prettyEquipment(r.equipmentType)}</td>
                     <td className="px-3 py-2 text-right">
                       {Number(r.baselineKwhPerYear).toLocaleString(undefined, { maximumFractionDigits: 0 })}
                     </td>

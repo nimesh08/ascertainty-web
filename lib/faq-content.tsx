@@ -107,7 +107,22 @@ export const FAQ_SECTIONS: FaqSection[] = [
       {
         id: "facility-size",
         q: "How big a facility can I get?",
-        a: "₹20L–₹100Cr depending on the audited savings forecast and DSCR @ P5 sizing. The PINN underwriting model produces a calibrated P5 floor for your specific site; the facility is sized to that floor under a DSCR ≥ 1.30× covenant.",
+        a: (
+          <>
+            Two lanes. The typical MSME single-deal bundle is{" "}
+            <b>₹4L–₹40L</b> (roughly $5K–$50K) — one facility, one auditor,
+            multiple ECMs aggregated into a single share-of-savings token.
+            Larger sites — chiller plant retrofits, cogen, captive solar — sit
+            in <b>₹2Cr–₹40Cr</b> ($250K–$5M) and close through pool
+            aggregation rather than single-LP direct. Either way, the PINN
+            underwriting model produces a calibrated P5 floor for your
+            specific site; the facility is sized to that floor under a
+            DSCR ≥ 1.30× covenant.{" "}
+            <Link href="/borrowers#ecm-categories" style={linkStyle}>
+              See the ECM ticket ranges →
+            </Link>
+          </>
+        ),
       },
       {
         id: "close-time",

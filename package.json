@@ -12,6 +12,7 @@
     "db:push": "drizzle-kit push",
     "db:seed-admin": "tsx scripts/seed-admin.ts",
     "db:seed-demo": "tsx scripts/seed-demo-fixtures.ts",
+    "db:seed-kisem": "tsx scripts/seed-projects-v04-kisem.ts",
     "test:unit": "vitest run",
     "test:integration": "TS_NODE_PROJECT=tests/integration/tsconfig.json mocha",
     "test:e2e": "playwright test",

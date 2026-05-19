@@ -349,6 +349,148 @@ export default function ProtocolPage() {
         </div>
       </section>
 
+      {/* BEE TAXONOMY ALIGNMENT — situates our model in the established
+          Bureau of Energy Efficiency vocabulary (UNNATEE 2019 Ch. 5).
+          Free credibility lift for analysts who already know the taxonomy.
+          Background image: BEE-affiliated audit instruments (clamp meters,
+          Fluke analyzers, IR thermometers) — thematically the tools of the
+          trade for the auditors whose data we underwrite on. */}
+      <section
+        id="bee-alignment"
+        className="a-section relative isolate overflow-hidden"
+      >
+        {/* Photographic background — held back with a low opacity + cream
+            top/bottom gradients so cards above always have a clean ground. */}
+        <div
+          aria-hidden
+          className="absolute inset-0 -z-10 bg-cover bg-center"
+          style={{
+            backgroundImage: "url('/images/approach/bee-bg.webp')",
+            opacity: 0.18,
+          }}
+        />
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 -z-10"
+          style={{
+            background:
+              "linear-gradient(to bottom, var(--bg-0) 0%, transparent 18%, transparent 82%, var(--bg-0) 100%)",
+          }}
+        />
+        <SectionHead
+          idx="04"
+          kicker="BEE / UNNATEE ALIGNMENT"
+          title="Where this sits in BEE's financing taxonomy."
+          intro="The Bureau of Energy Efficiency's UNNATEE strategy report ranks 26 EE-financing instruments for the Indian market. Ascertainty composes three of them — and tokenizes the fifth-ranked instrument so the share-of-savings claim is liquid on-chain."
+        />
+        <div className="shell relative" style={{ paddingTop: 32, paddingBottom: 80 }}>
+          <div
+            className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4"
+            style={{ marginBottom: 28 }}
+          >
+            {[
+              {
+                k: "Green Receivables Fund",
+                v: "GRF",
+                body: "Bundles future savings-payment streams from an early-stage portfolio of EE projects and distributes them in tranches to private investors. This is the closest BEE-taxonomy match for the senior/junior structure on Ascertainty.",
+                rank: null as string | null,
+              },
+              {
+                k: "Forfaiting / Factoring",
+                v: "ForfF / FactF",
+                body: "Sale of future receivables from one party (the project) to another (the financier) for a one-time discounted payment. The repayment-from-savings assignment in our loan docs is a forfaiting structure — making the receivable composable on-chain is the v0 contribution.",
+                rank: null,
+              },
+              {
+                k: "Carbon Finance",
+                v: "CF",
+                body: "Third-party verified emission-reduction payments layered on top of cash savings, leveraging private capital into projects that reduce GHG emissions. UNDERWRITING_POLICY §11 codifies this as a separate accrual on the same meter.",
+                rank: null,
+              },
+              {
+                k: "Energy Conservation Bond",
+                v: "ECB",
+                body: "Debt instrument sold to investors that pays from the underlying EE project's cash flow. Our share-of-savings token is a tokenized ECB — same instrument shape, made liquid + auditable on-chain.",
+                rank: "BEE-ranked #5",
+              },
+            ].map((c) => (
+              <div
+                key={c.k}
+                style={{
+                  border: "1px solid var(--line)",
+                  background: "var(--bg-1)",
+                  padding: 20,
+                  borderRadius: 16,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 10,
+                  boxShadow: "0 4px 24px -16px rgba(0,0,0,0.18)",
+                }}
+              >
+                <div
+                  className="mono-num"
+                  style={{
+                    fontSize: 11,
+                    letterSpacing: "0.14em",
+                    color: "var(--fg-faint)",
+                    textTransform: "uppercase",
+                  }}
+                >
+                  {c.v}
+                  {c.rank ? (
+                    <span
+                      style={{
+                        marginLeft: 8,
+                        color: "var(--accent-deep)",
+                        fontWeight: 500,
+                      }}
+                    >
+                      · {c.rank}
+                    </span>
+                  ) : null}
+                </div>
+                <h3
+                  style={{
+                    fontSize: 16,
+                    letterSpacing: "-0.01em",
+                    color: "var(--fg)",
+                    margin: 0,
+                  }}
+                >
+                  {c.k}
+                </h3>
+                <p
+                  style={{
+                    fontSize: 13,
+                    color: "var(--fg-muted)",
+                    lineHeight: 1.55,
+                    margin: 0,
+                  }}
+                >
+                  {c.body}
+                </p>
+              </div>
+            ))}
+          </div>
+          <p
+            style={{
+              fontSize: 12,
+              color: "var(--fg-faint)",
+              maxWidth: "72ch",
+            }}
+          >
+            BEE&apos;s UNNATEE report (Bureau of Energy Efficiency · 2019) ranks
+            Energy Savings Insurance (ESI) as the highest-impact instrument
+            for Indian EE financing. Our DSCR-at-P5 covenant approximates that
+            de-risking function statistically; a formal MSME-insurance
+            partnership is on the forward roadmap. The blockchain section of
+            UNNATEE itself does not address EE financing — our application of
+            share-of-savings
+            tokenization is novel work outside the BEE taxonomy.
+          </p>
+        </div>
+      </section>
+
       {/* CTA CLOSER */}
       <section className="a-section">
         <div

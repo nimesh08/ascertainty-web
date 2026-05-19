@@ -52,7 +52,7 @@ export function KPITile({
   return (
     <div
       className={cn(
-        "relative ring-1 ring-inset p-3",
+        "relative rounded-2xl ring-1 ring-inset p-3",
         s.ring,
         emphasis === "headline" && "p-4",
         className
