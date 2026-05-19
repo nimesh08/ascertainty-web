@@ -2248,6 +2248,58 @@
   }
   .bench-snippet { max-width: 920px; }
 
+  /* Mobile/tablet: the 6-column benchmark table cannot fit at 375–720px
+     without illegibly squishing every cell. Let the table own its native
+     width and put the wrapper on horizontal scroll. Subtle right-edge
+     gradient hints that there is more content to the right. */
+  @media (max-width: 720px) {
+    .bench-grid {
+      position: relative;
+    }
+    .bench-grid > .a-tbl {
+      display: block;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+      font-size: 11.5px;
+    }
+    .bench-grid > .a-tbl thead,
+    .bench-grid > .a-tbl tbody,
+    .bench-grid > .a-tbl tr {
+      display: table;
+      width: 760px;
+      table-layout: fixed;
+    }
+    .bench-grid > .a-tbl thead {
+      width: 760px;
+    }
+    .bench-grid > .a-tbl th,
+    .bench-grid > .a-tbl td {
+      padding: 10px 12px;
+    }
+    .bench-grid::after {
+      content: "";
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 28px;
+      pointer-events: none;
+      background: linear-gradient(
+        to right,
+        transparent,
+        color-mix(in oklab, var(--bg-0) 80%, transparent)
+      );
+    }
+    .a-section--dark .bench-grid::after {
+      background: linear-gradient(
+        to right,
+        transparent,
+        rgba(15, 26, 23, 0.85)
+      );
+    }
+  }
+
   /* timeline-band animation (§05 MECHANICS sub-segment) */
   .a-timeline-anim {
     border: 1px solid var(--line);
