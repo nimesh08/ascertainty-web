@@ -2376,13 +2376,16 @@
   .a-hero__heading {
     font-family: var(--font-display);
     font-weight: 500;
-    font-size: clamp(40px, 7vw, 96px);
+    font-size: clamp(32px, 7vw, 96px);
     letter-spacing: -0.02em;
     line-height: 1.02;
     margin: 32px 0 0;
     color: var(--fg);
     padding-bottom: 0.12em;
     max-width: 18ch;
+    overflow-wrap: break-word;
+    word-break: normal;
+    hyphens: auto;
   }
   .a-hero__heading em {
     font-family: var(--font-display);
@@ -2535,6 +2538,23 @@
   .a-hero__meta > div + div {
     padding-left: 20px;
     border-left: 1px solid var(--line);
+  }
+  @media (max-width: 640px) {
+    .a-hero__meta { grid-template-columns: repeat(2, 1fr); row-gap: 4px; }
+    .a-hero__meta > div { padding-right: 12px; }
+    .a-hero__meta > div:nth-child(3) {
+      padding-left: 0;
+      border-left: none;
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+      margin-top: 12px;
+    }
+    .a-hero__meta > div:nth-child(4) {
+      border-top: 1px solid var(--line);
+      padding-top: 18px;
+      margin-top: 12px;
+    }
+    .a-hero__meta .val { font-size: 22px; }
   }
   .a-hero__meta .label {
     display: block;
