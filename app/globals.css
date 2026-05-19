@@ -1267,8 +1267,16 @@
     margin: 0 4px 0 2px;
   }
   @media (max-width: 720px) {
-    .bc-progress { gap: 6px; padding: 0 14px; }
-    .bc-chip { padding: 4px 9px; font-size: 9px; }
+    /* On mobile the .bc-progress chip strip overflows into the panel art
+       and inline caption. The .bc-tabs row below already provides the
+       same Valuable / Verifiable / Enforceable / Predictable navigation
+       with clearer copy, so we hide the in-stage chips here and let the
+       art breathe. The eureka "= Bankable" moment still lands via the
+       tabs row + the section title. */
+    .bc-progress { display: none; }
+    .bc-panel { padding: 24px 20px 28px; }
+    .bc-panel__inline { font-size: 10px; max-width: 100%; padding: 0 4px; }
+    .bc-stage { height: clamp(260px, 60vw, 360px); }
   }
   .bc-tabs {
     display: grid;
